@@ -42,16 +42,12 @@ function git-update-with-wstool {
 
     fi
 
-    wstool update --parallel=4
-}
-
-function git-update-repositories {
-	git-update-with-wstool
+    wstool update -t $ROSINSTALL_ROOT --parallel=4
 }
 
 function git-update-all 
 {
-	gitff && git-update-repositories
+	git-update-with-wstool
 }
 
 # Short for git fetch
