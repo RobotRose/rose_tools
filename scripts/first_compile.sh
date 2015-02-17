@@ -42,11 +42,17 @@ else
 	exit 1
 fi
 
-echo "Running git-update-all" | colorize BLUE
-git-update-all
-
 # For catkin_make
 source $ROSE_SCRIPTS/setup_ROS.sh
+
+# Filter the rose config location from the developers config file
+ROSE_CONFIG=${ROBOT_FILE%/rose_config/*}/rose_config
+
+echo "Setting the rosinstall file" | colorize BLUE
+wstool init $ROSINSTALL_ROOT $ROSE_CONFIG/rosinstall/.rosinstall
+
+echo "Running git-update-all" | colorize BLUE
+git-update-all
 
 echo -en "\033[0;34mNow doing first compile. This will take some time, so you can grab some\E[30;33m\e[5m coffee!\033[m" 
 for ws in `get-all-ws-paths`
@@ -60,7 +66,6 @@ do
 		echo "$ws failed to built. Stopping first compile." | colorize RED
 		exit 1
 	fi
-
 
 	# Overlay workspaces
 	source $ROSE_SCRIPTS/overlay_workspaces.sh
