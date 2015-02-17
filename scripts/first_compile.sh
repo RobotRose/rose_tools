@@ -49,7 +49,7 @@ fi
 source $ROSE_SCRIPTS/setup_ROS.sh
 
 echo "Setting the rosinstall file" | colorize BLUE
-wstool init $ROSINSTALL_ROOT $ROSE_CONFIG/rosinstall/.rosinstall
+wstool init $ROSINSTALL_ROOT $ROSE_CONFIG/rosinstall/default_rosinstall
 
 echo "Running git-update-all" | colorize BLUE
 git-update-all
