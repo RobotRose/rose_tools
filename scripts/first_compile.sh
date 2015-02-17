@@ -48,13 +48,24 @@ fi
 # For catkin_make
 source $ROSE_SCRIPTS/setup_ROS.sh
 
+echo -e "\033[0;34mNow getting all repositories. This will take some time, so you can grab some\E[30;33m\e[5m coffee!\033[m" 
+
 echo "Setting the rosinstall file" | colorize BLUE
-wstool init $ROSINSTALL_ROOT $ROSE_CONFIG/rosinstall/default_rosinstall
+wstool init --parallel=8 $ROSINSTALL_ROOT $ROSE_CONFIG/rosinstall/default_rosinstall
 
-echo "Running git-update-all" | colorize BLUE
-git-update-all
+if [ $? != 0 ]; then
+	echo "There already is a .rosinstall file at $ROSINSTALL_ROOT. Using that one."
+	echo "Running git-update-all" | colorize BLUE
+	git-update-all
+fi
 
-echo -en "\033[0;34mNow doing first compile. This will take some time, so you can grab some\E[30;33m\e[5m coffee!\033[m" 
+if [ $? != 0 ]; then
+	echo "Getting/Updating repos failed. Stopping first compile." | colorize RED
+	exit 1
+fi
+
+echo -e "\033[0;34mDoing first compile..." 
+
 for ws in `get-all-ws-paths`
 do
 	cd $ws 
