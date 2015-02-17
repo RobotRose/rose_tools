@@ -27,6 +27,9 @@ fi
 # Set up bash aliases and ROSE_SCRIPTS env variable, assumes this script is in same directory as this script
 source $ROSE_SCRIPTS/setup_bash.sh
 
+# Filter the rose config location from the developers config file
+#ROSE_CONFIG=${ROBOT_FILE%/rose_config/*}/rose_config
+
 echo "Sourcing robot file: $ROBOT_FILE" | colorize BLUE
 source $ROBOT_FILE
 
@@ -44,9 +47,6 @@ fi
 
 # For catkin_make
 source $ROSE_SCRIPTS/setup_ROS.sh
-
-# Filter the rose config location from the developers config file
-ROSE_CONFIG=${ROBOT_FILE%/rose_config/*}/rose_config
 
 echo "Setting the rosinstall file" | colorize BLUE
 wstool init $ROSINSTALL_ROOT $ROSE_CONFIG/rosinstall/.rosinstall
