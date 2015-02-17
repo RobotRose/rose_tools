@@ -42,7 +42,7 @@ function git-update-with-wstool {
 
     fi
 
-    wstool update -t $ROSINSTALL_ROOT --parallel=4
+    wstool update --target-workspace=$ROSINSTALL_ROOT --parallel=4
 }
 
 function git-update-all 
