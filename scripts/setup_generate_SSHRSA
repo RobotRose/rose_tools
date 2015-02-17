@@ -1,0 +1,18 @@
+#!/bin/bash  
+
+mkdir -p $HOME/.ssh
+RSA_FILE=$HOME/.ssh/id_rsa
+
+expect -c "  
+    set timeout 5
+    spawn ssh-keygen -t rsa
+    expect : { send $RSA_FILE\r }
+    expect ? { send y\r }
+    expect : { send \r }
+    expect : { send \r }
+    expect \"again\"
+    sleep 2
+    exit
+"
+
+echo "Done running 'ssh-keygen -t rsa'."

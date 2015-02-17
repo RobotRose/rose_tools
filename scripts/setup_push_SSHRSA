@@ -1,0 +1,23 @@
+#!/bin/bash  
+
+# Call with preferably hostname or IP to push the public key to
+
+# $1 user
+# $2 pass
+# $3 IP/hostname
+
+USERNAME=$1
+PASS=$2
+IP=$3
+
+expect -c "  
+    set timeout 6  
+    spawn ssh-copy-id -i $USERNAME@$IP
+    expect {
+  		\"yes/no\" { send yes\n; exp_continue }
+  		\"password:\" { send $PASS\n }
+  		\"expecting.\" { exit }
+  	} 
+  	sleep 1
+  	expect eof
+"

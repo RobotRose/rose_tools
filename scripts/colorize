@@ -1,0 +1,24 @@
+#!/bin/bash  
+
+# colorize stdin according to parameter passed (GREEN, CYAN, BLUE, YELLOW, RED)
+# see https://wiki.archlinux.org/index.php/Color_Bash_Prompt#List_of_colors_for_prompt_and_Bash for more colors
+
+GREEN="\033[0;32m"
+CYAN="\033[0;36m"
+GRAY="\033[0;37m"
+BLUE="\033[0;34m"
+YELLOW="\033[0;33m"
+RED='\033[0;31m'          # Red
+NORMAL="\033[m"
+color=\$${1:-NORMAL}
+# activate color passed as argument
+echo -ne "`eval echo ${color}`"
+# read stdin (pipe) and print from it:
+cat
+# Note: if instead of reading from the pipe, you wanted to print
+# the additional parameters of the function, you could do:
+# shift; echo $*
+# back to normal (no color)
+echo -ne "${NORMAL}"
+
+
