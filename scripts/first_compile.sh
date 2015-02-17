@@ -50,17 +50,22 @@ source $ROSE_SCRIPTS/setup_ROS.sh
 
 echo -e "\033[0;34mNow getting all repositories. This will take some time, so you can grab some\E[30;33m\e[5m coffee!\033[m" 
 
-echo "Setting the rosinstall file" | colorize BLUE
-wstool init --parallel=8 $ROSINSTALL_ROOT $ROSE_CONFIG/rosinstall/default_rosinstall
+cd $ROSINSTALL_ROOT
 
-if [ $? != 0 ]; then
-	echo "There already is a .rosinstall file at $ROSINSTALL_ROOT. Using that one."
-	echo "Running git-update-all" | colorize BLUE
-	git-update-all
+if [ -f .rosinstall ]; then
+	echo "There already is a .rosinstall file at $ROSINSTALL_ROOT. Merging..." | colorize BLUE
+else
+	echo "Setting the rosinstall file" | colorize BLUE
+	wstool init .
 fi
 
+wstool merge $ROSE_CONFIG/rosinstall/default_rosinstall
+
+# Clone and/or update all git repositories
+git-update-all
+
 if [ $? != 0 ]; then
-	echo "Getting/Updating repos failed. Stopping first compile." | colorize RED
+	echo "Getting or updating repos failed. Stopping first compile." | colorize RED
 	exit 1
 fi
 
