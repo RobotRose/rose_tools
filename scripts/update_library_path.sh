@@ -19,5 +19,5 @@ if [ $? == 0 ]; then
 	echo -n 'LD_LIBRARY_PATH = ' | colorize YELLOW
 	echo $LD_LIBRARY_PATH
 else
-	echo "Could not find the rose_third_party, no setting up Cyton arms" | colorize RED
+	echo "Could not find the rose_third_party, not setting up Cyton arms" | colorize RED
 fi
