@@ -53,11 +53,10 @@ echo $WORKSPACES_FILE
 echo -n 'ROSCONSOLE_CONFIG_FILE 	= ' | colorize YELLOW
 echo $ROSCONSOLE_CONFIG_FILE
 
-export LD_LIBRARY_PATH=/opt/ros/hydro/lib/:/usr/lib/gazebo-1.9/plugins #:~/git/rose2_0/simulator/devel/lib
-echo -n 'LD_LIBRARY_PATH = ' | colorize YELLOW
-echo $LD_LIBRARY_PATH
-
 echo 'Setting up ROS environment...' | colorize BLUE
+
+# Update library path (for ROS environment)
+source $ROSE_SCRIPTS/update_library_path.sh
 
 #Overlay workspaces
 source $ROSE_SCRIPTS/overlay_workspaces.sh
@@ -65,15 +64,8 @@ source $ROSE_SCRIPTS/overlay_workspaces.sh
 export ROSLAUNCH_SSH_UNKNOWN=1
 echo 'Using unkown SSH hosts enabled.' | colorize BLUE
 
-echo 'Setting up Cyton arms...'  | colorize BLUE
-export EC_LOCATION=`rospack find rose_third_party`/robai
-echo -n 'EC_LOCATION = ' | colorize YELLOW
-echo $EC_LOCATION
-
-# Adding Robai lib/bin to LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$EC_LOCATION/bin:$EC_LOCATION/lib
-echo -n 'LD_LIBRARY_PATH = ' | colorize YELLOW
-echo $LD_LIBRARY_PATH
+# Update library path (for Cyton arms)
+source $ROSE_SCRIPTS/update_library_path.sh
 
 # Set rosconsole format
 echo "Setting rosconsole format"  | colorize BLUE

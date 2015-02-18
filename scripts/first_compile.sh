@@ -86,6 +86,9 @@ do
 	# Overlay workspaces
 	source $ROSE_SCRIPTS/overlay_workspaces.sh
 
+	# Update library path (for Cyton arms libs)
+	source $ROSE_SCRIPTS/update_library_path.sh
+
 done
 
 echo "Done with first compile, resource-ing bash to source workspaces." | colorize GREEN
