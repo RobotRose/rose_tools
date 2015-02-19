@@ -54,7 +54,7 @@ fi
 
 echo "Preparing and sending for transfer from $PC_FROM to $PC_TO." | colorize GREEN
 ssh -t ${FROM_USERNAME}@${PC_FROM} "	source /usr/bin/set_rose_scripts_folder.sh \
-										sudo ${ROSE_SCRIPTS}/setup_vpn_client.sh ${TO_USERNAME} ${ROBOT_NAME} ${PC_FROM} && \
+										sudo ${ROSE_TOOLS}/scripts/setup_vpn_client.sh ${TO_USERNAME} ${ROBOT_NAME} ${PC_FROM} && \
 										sudo chown -v ${FROM_USERNAME}:${FROM_USERNAME} ${DIRECTORY_FROM} && \
 										sudo chown -v ${FROM_USERNAME}:${FROM_USERNAME} ${DIRECTORY_FROM}/* && \
 										sudo chmod -v 777 ${DIRECTORY_FROM}/ ${DIRECTORY_FROM}/* && \

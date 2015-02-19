@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # To be sure we have colorize in the PATH
-export PATH="$ROSE_SCRIPTS:$PATH"
+export PATH="$ROSE_TOOLS/scripts:$PATH"
 KINECT_SERIAL=$1
 
 pushd .

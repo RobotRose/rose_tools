@@ -5,7 +5,7 @@ IP=$2
 MASTER=$3
 GITROOT=$4
 
-# Set up bash aliases and ROSE_SCRIPTS env variable, assumes this script is in same directory as this script
+# Set up bash aliases and ROSE_TOOLS/scripts env variable, assumes this script is in same directory as this script
 source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/setup_bash.sh
 
 export ROS_ROOT=$ROOT
@@ -56,23 +56,23 @@ echo $ROSCONSOLE_CONFIG_FILE
 echo 'Setting up ROS environment...' | colorize BLUE
 
 # Update library path (for ROS environment)
-source $ROSE_SCRIPTS/update_library_path.sh
+source $ROSE_TOOLS/scripts/update_library_path.sh
 
 #Overlay workspaces
-source $ROSE_SCRIPTS/overlay_workspaces.sh
+source $ROSE_TOOLS/scripts/overlay_workspaces.sh
 
 export ROSLAUNCH_SSH_UNKNOWN=1
 echo 'Using unkown SSH hosts enabled.' | colorize BLUE
 
 # Update library path (for Cyton arms)
-source $ROSE_SCRIPTS/update_library_path.sh
+source $ROSE_TOOLS/scripts/update_library_path.sh
 
 # Set rosconsole format
 echo "Setting rosconsole format"  | colorize BLUE
 export ROSCONSOLE_FORMAT='${time}|${logger}[${severity}]: ${message}' 
 
 echo -n 'Setup git... ' | colorize BLUE
-source $ROSE_SCRIPTS/setup_git.sh
+source $ROSE_TOOLS/scripts/setup_git.sh
 echo 'done'  | colorize GREEN
 echo
 
