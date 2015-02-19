@@ -8,10 +8,10 @@ EASYRSA="$OPENVPN/easy-rsa"
 # This file is installed by running the first_install.sh script
 source robot_file.sh
 
-SSH_RSA_SCRIPT="${ROSE_TOOLS/scripts}/setup_SSHRSA.sh"
-DEFAULT_RSA_VARS="${ROSE_TOOLS/scripts}/default_easyrsa_vars"
-DEFAULT_CLIENT_CONF="${ROSE_TOOLS/scripts}/default_client_vpn.conf"
-DEFAULT_SERVER_CONF="${ROSE_TOOLS/scripts}/default_server_vpn.conf"
+SSH_RSA_SCRIPT="${ROSE_TOOLS}/scripts/setup_SSHRSA.sh"
+DEFAULT_RSA_VARS="${ROSE_TOOLS}/scripts/default_easyrsa_vars"
+DEFAULT_CLIENT_CONF="${ROSE_TOOLS}/scripts/default_client_vpn.conf"
+DEFAULT_SERVER_CONF="${ROSE_TOOLS}/scripts/default_server_vpn.conf"
 
 # Get and check commandline parameters
 CLIENT_NAME=$1
@@ -35,7 +35,7 @@ echo "Creating certificate for client ${CLIENT_NAME}: ${CERT_NAME}" | colorize B
 cd $OPENVPN
 
 # Copy the default vars script
-cp -f -v ${ROSE_TOOLS/scripts}/default_easyrsa_vars $EASYRSA/vars
+cp -f -v ${ROSE_TOOLS}/scripts/default_easyrsa_vars $EASYRSA/vars
 
 # Add client specific information to the vars
 echo "export KEY_COUNTRY=\"NL\" 		\n \

@@ -257,4 +257,4 @@ else
 fi
 
 # Add shutdown etc to sudo users list for rose (for these commands to sudo password is asked)
-${ROSE_TOOLS/scripts}/setup_rose_commands
+${ROSE_TOOLS}/scripts/setup_rose_commands
