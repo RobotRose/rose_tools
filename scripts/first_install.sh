@@ -10,16 +10,16 @@ ROBOT_CONFIG_FILE_LINKNAME="/usr/bin/robot_file.sh"
 ROBOT_CONFIG_FILE_TARGET=$1 #First cmd line arg. 
 
 if [ -z $ROBOT_CONFIG_FILE_TARGET ]; then
-        echo "First parameter must be robot_<name>_config.sh file from $ roscd rose_config/robots." | colorize RED
+        echo "ERROR: First parameter must be robot_<name>_config.sh file from $ roscd rose_config/robots."
         exit 1
 fi
 
 ln -s $ROBOT_CONFIG_FILE_TARGET $ROBOT_CONFIG_FILE_LINKNAME
 if [ $? -eq 1 ]; then    
-    echo "Could not symlink $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME" | colorize RED
+    echo "ERROR: Could not symlink $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME"
     exit 1
 fi
-echo "Linked $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME" | colorize GREEN
+echo "Linked $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME"
 
 ROSE_SCRIPTS_FOLDER_FILE="/usr/bin/set_rose_scripts_folder.sh"
 
@@ -41,7 +41,7 @@ SETUP_ROBOT_ENV_SCRIPT="/usr/bin/setup_robot_env.sh"
 ln -s $THIS_FOLDER/setup_env.sh $SETUP_ROBOT_ENV_SCRIPT
 
 if [ $? -eq 1 ]; then    
-    echo "Could not symlink $THIS_FOLDER/setup_env.sh to $SETUP_ROBOT_ENV_SCRIPT" | colorize RED
+    echo "ERROR: Could not symlink $THIS_FOLDER/setup_env.sh to $SETUP_ROBOT_ENV_SCRIPT"
     exit 1
 fi
-echo "Linked $THIS_FOLDER/setup_env.sh to $SETUP_ROBOT_ENV_SCRIPT" | colorize GREEN
+echo "Linked $THIS_FOLDER/setup_env.sh to $SETUP_ROBOT_ENV_SCRIPT"
