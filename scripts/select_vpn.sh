@@ -1,11 +1,11 @@
 #!/bin/bash  
 # Bash Menu Script Example
 
-# Setup the rose scripts folder by running the set_rose_scripts_folder.sh in /usr/bin.
+# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
 # This file is installed by running the first_install.sh script
-source set_rose_scripts_folder.sh
+source robot_file.sh
 
-SSH_RSA_SCRIPT="$ROSE_SCRIPTS/setup_SSHRSA.sh"
+SSH_RSA_SCRIPT="$ROSE_TOOLS/scripts/setup_SSHRSA.sh"
 VPN_CONFIGS_DIR="/etc/openvpn"
 SET_VPN_NAME=$1
 selectednr=-1
@@ -122,8 +122,8 @@ trap - SIGINT SIGTERM SIGTSTP
 
 if [ "$CONNECTED" == "TRUE" ]; then
     echo "Setting up known_hosts file." | colorize BLUE
-    $ROSE_SCRIPTS/setup_known_hosts.sh rosepc1 > /dev/null 2>&1 
-    $ROSE_SCRIPTS/setup_known_hosts.sh rosepc2 > /dev/null 2>&1
+    $ROSE_TOOLS/scripts/setup_known_hosts.sh rosepc1 > /dev/null 2>&1 
+    $ROSE_TOOLS/scripts/setup_known_hosts.sh rosepc2 > /dev/null 2>&1
 
     MYIP=$(ifconfig | grep "inet addr:10.8.0." | grep -oP 'inet addr:\K([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})')
 

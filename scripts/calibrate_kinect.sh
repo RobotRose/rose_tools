@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
-# Setup the rose scripts folder by running the set_rose_scripts_folder.sh in /usr/bin.
+# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
 # This file is installed by running the first_install.sh script
-source set_rose_scripts_folder.sh
+source robot_file.sh
 
 CROSSINGS=$1
 SQUARESIZE=$2
@@ -101,4 +101,4 @@ echo "Committed calibration to GIT" | colorize GREEN
 popd
 
 echo "Calibration of RGB and IR camera was successful. " | colorize GREEN
-echo "Next, git push the calibration files, connect the Kinect back to the rosepc1 and run $ source $ROSE_SCRIPTS/setup_kinect.sh ${KINECT_SERIAL}" | colorize YELLOW
+echo "Next, git push the calibration files, connect the Kinect back to the rosepc1 and run $ source $ROSE_TOOLS/scripts/setup_kinect.sh ${KINECT_SERIAL}" | colorize YELLOW

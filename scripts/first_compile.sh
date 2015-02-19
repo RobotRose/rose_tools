@@ -15,17 +15,17 @@ if [ "$(id -u)" == "0" ]; then
     exit 1
 fi
 
-# Setup the rose scripts folder by running the set_rose_scripts_folder.sh in /usr/bin.
+# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
 # This file is installed by running the first_install.sh script
-source set_rose_scripts_folder.sh
+source robot_file.sh
 
 if [ $? != 0 ]; then
 	echo "Could not find the set_rose_scripts_folder script. Did you run first_install.sh on this PC?"
 	exit 1
 fi
 
-# Set up bash aliases and ROSE_SCRIPTS env variable, assumes this script is in same directory as this script
-source $ROSE_SCRIPTS/setup_bash.sh
+# Set up bash aliases and ROSE_TOOLS/scripts env variable, assumes this script is in same directory as this script
+source $ROSE_TOOLS/scripts/setup_bash.sh
 
 # Filter the rose config location from the developers config file
 #ROSE_CONFIG=${ROBOT_FILE%/rose_config/*}/rose_config
@@ -46,7 +46,7 @@ else
 fi
 
 # For catkin_make
-source $ROSE_SCRIPTS/setup_ROS.sh
+source $ROSE_TOOLS/scripts/setup_ROS.sh
 
 echo -e "\033[0;34mNow getting all repositories. This will take some time, so you can grab some\E[30;33m\e[5m coffee!\033[m" 
 
@@ -84,10 +84,10 @@ do
 	fi
 
 	# Overlay workspaces
-	source $ROSE_SCRIPTS/overlay_workspaces.sh
+	source $ROSE_TOOLS/scripts/overlay_workspaces.sh
 
 	# Update library path (for Cyton arms libs)
-	source $ROSE_SCRIPTS/update_library_path.sh
+	source $ROSE_TOOLS/scripts/update_library_path.sh
 
 done
 

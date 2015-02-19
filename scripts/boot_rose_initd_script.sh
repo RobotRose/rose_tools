@@ -20,8 +20,8 @@ date > "$stderr_log"
 source /usr/bin/set_rose_scripts_folder.sh >> "$stdout_log" 2>> "$stderr_log"
 
 user="rose"
-cmd="${ROSE_SCRIPTS}/boot_rose.py"
-echo "scripts folder = ${ROSE_SCRIPTS}" >> "$stdout_log"
+cmd="${ROSE_TOOLS/scripts}/boot_rose.py"
+echo "scripts folder = ${ROSE_TOOLS/scripts}" >> "$stdout_log"
 echo "user = $user" >> "$stdout_log"
 echo "cmd  = $cmd" >> "$stdout_log"
 
