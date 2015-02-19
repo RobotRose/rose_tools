@@ -37,3 +37,11 @@ source $ROSE_SCRIPTS_FOLDER_FILE
 echo "Copying ${ROSE_SCRIPTS}/colorize to /usr/bin/"
 cp ${ROSE_SCRIPTS}/colorize /usr/bin/colorize
 
+SETUP_ROBOT_ENV_SCRIPT="/usr/bin/setup_robot_env.sh"
+ln -s $THIS_FOLDER/setup_env.sh $SETUP_ROBOT_ENV_SCRIPT
+
+if [ $? -eq 1 ]; then    
+    echo "Could not symlink $THIS_FOLDER/setup_env.sh to $SETUP_ROBOT_ENV_SCRIPT" | colorize RED
+    exit 1
+fi
+echo "Linked $THIS_FOLDER/setup_env.sh to $SETUP_ROBOT_ENV_SCRIPT" | colorize GREEN
