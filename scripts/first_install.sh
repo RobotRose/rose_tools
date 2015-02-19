@@ -14,7 +14,7 @@ if [ -z $ROBOT_CONFIG_FILE_TARGET ]; then
         exit 1
 fi
 
-ln -s $ROBOT_CONFIG_FILE_TARGET $ROBOT_CONFIG_FILE_LINKNAME
+ln -s -f $ROBOT_CONFIG_FILE_TARGET $ROBOT_CONFIG_FILE_LINKNAME
 if [ $? -eq 1 ]; then    
     echo "ERROR: Could not symlink $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME"
     exit 1
@@ -38,7 +38,7 @@ echo "Copying ${ROSE_SCRIPTS}/colorize to /usr/bin/"
 cp ${ROSE_SCRIPTS}/colorize /usr/bin/colorize
 
 SETUP_ROBOT_ENV_SCRIPT="/usr/bin/setup_robot_env.sh"
-ln -s $THIS_FOLDER/setup_env.sh $SETUP_ROBOT_ENV_SCRIPT
+ln -s -f $THIS_FOLDER/setup_env.sh $SETUP_ROBOT_ENV_SCRIPT
 
 if [ $? -eq 1 ]; then    
     echo "ERROR: Could not symlink $THIS_FOLDER/setup_env.sh to $SETUP_ROBOT_ENV_SCRIPT"
