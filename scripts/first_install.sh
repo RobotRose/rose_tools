@@ -6,6 +6,21 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
+ROBOT_CONFIG_FILE_LINKNAME="/usr/bin/robot_file.sh"
+ROBOT_CONFIG_FILE_TARGET=$1 #First cmd line arg. 
+
+if [ -z $ROBOT_CONFIG_FILE_TARGET ]; then
+        echo "First parameter must be robot_<name>_config.sh file from $ roscd rose_config/robots." | colorize RED
+        exit 1
+fi
+
+ln -s $ROBOT_CONFIG_FILE_TARGET $ROBOT_CONFIG_FILE_LINKNAME
+if [ $? -eq 1 ]; then    
+    echo "Could not symlink $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME" | colorize RED
+    exit 1
+fi
+echo "Linked $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME" | colorize GREEN
+
 ROSE_SCRIPTS_FOLDER_FILE="/usr/bin/set_rose_scripts_folder.sh"
 
 # Get the path of this file
@@ -21,3 +36,4 @@ source $ROSE_SCRIPTS_FOLDER_FILE
 
 echo "Copying ${ROSE_SCRIPTS}/colorize to /usr/bin/"
 cp ${ROSE_SCRIPTS}/colorize /usr/bin/colorize
+
