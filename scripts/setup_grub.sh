@@ -1,6 +1,6 @@
 #!/bin/bash  
 
-DEFAULT_GRUB_CONFIG_FILE="$ROSE_SCRIPTS/default_grub_config"
+DEFAULT_GRUB_CONFIG_FILE="$ROSE_TOOLS/scripts/default_grub_config"
 GRUB_CONFIG_FILE="/etc/default/grub"
 
 echo "Making backup of grub config file."

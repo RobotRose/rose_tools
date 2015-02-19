@@ -1,8 +1,8 @@
 #!/bin/bash  
 
-# Setup the rose scripts folder by running the set_rose_scripts_folder.sh in /usr/bin.
+# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
 # This file is installed by running the first_install.sh script
-source set_rose_scripts_folder.sh
+source robot_file.sh
 
 if [ $? != 0 ]; then
 	>&2 echo "Could not find the set_rose_scripts_folder script. Did you run first_install.sh on this PC?"
@@ -11,11 +11,11 @@ if [ $? != 0 ]; then
 fi
 
 echo "Adding the rose scripts dir to the PATH."
-export PATH="$ROSE_SCRIPTS:$PATH"
+export PATH="$ROSE_TOOLS/scripts:$PATH"
 
-echo -n 'ROSE_SCRIPTS = '  | colorize YELLOW
-echo $ROSE_SCRIPTS
+echo -n 'ROSE_TOOLS/scripts = '  | colorize YELLOW
+echo $ROSE_TOOLS/scripts
 
 echo -n 'Adding bash aliases... ' | colorize BLUE
-source $ROSE_SCRIPTS/bash_aliases.sh
+source $ROSE_TOOLS/scripts/bash_aliases.sh
 echo 'done' | colorize GREEN

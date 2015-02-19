@@ -1,8 +1,8 @@
 #!/bin/bash  
 
-# Setup the rose scripts folder by running the set_rose_scripts_folder.sh in /usr/bin.
+# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
 # This file is installed by running the first_install.sh script
-source set_rose_scripts_folder.sh
+source robot_file.sh
 
 PC1=$1
 PC1_USER=$2
@@ -45,7 +45,7 @@ else
   expect -c "
     set timeout 6
     spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \" \ sed -i'.bak' '/$PCNAME/d' ~/.ssh/authorized_keys ; \
-                                                ${ROSE_SCRIPTS}/setup_generate_SSHRSA\"
+                                                ${ROSE_TOOLS}/scripts/setup_generate_SSHRSA\"
     expect {
     	\"yes/no\" { send yes\n; exp_continue }
     	\"password:\" { send $PC1_PASS\n }
@@ -57,7 +57,7 @@ fi
 echo -e "\nPushing SSH key ${PC1} -> ${PC2}..." | colorize BLUE
 expect -c "
   set timeout 6
-  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"${ROSE_SCRIPTS}/setup_push_SSHRSA $PC2_USER $PC2_PASS $PC2\"
+  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"${ROSE_TOOLS}/scripts/setup_push_SSHRSA $PC2_USER $PC2_PASS $PC2\"
   expect \"\$\"
   expect {
   	\"yes/no\" { send yes\n; exp_continue }
@@ -71,7 +71,7 @@ expect -c "
 echo -e "\nSetting ssh-agent socket @${PC1}..." | colorize BLUE
 expect -c "
   set timeout 6
-  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"source ${ROSE_SCRIPTS}/ssh-find-agent.bash set_ssh_agent_socket\"
+  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"source ${ROSE_TOOLS}/scripts/ssh-find-agent.bash set_ssh_agent_socket\"
   expect {
   	\"yes/no\" { send yes\n; exp_continue }
   	\"password:\" { send $PC1_PASS\n }

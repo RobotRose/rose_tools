@@ -66,12 +66,12 @@ function rose-core {
     if [ "$vpn_ip" == "" ]; then
         echo -e "\e[31mAre you only VPN? Cannot find tap0 in ifconfig. Aborting, leaving you on local-core\e[0m"
     else
-        source $ROSE_SCRIPTS/setup_ROS.sh "/opt/ros/hydro/" "$vpn_ip" "http://10.8.0.1:11311"
+        source $ROSE_TOOLS/scripts/setup_ROS.sh "/opt/ros/hydro/" "$vpn_ip" "http://10.8.0.1:11311"
     fi
 }
 
 function local-core {
-    source $ROSE_SCRIPTS/setup_ROS.sh "/opt/ros/hydro/" "127.0.0.1" "http://localhost:11311"
+    source $ROSE_TOOLS/scripts/setup_ROS.sh "/opt/ros/hydro/" "127.0.0.1" "http://localhost:11311"
 }
 
 function speech_report {
@@ -107,7 +107,7 @@ function cdws {
 }
 
 function vpn {
-	sudo $ROSE_SCRIPTS/select_vpn.sh $1
+	sudo $ROSE_TOOLS/scripts/select_vpn.sh $1
 }
 
 function timing {
