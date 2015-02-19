@@ -27,7 +27,6 @@ echo "setup_env.sh: tap0 IP = $IP" >> ~/setup_env.log
 echo "setup_env.sh: Sourcing setup_ROS.sh." >> ~/setup_env.log
 source $ROSE_TOOLS/scripts/setup_ROS.sh "/opt/ros/hydro/" "$IP" "http://rosepc1:11311" >> ~/setup_env.log
 
-shift
 echo "setup_env.sh: Executing arguments: $@ " >> ~/setup_env.log
 exec "$@"
 
