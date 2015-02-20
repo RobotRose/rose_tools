@@ -20,7 +20,7 @@ fi
 source robot_file.sh
 
 if [ $? != 0 ]; then
-	echo "Could not find the set_rose_scripts_folder script. Did you run first_install.sh on this PC?"
+	echo "Could not find /usr/bin/robot_file.sh. Did you run first_install.sh on this PC?" 
 	exit 1
 fi
 

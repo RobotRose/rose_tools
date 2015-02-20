@@ -17,7 +17,7 @@ stderr_log="/var/log/$name.err"
 date > "$stdout_log" 
 date > "$stderr_log"
 
-source /usr/bin/set_rose_scripts_folder.sh >> "$stdout_log" 2>> "$stderr_log"
+source /usr/bin/robot_file.sh >> "$stdout_log" 2>> "$stderr_log"
 
 user="rose"
 cmd="${ROSE_TOOLS}/scripts/boot_rose.py"
