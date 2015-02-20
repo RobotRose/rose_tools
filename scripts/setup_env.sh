@@ -2,14 +2,14 @@
 
 echo "setup_env.sh: Running $(date)" > ~/setup_env.log
 
-# Setup the rose scripts folder env variable ROSE_TOOLS/scripts by running the set_rose_scripts_folder.sh in /usr/bin.
+# Setup the rose scripts folder env variable ROSE_TOOLS/scripts by running the robot_file.sh in /usr/bin.
 # This file is installed by running the first_install.sh script
 source robot_file.sh >> ~/setup_env.log
 
 echo "setup_env.sh: Set scripts folder to $ROSE_TOOLS/scripts" >> ~/setup_env.log
 
 if [ $? != 0 ]; then
-	echo "Could not find the set_rose_scripts_folder script. Did you run first_install.sh on this PC?"
+	echo "Could not find /usr/bin/robot_file.sh. Did you run first_install.sh on this PC?" 
 	echo "setup_env.sh: ERROR" >> ~/log.txt
 	exit 1
 fi

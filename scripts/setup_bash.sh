@@ -5,7 +5,7 @@
 source robot_file.sh
 
 if [ $? != 0 ]; then
-	>&2 echo "Could not find the set_rose_scripts_folder script. Did you run first_install.sh on this PC?"
+	>&2 echo "Could not find /usr/bin/robot_file.sh. Did you run first_install.sh on this PC?" 
 	read -p "Press CTRL+C to stop script or Enter to exit"
 	exit 1
 fi
