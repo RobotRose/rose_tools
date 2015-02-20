@@ -6,6 +6,9 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
+# Get the path of this file
+THIS_FOLDER=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 ROBOT_CONFIG_FILE_LINKNAME="/usr/bin/robot_file.sh"
 ROBOT_CONFIG_FILE_TARGET=$1 #First cmd line arg. 
 
