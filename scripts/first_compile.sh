@@ -73,7 +73,25 @@ echo -e "\033[0;34mDoing first compile..."
 
 for ws in `get-all-ws-paths`
 do
-	cd $ws 
+	if [ ! -d $ws/src ]; then
+		echo "Path $ws/src does not exist, creating it..." | colorize BLUE
+		mkdir -p $ws/src
+		cd $ws/src
+	fi
+
+	# Check if this workspace has a CMakelist (so it is a catkin workspace)
+	if [ -f $ws/src/CMakeList.txt ]; then
+		echo "Workspace found" | colorize BLUE
+		cd $ws
+	else
+		echo "Creating workspace at $ws..." | colorize BLUE
+		cd $ws/src
+		catkin_init_workspace
+		cd ..
+	fi
+
+	cd $ws
+
 	catkin_make
 
 	if [ $? == 0 ]; then
