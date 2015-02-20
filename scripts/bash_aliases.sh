@@ -20,8 +20,8 @@ alias platform='echo "Use platformXX (for example platform20)"'
 alias platform20='roslaunch rose20_platform platform.launch hardware:="rose20"'
 alias platform21='roslaunch rose21_platform platform.launch hardware:="rose21"'
 alias arms="roslaunch arm_controller arm_controller.launch"
-alias app="roslaunch gui_application application.launch"
-alias gui="roslaunch gui_application ui.launch"
+alias app="roslaunch rose_gui_application application.launch"
+alias gui="roslaunch rose_gui_application ui.launch"
 
 function gitff {
 	git fetch && git pull --ff --ff-only origin $(git rev-parse --abbrev-ref HEAD)
