@@ -53,7 +53,7 @@ function git-update-all
 	cd ${ROSE_CONFIG} && gitff
 	git-update-with-wstool
 
-	popd .
+	popd
 }
 
 # Short for git fetch
