@@ -50,16 +50,7 @@ source $ROSE_TOOLS/scripts/setup_ROS.sh
 
 echo -e "\033[0;34mNow getting all repositories. This will take some time, so you can grab some\E[30;33m\e[5m coffee!\033[m" 
 
-cd $ROSINSTALL_ROOT
-
-if [ -f .rosinstall ]; then
-	echo "There already is a .rosinstall file at $ROSINSTALL_ROOT. Merging..." | colorize BLUE
-else
-	echo "Setting the rosinstall file" | colorize BLUE
-	wstool init .
-fi
-
-wstool merge $ROSE_CONFIG/rosinstall/default_rosinstall
+source $ROSE_TOOLS/scripts/update_rosinstall.sh
 
 # Clone and/or update all git repositories
 git-update-all
