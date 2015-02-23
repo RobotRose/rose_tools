@@ -43,7 +43,7 @@ resolve_conflict ()
 pushd .
 
 if [[ $ROSINSTALL_CONFIG == '' ]]; then
-	echo "No rosinstall file given as input. Using default_rosinstall." | colorize BLUE
+	echo "No rosinstall file configured in $ROBOT_FILE. Using default_rosinstall." | colorize BLUE
 	ROSINSTALL_FILE=${ROSE_CONFIG}/rosinstall/default_rosinstall
 else
 	ROSINSTALL_FILE=${ROSINSTALL_CONFIG}
