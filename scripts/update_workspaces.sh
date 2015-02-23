@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script checks workspaces and makes them if they are not present
+# This script checks workspaces and creates them if they are not present
 
 pushd .
 
