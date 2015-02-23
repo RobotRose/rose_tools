@@ -60,27 +60,13 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+# Make sure all workspaces are available
+source $ROSE_TOOLS/scripts/update_workspaces.sh
+
 echo -e "\033[0;34mDoing first compile..." 
 
 for ws in `get-all-ws-paths`
 do
-	if [ ! -d $ws/src ]; then
-		echo "Path $ws/src does not exist, creating it..." | colorize BLUE
-		mkdir -p $ws/src
-		cd $ws/src
-	fi
-
-	# Check if this workspace has a CMakelist (so it is a catkin workspace)
-	if [ -f $ws/src/CMakeList.txt ]; then
-		echo "Workspace found" | colorize BLUE
-		cd $ws
-	else
-		echo "Creating workspace at $ws..." | colorize BLUE
-		cd $ws/src
-		catkin_init_workspace
-		cd ..
-	fi
-
 	cd $ws
 
 	catkin_make

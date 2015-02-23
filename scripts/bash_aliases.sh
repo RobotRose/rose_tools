@@ -112,6 +112,10 @@ function update-rosinstall {
 	$ROSE_TOOLS/scripts/update_rosinstall.sh
 }
 
+function update-workspaces {
+	$ROSE_TOOLS/scripts/update_workspaces.sh
+}
+
 function cdws {
 	cd `get-workspace-folder $1`
 }
