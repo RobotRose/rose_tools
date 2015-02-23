@@ -40,7 +40,6 @@ resolve_conflict ()
 	
 }
 
-# Update library path
 pushd .
 
 if [[ $ROSINSTALL_CONFIG == '' ]]; then
