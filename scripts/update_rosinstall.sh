@@ -29,7 +29,7 @@ resolve_conflict ()
 			'k' )
 				break # from while loop
 			;;
-			'q' )
+			'c' )
 				exit 1
 			;;
 			* )
