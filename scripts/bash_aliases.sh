@@ -53,7 +53,7 @@ function git-update-all
 	cd ${ROSE_CONFIG} && gitff
 	git-update-with-wstool
 
-	popd .
+	popd
 }
 
 # Short for git fetch
@@ -106,6 +106,14 @@ function get-all-ws-paths {
 	then
 		cat $WORKSPACES_FILE | cut -d ":" -f 2
 	fi
+}
+
+function update-rosinstall {
+	$ROSE_TOOLS/scripts/update_rosinstall.sh
+}
+
+function update-workspaces {
+	$ROSE_TOOLS/scripts/update_workspaces.sh
 }
 
 function cdws {

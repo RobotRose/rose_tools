@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 # Update library path
 echo 'Updating library path...' | colorize BLUE
