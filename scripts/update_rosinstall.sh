@@ -9,7 +9,7 @@ resolve_conflict ()
       'n' to merge (replacing entries with new ones)
       'r' to replace 
       'k' to keep current rosinstall file
-      'q' to cancel"
+      'c' to cancel"
 		read input
 		case "$input" in
 			'm' )
