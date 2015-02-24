@@ -5,7 +5,7 @@ resolve_conflict ()
 	echo "There already is a .rosinstall file at $ROSINSTALL_ROOT." | colorize BLUE
 	while : 
 	do
-		echo "Press 'm' to merge (keeping existing extries)
+		echo "'m' to merge (keeping existing extries)
       'n' to merge (replacing entries with new ones)
       'r' to replace 
       'k' to keep current rosinstall file
