@@ -49,8 +49,8 @@ function git-update-all
 {
 	pushd . 
 
-	cd ${ROSE_TOOLS} && gitff
-	cd ${ROSE_CONFIG} && gitff
+	cd ${ROSE_TOOLS} && gitff ;
+	cd ${ROSE_CONFIG} && gitff ;
 	git-update-with-wstool
 
 	popd
