@@ -18,6 +18,7 @@ CLIENT_NAME=$1
 ROBOT_NAME=$2
 SERVER_IP=$3
 
+
 if [ "$CLIENT_NAME" == "" ]; then
 	echo "First argument must provide the name of the client." | colorize BLUE
 fi
@@ -25,6 +26,8 @@ fi
 if [ "$ROBOT_NAME" == "" ]; then
 	echo "Second argument must provide the name of the robot." | colorize BLUE
 fi
+
+echo "Creating certificate of robot ${ROBOT_NAME} with server ip ${SERVER_IP},for client ${CLIENT_NAME}" | colorize GREEN
 
 CERT_NAME="${CLIENT_NAME}_${ROBOT_NAME}"
 REMOTE_CLIENT_DIR="${OPENVPN}/.vpn_client_${ROBOT_NAME}"
@@ -72,3 +75,4 @@ echo "key ${OPENVPN}/.vpn_client_${ROBOT_NAME}/${CERT_NAME}.key" >> ${REMOTE_CLI
 
 echo "Done" | colorize GREEN
 exit 0
+

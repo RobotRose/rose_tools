@@ -52,17 +52,24 @@ if [ $? == 1 ]; then
 	exit 1
 fi
 
-echo "Preparing and sending for transfer from $PC_FROM to $PC_TO." | colorize GREEN
+echo "Preparing \"sudo ${ROSE_TOOLS}/scripts/setup_vpn_client.sh ${TO_USERNAME} ${ROBOT_NAME} ${PC_FROM}\"" | colorize GREEN
 ssh -t ${FROM_USERNAME}@${PC_FROM} "	source /usr/bin/robot_file.sh && \
-										sudo \${ROSE_TOOLS}/scripts/setup_vpn_client.sh ${TO_USERNAME} ${ROBOT_NAME} ${PC_FROM} && \
-										sudo chown -v ${FROM_USERNAME}:${FROM_USERNAME} ${DIRECTORY_FROM} && \
+										sudo \${ROSE_TOOLS}/scripts/setup_vpn_client.sh ${TO_USERNAME} ${ROBOT_NAME} ${PC_FROM}"
+
+if [ $? == 1 ]; then
+	echo "Unable to create vpn configuration for $PC_TO at $PC_FROM." | colorize RED
+	exit 1
+fi
+
+echo "Sending VPN config from $PC_FROM to $PC_TO." | colorize GREEN
+ssh -t ${FROM_USERNAME}@${PC_FROM} "	sudo chown -v ${FROM_USERNAME}:${FROM_USERNAME} ${DIRECTORY_FROM} && \
 										sudo chown -v ${FROM_USERNAME}:${FROM_USERNAME} ${DIRECTORY_FROM}/* && \
 										sudo chmod -v 777 ${DIRECTORY_FROM}/ ${DIRECTORY_FROM}/* && \
-										scp ${DIRECTORY_FROM}/${CERTNAME}.* ${DIRECTORY_FROM}/vpn_client_${CERTNAME}.conf ${DIRECTORY_FROM}/ca.crt      ${TO_USERNAME}@${PC_TO}:${DIRECTORY_TO} && \
+										scp ${DIRECTORY_FROM}/${CERTNAME}.* ${DIRECTORY_FROM}/vpn_client_${CERTNAME}.conf ${DIRECTORY_FROM}/ca.crt ${TO_USERNAME}@${PC_TO}:${DIRECTORY_TO} && \
 										sudo chown -v root:root ${DIRECTORY_FROM}/ ${DIRECTORY_FROM}/* && \
 										sudo chmod -v 644 ${DIRECTORY_FROM}/ ${DIRECTORY_FROM}/*"
 if [ $? == 1 ]; then
-	echo "Unable to create receiving directory at $PC_TO." | colorize RED
+	echo "Unable to copy VPN config from $PC_FROM to receiving directory at $PC_TO." | colorize RED
 	exit 1
 fi
 
@@ -77,3 +84,4 @@ if [ $? == 1 ]; then
 fi
 
 echo "Done copying configuration, have a nice day." | colorize GREEN
+

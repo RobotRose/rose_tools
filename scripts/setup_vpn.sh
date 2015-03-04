@@ -174,13 +174,15 @@ expect -c "
    expect eof { send_user \"Copied all files!\n\" }
 "  
 
-echo "Copying vpn client config and restart rosepc2 vpn service" | colorize BLUE
+echo "Copying vpn client config and restart rosepc2 vpn service." | colorize BLUE
 
 # Copy vpn client config and restart rosepc2 vpn service
 expect -c "  
    exp_internal 0
    set timeout 4
    spawn ssh -t rose@$ROSEPC2_IP 
+   sleep 10
+
    expect {
       \"yes/no\" { send yes\n; exp_continue }
       \"password:\" { send $SCP_PASSWORD\n }
@@ -258,3 +260,4 @@ fi
 
 # Add shutdown etc to sudo users list for rose (for these commands to sudo password is asked)
 ${ROSE_TOOLS}/scripts/setup_rose_commands
+
