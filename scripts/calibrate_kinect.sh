@@ -94,6 +94,7 @@ else
     exit 1
 fi
 
+roscd rose_config
 git add `rospack find rose_config`/kinect/rgb_${KINECT_SERIAL}.yaml `rospack find rose_config`/kinect/depth_${KINECT_SERIAL}.yaml
 git commit `rospack find rose_config`/kinect/rgb_${KINECT_SERIAL}.yaml `rospack find rose_config`/kinect/depth_${KINECT_SERIAL}.yaml -m "Added Kinect calibration data for ${KINECT_SERIAL}"
 echo "Committed calibration to GIT" | colorize GREEN
