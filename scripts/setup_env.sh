@@ -15,7 +15,7 @@ if [ $? != 0 ]; then
 fi
 
 # Set the robot file
-export ROBOT_FILE="/usr/bin/robot_file.sh"
+export ROBOT_FILE=$(readlink -f /usr/bin/robot_file.sh)
 echo "setup_env.sh: ROBOT_FILE = $ROBOT_FILE" >> ~/setup_env.log
 
 source $ROBOT_FILE

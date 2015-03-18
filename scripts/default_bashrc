@@ -105,11 +105,13 @@ fi
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
- 
-#Get the IP you use for VPN:
-my_ip=$(ifconfig tap0 | grep 'inet addr:'  | cut -d: -f2 | awk '{ print $1}')
 
-export ROBOT_FILE=`cat ~/ROBOT_FILE_LOCATION`
+
+# Source the robot file 
+source /usr/bin/robot_file.sh
+
+# Get the IP you use for VPN (tap0 interface):
+my_ip=$(ifconfig tap0 | grep 'inet addr:'  | cut -d: -f2 | awk '{ print $1}')
 
 # source $ROSE_TOOLS/scripts/setup_ROS.sh "/opt/ros/hydro/" "127.0.0.1" "http://localhost:11311"
 source $ROSE_TOOLS/scripts/setup_ROS.sh "/opt/ros/hydro/" "${my_ip}" "http://$(gethostip -d rosepc1):11311"

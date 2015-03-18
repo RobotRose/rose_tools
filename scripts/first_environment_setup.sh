@@ -6,21 +6,22 @@ if [ "$(id -u)" == "0" ]; then
     exit 1
 fi
 
-echo "This script should be run from the rose scripts folder."
+echo "This script must be run from the rose scripts folder."
 sleep 2
+
+read -p "What is the full path of the robot file? " ROBOT_FILE
 
 # This will install the script in usr/bin which loads the ROSE_TOOLS/scripts folder
 echo "Running first_install.sh"
-sudo $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/first_install.sh
+sudo $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/first_install.sh $ROBOT_FILE
 
 # Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
 # This file is installed by running the first_install.sh script
-source robot_file.sh
+source $ROBOT_FILE
 
 if [ $? != 0 ]; then
-	echo "Could not find /usr/bin/robot_file.sh. Did you run first_install.sh on this PC?"
-
- 
+	echo "Could not find ${ROBOT_FILE}. Did you run first_install.sh on this PC?"
+	echo "Aborting first environment setup."
 	exit 1
 fi
 
@@ -30,9 +31,6 @@ source $ROSE_TOOLS/scripts/setup_bash.sh
 echo "Copying the default bashrc to ~/.bashrc"
 cp $ROSE_TOOLS/scripts/default_bashrc ~/.bashrc; 
 echo "Done. "
-
-read -p "What is the full path of the robot file? " ROBOT_FILE
-echo $ROBOT_FILE >> ~/ROBOT_FILE_LOCATION
 
 source ~/.bashrc
 

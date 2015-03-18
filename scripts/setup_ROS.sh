@@ -37,14 +37,15 @@ export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$GITROOT
 echo -n 'ROS_PACKAGE_PATH 	= ' | colorize YELLOW
 echo $ROS_PACKAGE_PATH
 
-#User prefs]
-if [ -e $ROBOT_FILE ]
+# User environment variables
+ROBOT_FILE=$(readlink -f /usr/bin/robot_file.sh)
+if [ -e /usr/bin/robot_file.sh ]
 then
-    echo -n "Loading environment variables from $ROBOT_FILE... " | colorize BLUE
-    source $ROBOT_FILE
+    echo -n "Loading environment variables from ${ROBOT_FILE}... " | colorize BLUE
+    source /usr/bin/robot_file.sh
     echo "done" | colorize GREEN
 else
-    echo "No environment variables for $ROBOT_NAME" | colorize RED
+    echo "No environment variables file ${ROBOT_FILE} found." | colorize RED
 fi
 
 echo -n 'LOCATION OF WORKSPACES FILE = ' | colorize YELLOW
