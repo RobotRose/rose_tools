@@ -109,6 +109,14 @@ case $response in
    0) 
 	echo "Running git-update-all..." | colorize BLUE
 	git-update-all 
+	
+	echo "Do you want to run 'cm all'?" | colorize BLUE
+	select yn in "Yes" "No"; do
+	    case $yn in
+	        Yes ) echo "Running 'cm all'" | colorize BLUE; cm all; break;;
+	        No ) exit 0;;
+	    esac
+	done
 	;;
    1) 
 	echo "Not running git-update-all." | colorize BLUE
