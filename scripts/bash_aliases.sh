@@ -108,6 +108,10 @@ function get-all-ws-paths {
 	fi
 }
 
+function select-rosinstall {
+	$ROSE_TOOLS/scripts/select_rosinstall.sh
+}
+
 function update-rosinstall {
 	$ROSE_TOOLS/scripts/update_rosinstall.sh
 }

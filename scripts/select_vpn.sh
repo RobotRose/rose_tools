@@ -38,14 +38,17 @@ if [ "$SET_VPN_NAME" == "" ]; then
     options=""
     while [ $i -lt $nr ]
     do
-      new="$[$i+1] $(ls -a ${VPN_CONFIGS_DIR}/ | grep .vpn_client_ | sed -n $[$i+1]p) on "
+      new="$[$i+1] $(ls -a ${VPN_CONFIGS_DIR}/ | grep .vpn_client_ | sed -n $[$i+1]p) "
       echo "New option: $new"
       options="${options}${new}"
       i=$[$i+1]
     done
     options2=($options)
 
-    dialog --clear --radiolist "Select which vpn configuration to use:" 40 80 22 ${options2[@]} 2>/tmp/vpn_dialog.ans
+    dialog --title "Select VPN configuration" \
+        --backtitle "Select VPN configuration" \
+        --clear \
+        --menu "Select VPN configuration" 40 80 22 ${options2[@]} 2>/tmp/vpn_dialog.ans
 
     result=$(cat /tmp/vpn_dialog.ans)
     if [ "$result" == "" ]; then
@@ -80,7 +83,7 @@ if [ "$remove" != "" ]; then
         exit 1
     fi
 else
-    echo "No old configs found."
+    echo "No old configurations found."
 fi
 
 echo "Creating new symlink to selected VPN configuration." | colorize BLUE

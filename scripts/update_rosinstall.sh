@@ -43,6 +43,7 @@ resolve_conflict ()
 pushd .
 
 ROBOT_FILE=$(readlink -f /usr/bin/robot_file.sh)
+source $ROBOT_FILE
 if [[ $ROSINSTALL_CONFIG == '' ]]; then
 	echo "No rosinstall file configured in $ROBOT_FILE. Using default_rosinstall." | colorize BLUE
 	ROSINSTALL_FILE=${ROSE_CONFIG}/rosinstall/default_rosinstall
