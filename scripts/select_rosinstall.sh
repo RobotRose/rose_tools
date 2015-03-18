@@ -26,10 +26,8 @@ if [ -e $ROSINSTALL_ROOT ]; then
 	dialog --title "rosinstall root" \
 	--backtitle "Checking for rosinstall root" \
 	--colors \
-	--sleep 2 \
-	--infobox "ROSINSTALL_ROOT = \Z3${ROSINSTALL_ROOT}\Zn \nROSINSTALL_GIT_DIR = \Z3${ROSINSTALL_GIT_DIR}\Zn \nROSINSTALL_USER_DIR = \Z3${ROSINSTALL_USER_DIR}\Zn \n" 5 120
-	# echo -n "ROSINSTALL_ROOT = " | colorize YELLOW
-	# echo "${ROSINSTALL_ROOT}"
+	--nocancel \
+	--pause "ROSINSTALL_ROOT = \Z3${ROSINSTALL_ROOT}\Zn \nROSINSTALL_GIT_DIR = \Z3${ROSINSTALL_GIT_DIR}\Zn \nROSINSTALL_USER_DIR = \Z3${ROSINSTALL_USER_DIR}\Zn \n" 10 120 2
 else
 	echo "No rosinstall root configured in $(readlink -f /usr/bin/robot_file.sh)." | colorize RED
 	exit 1
@@ -102,8 +100,6 @@ dialog --colors \
 	--defaultno \
 	--yesno "Selected \Z2${selected}\Zn -> \Z4${INSTALL_DIR}\Zn.\n\Zb\Z1Do you want to run git-update-all now?\Zn" 7 120
 
-
-
 # Get exit status
 # 0 means user hit [yes] button.
 # 1 means user hit [no] button.
@@ -111,17 +107,11 @@ dialog --colors \
 response=$?
 case $response in
    0) 
-	temp_file=$(mktemp)
-	echo " " > $temp_file
-	dialog --sleep 1
-	git-update-all > "$temp_file" 2>&1 &
-	dialog --title "Select rosinstall file" \
-		--backtitle "Running git-update-all" \
-		--tailbox "$temp_file" 120 150
-	rm "$temp_file"
+	echo "Running git-update-all..." | colorize BLUE
+	git-update-all 
 	;;
    1) 
-	echo "Not running git-update-all..." | colorize BLUE
+	echo "Not running git-update-all." | colorize BLUE
 	;;
    255);;
 esac
