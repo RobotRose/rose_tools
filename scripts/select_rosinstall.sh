@@ -33,7 +33,7 @@ else
 	exit 1
 fi
 
-nr_g="$(ls -a ${ROSINSTALL_GIT_DIR}/ | grep -c rosinstall)" 
+nr_g="$(ls -a ${ROSINSTALL_GIT_DIR}/ | grep -c rosinstall)"  
 nr_u="$(ls -a ${ROSINSTALL_USER_DIR}/ | grep -c rosinstall)" 
 if [ "$nr_g" == "0" ]; then
 	if [ "$nr_u" == "0" ]; then

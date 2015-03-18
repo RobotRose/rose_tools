@@ -42,6 +42,8 @@ function git-update-with-wstool {
 
     fi
 
+    # Check if there are changes made to the repositories
+    
     wstool update --target-workspace=$ROSINSTALL_ROOT --parallel=50
 }
 
