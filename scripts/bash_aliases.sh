@@ -27,7 +27,7 @@ function gitff {
 	git fetch && git pull --ff --ff-only origin $(git rev-parse --abbrev-ref HEAD)
 }
 
-function git-update-with-wstool {
+function git-update-all {
     # Check if wstool is installed
     wstool 2>&1 1> /dev/null
 
@@ -43,17 +43,26 @@ function git-update-with-wstool {
     fi
 
     # Check if there are changes made to the repositories
-    
-    wstool update --target-workspace=$ROSINSTALL_ROOT --parallel=50
-}
+    $ROSE_TOOLS/scripts/check_repository_state.sh
+	changed=$?
 
-function git-update-all 
-{
+	if [ "$changed" == "1" ]; then
+		echo "There are changes detected, are you sure you want to continue running git-update-all?" | colorize RED
+		select yn in "Yes" "No"; do
+		    case $yn in
+		        Yes ) echo "Continuing with git-update-all." | colorize BLUE; break;;
+		        No ) return;;
+		    esac
+		done
+	else
+		echo "No changes detected, continuing with git-update-all..." | colorize GREEN
+	fi
+
 	pushd . 
 
 	cd ${ROSE_TOOLS} && gitff ;
 	cd ${ROSE_CONFIG} && gitff ;
-	git-update-with-wstool
+    wstool update --target-workspace=$ROSINSTALL_ROOT --parallel=50
 
 	popd
 }
