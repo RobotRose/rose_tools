@@ -2,7 +2,7 @@
 
  # Check if we are not sudo user
 if [ "$(id -u)" == "0" ]; then
-    echo -e "Sorry, you should not run this script as root."
+    echo -e "Sorry, you should NOT run this script as root."
     exit 1
 fi
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# This script uses wstool on a certain .rosinstall file in the provided directory and extracts the workspaces
+# This script uses wstool on a certain .rosinstall file in the provided directory and extracts the ROS workspaces
+# ROS workspaces are identified by the format workspace_name/src/
 # Due to limitations of wstool (one cannot specify a file to be used as .rosinstall file) the file has to be named .rosinstall.
 # This scripts cd's to that directory and runs wstool in that directory.
 
@@ -22,4 +23,4 @@ cd ${ROSINSTALL_ROOT}
 # Read the workspace names
 wstool info --only=localname | grep -oP '.*?(?=/src)'
 
-popd > /dev/null 2>&1; exit 0
+popd > /dev/null 2>&1

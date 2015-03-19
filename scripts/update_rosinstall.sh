@@ -2,7 +2,7 @@
 
 resolve_conflict () 
 {
-	echo "There already is a .rosinstall file at $ROSINSTALL_ROOT." | colorize BLUE
+	echo "There already is a .rosinstall file at ${REPOS_ROOT}." | colorize BLUE
 	while : 
 	do
 		echo "'m' to merge (keeping existing extries)
@@ -40,30 +40,28 @@ resolve_conflict ()
 	
 }
 
-pushd .
+pushd . > /dev/null 2>&1
 
-ROBOT_FILE=$(readlink -f /usr/bin/robot_file.sh)
-source $ROBOT_FILE
-if [[ $ROSINSTALL_CONFIG == '' ]]; then
-	echo "No rosinstall file configured in $ROBOT_FILE. Using default_rosinstall." | colorize BLUE
+if [ ${ROSINSTALL_FILE} == "" ]; then
+	echo "No .rosinstall file configured. Using default_rosinstall." | colorize BLUE
 	ROSINSTALL_FILE=${ROSE_CONFIG}/rosinstall/default_rosinstall
 else
 	ROSINSTALL_FILE=${ROSINSTALL_CONFIG}
 fi
 
+echo -n "REPOS_ROOT = " | colorize YELLOW
+echo "$REPOS_ROOT"
 echo -n "ROSINSTALL_FILE = " | colorize YELLOW
-echo "$ROSINSTALL_FILE"
-echo -n "ROSINSTALL_ROOT = " | colorize YELLOW
-echo "$ROSINSTALL_ROOT"
+echo "${ROSINSTALL_FILE}"
 
-cd $ROSINSTALL_ROOT
+cd $REPOS_ROOT
 
 if [ -f .rosinstall ]; then
 	resolve_conflict
 else
 	echo "Creating new rosinstall file" | colorize BLUE
 	wstool init .
-	wstool merge $ROSINSTALL_FILE
+	wstool merge ${ROSINSTALL_FILE}
 fi
 
-popd
+popd > /dev/null 2>&1

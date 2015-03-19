@@ -22,4 +22,4 @@ cd ${ROSINSTALL_ROOT}
 # Read the remotes
 wstool info --only=uri
 
-popd > /dev/null 2>&1; exit 0
+popd > /dev/null 2>&1

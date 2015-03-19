@@ -53,8 +53,12 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+function __git_repo {
+   git remote -v 2> /dev/null | grep push | sed s/\\.git.*/""/g | sed s/".*\/"//g
+}
+
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]($ROBOT_NAME):\[\033[01;34m\]\w\[\033[00m\]\[\033[01;31m\]$(__git_ps1 "\n@%s")\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\[\033[38;5;202m\]@$(__git_repo)\[\033[01;31m\]$(__git_ps1 "@%s")\n\[\033[38;5;202m\]\[\033[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -106,12 +110,9 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
 
-
-# Source the robot file 
-source /usr/bin/robot_file.sh
-
-# Get the IP you use for VPN (tap0 interface):
-my_ip=$(ifconfig tap0 | grep 'inet addr:'  | cut -d: -f2 | awk '{ print $1}')
-
-# source $ROSE_TOOLS/scripts/setup_ROS.sh "/opt/ros/hydro/" "127.0.0.1" "http://localhost:11311"
-source $ROSE_TOOLS/scripts/setup_ROS.sh "/opt/ros/hydro/" "${my_ip}" "http://$(gethostip -d rosepc1):11311"
+# Setup environment 
+if [ -f /usr/bin/setup_environment.sh ]; then
+    source /usr/bin/setup_environment.sh
+else
+    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)."
+fi

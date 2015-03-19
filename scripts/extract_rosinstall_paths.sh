@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script uses wstool on a certain .rosinstall file in the provided directory and extracts the local names
+# This script uses wstool on a certain .rosinstall file in the provided directory and extracts the local paths, relative to the .rosinstall file
 # Due to limitations of wstool (one cannot specify a file to be used as .rosinstall file) the file has to be named .rosinstall.
 # This scripts cd's to that directory and runs wstool in that directory.
 
@@ -19,7 +19,7 @@ fi
 
 cd ${ROSINSTALL_ROOT}
 
-# Read the names
+# Read the paths
 wstool info --only=localname
 
-popd > /dev/null 2>&1; exit 0
+popd > /dev/null 2>&1

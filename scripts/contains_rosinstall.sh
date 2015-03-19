@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Check if the provided directory (argument 1) contains a .rosinstall file.
+
 # Get first parameter
 ROSINSTALL_ROOT=$1
 
@@ -22,4 +24,4 @@ else
 	fi
 fi
 
-popd > /dev/null 2>&1; exit 0
+popd > /dev/null 2>&1

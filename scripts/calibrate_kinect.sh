@@ -8,7 +8,7 @@ CROSSINGS=$1
 SQUARESIZE=$2
 KINECT_SERIAL=$3
 
-pushd .
+pushd . > /dev/null 2>&1
 
 echo "Starting Kinect calibration." | colorize BLUE
 echo "Connect the Kinect to calibrate to your local PC via USB. Then, run $ roslaunch openni_launch openni.launch #in a separate terminal and press <enter> here when done" | colorize BLUE
@@ -38,7 +38,7 @@ fi
 rosrun camera_calibration cameracalibrator.py image:=/camera/rgb/image_raw camera:=/camera/rgb --size ${CROSSINGS} --square ${SQUARESIZE}
 
 if [ $? -eq 0 ]; then
-    echo "Calibration ran successfuly" | colorize GREEN
+    echo "Calibration ran successfully" | colorize GREEN
 else
     echo "Calibration failed" | colorize RED
     exit 1
@@ -83,7 +83,7 @@ echo "Finally, click 'Commit'" | colorize YELLOW
 rosrun camera_calibration cameracalibrator.py image:=/camera/ir/image_raw camera:=/camera/ir --size ${CROSSINGS} --square ${SQUARESIZE}
 
 if [ $? -eq 0 ]; then
-    echo "Calibration ran successfuly" | colorize GREEN
+    echo "Calibration ran successfully" | colorize GREEN
 else
     echo "Calibration failed" | colorize RED
     exit 1
@@ -120,7 +120,7 @@ git add ${CALIBRATION_STORAGE_RGB} ${CALIBRATION_STORAGE_DEPTH}
 git commit ${CALIBRATION_STORAGE_RGB} ${CALIBRATION_STORAGE_DEPTH} -m "Added/updated Kinect calibration data for ${KINECT_SERIAL}"
 echo "Committed calibration to GIT." | colorize GREEN
 
-popd
+popd > /dev/null 2>&1 
 
 echo "Calibration of RGB and IR camera was successful. " | colorize GREEN
 echo "Next, git push the calibration files, connect the Kinect back to the rosepc1 and run $ source $ROSE_TOOLS/scripts/setup_kinect.sh ${KINECT_SERIAL}" | colorize YELLOW
