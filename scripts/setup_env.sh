@@ -4,15 +4,17 @@ echo "setup_env.sh: Running $(date)" > ~/setup_env.log
 
 # Setup the rose scripts folder env variable ROSE_TOOLS/scripts by running the robot_file.sh in /usr/bin.
 # This file is installed by running the first_install.sh script
-source robot_file.sh >> ~/setup_env.log
-
-echo "setup_env.sh: Set scripts folder to $ROSE_TOOLS/scripts" >> ~/setup_env.log
-
-if [ $? != 0 ]; then
-	echo "Could not find /usr/bin/robot_file.sh. Did you run first_install.sh on this PC?" 
-	echo "setup_env.sh: ERROR" >> ~/log.txt
+ROBOT_FILE=$(readlink /usr/bin/robot_file.sh)
+echo "ROBOT_FILE = $ROBOT_FILE"
+if [ -f $ROBOT_FILE ]; then
+	source $ROBOT_FILE >> ~/setup_env.log
+else
+	echo "Could not find link target of /usr/bin/robot_file.sh -> ${ROBOT_FILE}. Did you run first_install.sh on this PC?" 
+	read -p "Press CTRL+C to stop script or Enter to exit"
 	exit 1
 fi
+
+echo "setup_env.sh: Set scripts folder to $ROSE_TOOLS/scripts" >> ~/setup_env.log
 
 # Set the robot file
 export ROBOT_FILE=$(readlink -f /usr/bin/robot_file.sh)

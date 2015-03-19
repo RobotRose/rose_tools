@@ -22,7 +22,7 @@ if [ $? -eq 1 ]; then
     echo "ERROR: Could not symlink $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME"
     exit 1
 fi
-echo "Linked $ROBOT_CONFIG_FILE_TARGET to $ROBOT_CONFIG_FILE_LINKNAME"
+echo "Linked $ROBOT_CONFIG_FILE_LINKNAME to $ROBOT_CONFIG_FILE_TARGET."
 source $ROBOT_CONFIG_FILE_LINKNAME
 
 echo "Copying ${ROSE_TOOLS}/scripts/colorize to /usr/bin/"

@@ -17,10 +17,13 @@ fi
 
 # Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
 # This file is installed by running the first_install.sh script
-source robot_file.sh
-
-if [ $? != 0 ]; then
-	echo "Could not find /usr/bin/robot_file.sh. Did you run first_install.sh on this PC?" 
+ROBOT_FILE=$(readlink /usr/bin/robot_file.sh)
+echo "ROBOT_FILE = $ROBOT_FILE"
+if [ -f $ROBOT_FILE ]; then
+	source $ROBOT_FILE
+else
+	echo "Could not find link target of /usr/bin/robot_file.sh -> ${ROBOT_FILE}. Did you run first_install.sh on this PC?" 
+	read -p "Press CTRL+C to stop script or Enter to exit"
 	exit 1
 fi
 

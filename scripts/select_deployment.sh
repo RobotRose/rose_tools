@@ -8,8 +8,8 @@ source robot_file.sh
 # Set up bash aliases and ROSE_TOOLS/scripts env variable, assumes this script is in same directory as this script
 source $ROSE_TOOLS/scripts/setup_bash.sh
 
-ROSINSTALL_GIT_DIR="${ROSE_CONFIG}/rosinstall"
-eval ROSINSTALL_USER_DIR="~/.rosinstall"
+DEPLOYMENT_GIT_DIR="${ROSE_CONFIG}/deployment"
+eval DEPLOYMENT_USER_DIR="~/.deployment"
 selected_nr=-1
 
 
@@ -21,43 +21,43 @@ if [ $? == 127 ]; then
     apt-get install -y --force-yes dialog 
 fi
 
-# Check if $ROSINSTALL_ROOT is defined
-if [ -e $ROSINSTALL_ROOT ]; then
-	dialog --title "rosinstall root" \
-	--backtitle "Checking for rosinstall root" \
+# Check if $WORKSPACE_ROOT is defined
+if [ -e $WORKSPACE_ROOT ]; then
+	dialog --title "Deployment folders" \
+	--backtitle "Deployment folders" \
 	--colors \
 	--nocancel \
-	--pause "ROSINSTALL_ROOT = \Z3${ROSINSTALL_ROOT}\Zn \nROSINSTALL_GIT_DIR = \Z3${ROSINSTALL_GIT_DIR}\Zn \nROSINSTALL_USER_DIR = \Z3${ROSINSTALL_USER_DIR}\Zn \n" 10 120 2
+	--pause "WORKSPACE_ROOT = \Z3${WORKSPACE_ROOT}\Zn \nDEPLOYMENT_GIT_DIR = \Z3${DEPLOYMENT_GIT_DIR}\Zn \nDEPLOYMENT_USER_DIR = \Z3${DEPLOYMENT_USER_DIR}\Zn \n" 10 120 2
 else
-	echo "No rosinstall root configured in $(readlink -f /usr/bin/robot_file.sh)." | colorize RED
+	echo "No workspace root configured in $(readlink -f /usr/bin/robot_file.sh)." | colorize RED
 	exit 1
 fi
 
-nr_g="$(ls -a ${ROSINSTALL_GIT_DIR}/ | grep -c rosinstall)"  
-nr_u="$(ls -a ${ROSINSTALL_USER_DIR}/ | grep -c rosinstall)" 
+nr_g="$(ls -a ${DEPLOYMENT_GIT_DIR}/ | grep -c deployment)"  
+nr_u="$(ls -a ${DEPLOYMENT_USER_DIR}/ | grep -c deployment)" 
 if [ "$nr_g" == "0" ]; then
 	if [ "$nr_u" == "0" ]; then
-    	echo "No rosinstalls found in either '${ROSINSTALL_GIT_DIR}'' or '${ROSINSTALL_USER_DIR}'." | colorize RED
+    	echo "No deployments found in either '${DEPLOYMENT_GIT_DIR}'' or '${DEPLOYMENT_USER_DIR}'." | colorize RED
     	exit 1
     fi
 fi
 
-# Read git rosinstalls
+# Read git deployments
 i="0"
 options=""
 while [ $i -lt $nr_g ]
 do
-  new="$[$i+1] git/$(ls -a ${ROSINSTALL_GIT_DIR}/ | grep rosinstall | sed -n $[$i+1]p) "
+  new="$[$i+1] git/$(ls -a ${DEPLOYMENT_GIT_DIR}/ | grep deployment | sed -n $[$i+1]p) "
   echo "New option: $new"
   options="${options}${new}"
   i=$[$i+1]
 done
 
-# Read user rosinstalls
+# Read user deployments
 j="0"
 while [ $j -lt $nr_u ]
 do
-  new="$[$i+1] user/$(ls -a ${ROSINSTALL_USER_DIR}/ | grep rosinstall | sed -n $[$j+1]p) "
+  new="$[$i+1] user/$(ls -a ${DEPLOYMENT_USER_DIR}/ | grep deployment | sed -n $[$j+1]p) "
   echo "New option: $new"
   options="${options}${new}"
   i=$[$i+1]
@@ -66,10 +66,10 @@ done
 
 options2=($options)
 
-dialog --title "Select rosinstall file" \
-	--backtitle "Select rosinstall" \
+dialog --title "Select deployment file" \
+	--backtitle "Select deployment" \
 	--clear \
-	--menu "Select a rosinstall:" 40 80 22 ${options2[@]} 2>/tmp/vpn_dialog.ans
+	--menu "Select a deployment:" 40 80 22 ${options2[@]} 2>/tmp/vpn_dialog.ans
 
 result=$(cat /tmp/vpn_dialog.ans)
 if [ "$result" == "" ]; then
@@ -79,23 +79,23 @@ fi
 selected_nr=$result
 
 if [[ $selected_nr -lt $nr_g ]]; then
-	INSTALL_DIR=${ROSINSTALL_GIT_DIR}
+	INSTALL_DIR=${DEPLOYMENT_GIT_DIR}
 	dir_nr=$selected_nr
 else
-	INSTALL_DIR=${ROSINSTALL_USER_DIR}
+	INSTALL_DIR=${DEPLOYMENT_USER_DIR}
 	dir_nr=$[$selected_nr-$nr_g]
 fi
 
-selected="$(ls -a ${INSTALL_DIR}/ | grep rosinstall | sed -n ${dir_nr}p)"
+selected="$(ls -a ${INSTALL_DIR}/ | grep deployment | sed -n ${dir_nr}p)"
 echo -en "${selected}" | colorize GREEN
 echo " -> file $dir_nr from '${INSTALL_DIR}'" | colorize BLUE
 
 # Do the actual 'selecting'
-# Copy rosinstall to the rosinstall root directory
-cp -f ${INSTALL_DIR}/${selected} ${ROSINSTALL_ROOT}/.rosinstall
+# Copy deployment to the deployment root directory
+cp -f ${INSTALL_DIR}/${selected} ${WORKSPACE_ROOT}/.deployment
 
 dialog --colors \
-	--title "Select rosinstall file" \
+	--title "Select deployment file" \
 	--backtitle "Run git-update-all?" \
 	--defaultno \
 	--yesno "Selected \Z2${selected}\Zn -> \Z4${INSTALL_DIR}\Zn.\n\Zb\Z1Do you want to run git-update-all now?\Zn" 7 120
@@ -108,7 +108,7 @@ response=$?
 case $response in
    0) 
 	echo "Running git-update-all..." | colorize BLUE
-	git-update-all 
+	#git-update-all 
 	
 	echo "Do you want to run 'cm all'?" | colorize BLUE
 	select yn in "Yes" "No"; do
@@ -123,3 +123,12 @@ case $response in
 	;;
    255);;
 esac
+
+# Robot model
+source ${ROSE_CONFIG}/models/model_${ROBOT_NAME}.config
+
+# Robot model
+source ${ROSE_CONFIG}/models/${ROBOT_NAME}/model.sh
+
+# Location
+source ${ROSE_CONFIG}/locations/${LOCATION_NAME}/location.sh
