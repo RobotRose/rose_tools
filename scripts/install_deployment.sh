@@ -251,10 +251,11 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 		if [ "${NR_FILES_AND_DIRS_SRC}" -gt "1" ]; then
 			echo "Not removing workspace '${WORKSPACE}', because there are still ${NR_FILES_AND_DIRS_SRC} files/directories left in '${WORKSPACE}/src/." | colorize RED
 		else
-			if [ ! "${FILES_WS}" == ".catkin_workspace" ]; then
+			if [ "${FILES_WS}" != "" ] && [ "${FILES_WS}" != ".catkin_workspace" ]; then
 				echo "Not removing workspace '${WORKSPACE}', because there is not exactly only the '.catkin_workspace' file in '${WORKSPACE}/." | colorize RED
+				echo ${FILES_WS}
 			else
-				echo -en "Removing workspace '${WORKSPACE}'... " | colorize RED
+				echo -en "Removing workspace '${OLD_REPOS_ROOT}/${WORKSPACE}'... " | colorize RED
 				rm -rf ${OLD_REPOS_ROOT}/${WORKSPACE}
 				echo "done." | colorize GREEN
 			fi
