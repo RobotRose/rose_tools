@@ -144,10 +144,8 @@ function timing {
 
 function get-all-workspace-paths {
 	if [ -f ${WORKSPACES_FILE} ]; then
-		while read LINE           
-		do           
-		    echo ${REPOS_ROOT}/${LINE}           
-		done < "${WORKSPACES_FILE}"
+		# Return path with ordered by build order
+		cat ${REPOS_ROOT}/.workspaces_build_order | cut -d ':' -f 3
 	fi
 }
 
@@ -169,6 +167,14 @@ function get-workspace-path {
 
 	pwd
 	return
+}
+
+function get-workspace-build-order-name {
+	cat ${REPOS_ROOT}/.workspaces_build_order | cut -d ':' -f 1,2
+}
+
+function get-workspace-build-order-path {
+	cat ${REPOS_ROOT}/.workspaces_build_order | cut -d ':' -f 1,3
 }
 
 function cm {
