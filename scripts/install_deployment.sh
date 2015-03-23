@@ -226,10 +226,10 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 	sleep 2
 	
 	NEW_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${NEW_ROSINSTALL_ROOT} | sort -u | uniq -u)
-	REMOVE_WORKSPACES=$(echo -e "${OLD_WORKSPACES}\n${NEW_WORKSPACES}" | sort -u | uniq -u)
+	REMOVE_WORKSPACES=$(echo -e "${OLD_WORKSPACES}" | sort -u | uniq -u)
 
-	# echo "REMOVE_WORKSPACES:"
-	# echo -e "$REMOVE_WORKSPACES"
+	echo "Checking the following workspaces for deletion:"
+	echo -e "$REMOVE_WORKSPACES"
 
 	# For each OLD URI
 	while read -r WORKSPACE; do
