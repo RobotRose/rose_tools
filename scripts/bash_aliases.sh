@@ -202,9 +202,9 @@ function cm {
 	  			cd $ws && catkin_make && source devel/setup.sh --extend
 	  			if [ $? -ne 0 ]
 	  			then
-	  				failed_workspaces+=( $(get-workspace-path $var) )
+	  				failed_workspaces+=( $(get-workspace-path $ws) )
 	  			else
-	  				successful_workspaces+=( $(get-workspace-path $var) )
+	  				successful_workspaces+=( $(get-workspace-path $ws) )
 	  			fi
 	  		done
 	  	else
@@ -227,12 +227,12 @@ function cm {
 	echo "Build summary:" 		| colorize YELLOW
 	for bws in "${successful_workspaces[@]}"
 	do
-		echo "  $bws built succesfully" | colorize GREEN
+		echo "  Building workspace '$bws' successful." | colorize GREEN
 	done
 
 	for bws in "${failed_workspaces[@]}"
 	do
-		echo "! $bws build failed" | colorize RED
+		echo "! Building workspace '$bws' failed." | colorize RED
 		FAILED="true"
 	done
 
