@@ -174,11 +174,15 @@ fi
 
 # ROSE TOOLS AND CONFIG HAVE ALSO BEEN MOVED FROM THIS POINT ON (IF THEY HAD TO BE MOVED)
 
+
 # Run source deployment script
 NEW_TOOLS=${NEW_REPOS_ROOT}/deployment/src/rose_tools
 source ${NEW_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
 NEW_CONFIG=${ROSE_CONFIG}
 NEW_ROSINSTALL_ROOT="${NEW_CONFIG}/rosinstall/${DEPLOYMENT_ID}"
+
+# Store the old workspaces for clearing them later, before copying the rosinstall
+OLD_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${OLD_ROSINSTALL_ROOT} | sort -u | uniq -u)
 
 # Copy the new .rosinstall to the repository root directory
 echo -en "Copying new .rosinstall to the repository root... " | colorize BLUE
@@ -199,12 +203,12 @@ while $RETRY_WSTOOL; do
 		RETRY_WSTOOL=false; break;
 	else
 		echo "wstool update failed." | colorize RED
-		echo "Do you want to retry?"
-		select yn in "Yes" "No" "Skip"; do
+		echo "Do you want to retry/skip/abort?"
+		select yn in "Retry" "Skip" "Abort" ; do
 		    case $yn in
-		        Yes ) break;;
-		        No ) RETRY_WSTOOL=false; return 1;;
+		        Retry ) break;;
 				Skip ) echo "Skipping wstool update!" | colorize RED; RETRY_WSTOOL=false; break;;
+		        Abort ) RETRY_WSTOOL=false; return 1;;
 		    esac
 		done	
 
@@ -215,14 +219,17 @@ echo "Done running 'wstool update'." | colorize GREEN
 
 # UPDATE WORKSPACES
 
-# If we had an previous 'old' install, olaso remove old empty workspaces
+# If we had an previous 'old' install, remove them old empty workspaces
 if [ HAVE_OLD_REPOS_ROOT ]; then
 	# Remove old empty workspaces
 	echo "Removing old empty workspaces." | colorize BLUE
 	sleep 2
-	OLD_WORKSPACES=$(${OLD_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${OLD_ROSINSTALL_ROOT} | sort -u | uniq -u)
-	NEW_WORKSPACES=$(${OLD_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${NEW_ROSINSTALL_ROOT} | sort -u | uniq -u)
-	REMOVE_WORKSPACES=$(echo -e "${OLD_WORKSPACES}\\n${NEW_WORKSPACES}" | sort -u | uniq -u)
+	
+	NEW_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${NEW_ROSINSTALL_ROOT} | sort -u | uniq -u)
+	REMOVE_WORKSPACES=$(echo -e "${OLD_WORKSPACES}\n${NEW_WORKSPACES}" | sort -u | uniq -u)
+
+	# echo "REMOVE_WORKSPACES:"
+	# echo -e "$REMOVE_WORKSPACES"
 
 	# For each OLD URI
 	while read -r WORKSPACE; do
@@ -241,20 +248,19 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 		NR_FILES_AND_DIRS_SRC=$(ls -A1 | wc -l)
 		popd > /dev/null 2>&1
 
-		if [ "${NR_FILES_AND_DIRS_SRC}" -gt "0" ]; then
-			echo "Not removing old workspace '${WORKSPACE}', because there are still ${NR_FILES_AND_DIRS_SRC} files/directories left in '${WORKSPACE}/src/." | colorize RED
+		if [ "${NR_FILES_AND_DIRS_SRC}" -gt "1" ]; then
+			echo "Not removing workspace '${WORKSPACE}', because there are still ${NR_FILES_AND_DIRS_SRC} files/directories left in '${WORKSPACE}/src/." | colorize RED
 		else
 			if [ ! "${FILES_WS}" == ".catkin_workspace" ]; then
-				echo "Not removing old workspace '${WORKSPACE}', because there is not exactly only the '.catkin_workspace' file in '${WORKSPACE}/." | colorize RED
+				echo "Not removing workspace '${WORKSPACE}', because there is not exactly only the '.catkin_workspace' file in '${WORKSPACE}/." | colorize RED
 			else
-				echo -en "Removing old workspace '${WORKSPACE}'... " | colorize RED
-				# DO THE ACTUAL REMOVING
+				echo -en "Removing workspace '${WORKSPACE}'... " | colorize RED
+				rm -rf ${OLD_REPOS_ROOT}/${WORKSPACE}
 				echo "done." | colorize GREEN
 			fi
 		fi
 	done <<< "${REMOVE_WORKSPACES}"
 fi
-
 
 echo "Creating new workspaces... " | colorize BLUE
 # Create new workspaces file
