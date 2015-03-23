@@ -75,7 +75,7 @@ fi
 # fi	
 
 # Source deployment file to read parameters
-source ${NEW_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
+source ${OLD_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
 
 # Store new values
 NEW_REPOS_ROOT=${HOME}/${REPOS_LOCATION}
@@ -291,6 +291,13 @@ fi
 
 # Update links to new deployment 
 source "${ROSE_TOOLS}/scripts/link_deployment.sh"
+
+# Force the environment to be setup with all new stuff installed
+if [ -f /usr/bin/setup_environment.sh ]; then
+    source /usr/bin/setup_environment.sh
+else
+    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." | colorize RED
+fi
 
 # Run first compile to compile the deployed code
 echo "Running 'cm-clean all' to install the deployed code base." | colorize BLUE

@@ -8,18 +8,20 @@
 
 echo 'Setting up ROS environment...' | colorize BLUE
 
+echo -n 'ROS_VERSION             = ' | colorize YELLOW
+echo ${ROS_VERSION}
+
 ROS_ROOT_DIR="/opt/ros/${ROS_VERSION}"
-echo -n 'ROS_ROOT_DIR  			= ' | colorize YELLOW
+echo -n 'ROS_ROOT_DIR            = ' | colorize YELLOW
 echo ${ROS_ROOT_DIR}
 
-echo -n 'ROS_IP         		= ' | colorize YELLOW
+echo -n 'ROS_IP                  = ' | colorize YELLOW
 echo ${ROS_IP}
 
-echo -n 'ROS_MASTER_URI 		= ' | colorize YELLOW
+echo -n 'ROS_MASTER_URI          = ' | colorize YELLOW
 echo ${ROS_MASTER_URI}
 
 source "${ROS_ROOT_DIR}/setup.bash"
-echo ${ROS_ROOT_DIR}
 
 # echo 'Setting up Rose Simulator...'  | colorize BLUE
 # export GAZEBO_PLUGIN_PATH=/usr/lib/gazebo-1.9/plugins:~/git/rose2_0/simulator/devel/lib

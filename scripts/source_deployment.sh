@@ -7,10 +7,15 @@
 # Read arguments
 DEPLOYMENT_FILE=$1
 
+echo -en "Sourcing deployment " | colorize BLUE
+echo "'${DEPLOYMENT_FILE}' " | colorize YELLOW
+
 if [ -f ${DEPLOYMENT_FILE} ]; then
-	echo "Deployment ${DEPLOYMENT_FILE} found." | colorize BLUE
+	echo -en "Deployment file " | colorize BLUE
+	echo "found." | colorize GREEN
 else
-	echo "Deployment ${DEPLOYMENT_FILE} is non existing." | colorize RED
+	echo -en "Deployment file " | colorize BLUE
+	echo "non existing." | colorize RED
 	return 1
 fi	
 
@@ -30,13 +35,13 @@ export ROSE_CONFIG="${REPOS_ROOT}/deployment/src/rose_config/rose_config"
 export ROSE_TOOLS="${REPOS_ROOT}/deployment/src/rose_tools"
 
 # Initialize environment
-echo -n "Adding the rose scripts dir to the PATH... " | colorize BLUE
+echo -n "Adding the rose scripts directory to \$PATH... " | colorize BLUE
 export PATH="${ROSE_TOOLS}/scripts:$PATH"
-echo 'done' | colorize GREEN
+echo "done." | colorize GREEN
 
 echo -n 'Enabling bash aliases... ' | colorize BLUE
 source ${ROSE_TOOLS}/scripts/bash_aliases.sh
-echo 'done' | colorize GREEN
+echo "done." | colorize GREEN
 
 # Source installation
 source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/pc1.sh"
@@ -44,4 +49,6 @@ source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/pc1.sh"
 export ROSINSTALL_DIR="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}"
 export ROSINSTALL_FILE="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}/.rosinstall"
 
-echo "Deployment '${DEPLOYMENT_ID}' sourced." | colorize GREEN
+echo -en "Deployment " | colorize BLUE
+echo -en "'${DEPLOYMENT_ID}' " | colorize YELLOW
+echo "sourced." | colorize GREEN
