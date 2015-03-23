@@ -218,6 +218,14 @@ echo "Done running 'wstool update'." | colorize GREEN
 
 
 # UPDATE WORKSPACES
+NEW_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${NEW_ROSINSTALL_ROOT} | sort -u | uniq -u)
+echo "Creating new workspaces... " | colorize BLUE
+# Create new workspaces file
+
+echo -e "$NEW_WORKSPACES" > ${NEW_REPOS_ROOT}/.workspaces
+
+# Initialize workspaces if needed
+${ROSE_TOOLS}/scripts/init_workspaces.sh
 
 # If we had an previous 'old' install, remove them old empty workspaces
 if [ HAVE_OLD_REPOS_ROOT ]; then
@@ -225,14 +233,16 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 	echo "Removing old empty workspaces." | colorize BLUE
 	sleep 2
 	
-	NEW_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${NEW_ROSINSTALL_ROOT} | sort -u | uniq -u)
 	REMOVE_WORKSPACES=$(echo -e "${OLD_WORKSPACES}" | sort -u | uniq -u)
-
-	echo "Checking the following workspaces for deletion:"
-	echo -e "$REMOVE_WORKSPACES"
 
 	# For each OLD URI
 	while read -r WORKSPACE; do
+
+		# Skip new workspaces
+		if [ "$(echo -en ${NEW_WORKSPACES} | grep "${WORKSPACE}")" != "" ]; then
+			continue
+		fi
+
 		pushd . > /dev/null 2>&1
 
 		cd ${OLD_REPOS_ROOT}/${WORKSPACE}
@@ -262,14 +272,6 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 		fi
 	done <<< "${REMOVE_WORKSPACES}"
 fi
-
-echo "Creating new workspaces... " | colorize BLUE
-# Create new workspaces file
-
-echo -e "$NEW_WORKSPACES" > ${NEW_REPOS_ROOT}/.workspaces
-
-# Initialize workspaces if needed
-${ROSE_TOOLS}/scripts/init_workspaces.sh
 
 # Update links to new deployment 
 source "${ROSE_TOOLS}/scripts/link_deployment.sh"

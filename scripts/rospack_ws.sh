@@ -14,7 +14,7 @@ let "i = 1"
 while read -r PACKAGE; do
 	WORKSPACE=$(echo -en "${REPO_ROOT_PACKAGES_WORKSPACES}" | sed -n "$i"p)
 	pkg_workspaces[$PACKAGE]=$WORKSPACE
-	echo "Package '$PACKAGE' is in workspace '$WORKSPACE'."
+	# echo "Package '$PACKAGE' is in workspace '$WORKSPACE'."
 	let "i++"
 done <<< "${REPO_ROOT_PACKAGES_NAMES}"
 

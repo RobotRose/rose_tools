@@ -69,11 +69,10 @@ while read -r PACKAGE; do
 				if [ "$WORKSPACE" != "$DEPENDENCY_WORKSPACE" ]; then
 					ws_dependencies[$WORKSPACE]+="${DEPENDENCY_WORKSPACE}\n"
 
-
 					if [ "${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPENDENCY_WORKSPACE]}" == "" ]; then
-						WS_WS_DEP=$(echo -en "${PACKAGE}" | sort -u | uniq -u)
+						WS_WS_DEP=$(echo -en "${PACKAGE} -> ${DEPENDENCY} (${DEPENDENCY_WORKSPACE})" | sort -u | uniq -u)
 					else
-						WS_WS_DEP=$(echo -en "${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPENDENCY_WORKSPACE]}\n${PACKAGE}" | sort -u | uniq -u)
+						WS_WS_DEP=$(echo -en "${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPENDENCY_WORKSPACE]}\n${PACKAGE}->${DEPENDENCY}(${DEPENDENCY_WORKSPACE})" | sort -u | uniq -u)
 					fi
 
 					ws_ws_pkg_dependencies["$WORKSPACE -> $DEPENDENCY_WORKSPACE"]="$WS_WS_DEP"
@@ -116,9 +115,10 @@ while read -r WORKSPACE; do
 			if [ "$DEPEND_ON_WORKSPACE" != "" ]; then
 				echo "$WORKSPACE -> $DEPEND_ON_WORKSPACE" | colorize CYAN
 				if [ $(echo "${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPEND_ON_WORKSPACE]}" | wc -l) != "0" ]; then
-					PKG_LIST=$(echo -en ${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPEND_ON_WORKSPACE]})
-					PKG_LIST=${PKG_LIST// /, }
-					echo "$PKG_LIST"
+					PKG_LIST=$(echo -en ${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPEND_ON_WORKSPACE]} | tr ' ' $'\n')
+					# PKG_LIST=${PKG_LIST// /'/n'}
+
+					echo -e "${PKG_LIST}"
 				fi
 			fi
 		fi

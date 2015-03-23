@@ -222,6 +222,7 @@ function cm {
 		fi
 	fi
 
+	FAILED="false"
 	# Execute the successful and unsuccessful workspaces
 	echo "Build summary:" 		| colorize YELLOW
 	for bws in "${successful_workspaces[@]}"
@@ -232,11 +233,18 @@ function cm {
 	for bws in "${failed_workspaces[@]}"
 	do
 		echo "! $bws build failed" | colorize RED
+		FAILED="true"
 	done
 
-	notify_done
 	popd > /dev/null 2>&1
-	return
+	
+	if [ "${FAILED}" != "true" ] ; then
+		notify_done
+		return 0
+	else
+		notify_failed
+		return 1
+	fi
 }
 
 function cm-clean {
