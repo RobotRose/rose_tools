@@ -251,6 +251,7 @@ function cm-clean {
 	pushd . > /dev/null 2>&1 
   	if [ "$#" = 0 ]; then
   		rm -rf build devel && catkin_make
+  		CM_RESULT=$1
   	else
 	  	if [ "$1" = "all" ]; then
 	  		echo "Clearing all build and devel folders" | colorize BLUE
@@ -259,17 +260,21 @@ function cm-clean {
 	  			cd $ws && rm -rf build devel
 	  		done
 	  		cm all
+	  		CM_RESULT=$?
 	  	else
 	  		# search for var in ws-file
-			for var	do
-				echo "Clearing all build and devel folder for $var" | colorize BLUE
-			    cdws $var && rm -rf build devel
-			    cm $var
+			for ws in $@
+			do
+				echo "Clearing all build and devel folder for $ws" | colorize BLUE
+			    cdws $ws && rm -rf build devel
 			done
+		    cm $@
+			CM_RESULT=$?
 		fi
 	fi
-	notify_done
 	popd > /dev/null 2>&1
+	notify_done
+	return $CM_RESULT
 }
 
 function mergeclean {
