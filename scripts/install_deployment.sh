@@ -297,7 +297,7 @@ fi
 
 # Run first compile to compile the deployed code
 echo "Running 'cm-clean all' to install the deployed code base." | colorize BLUE
-source cm-clean all
+cm-clean all
 if [ $? != 0 ]; then
 	return 1
 fi
