@@ -274,8 +274,11 @@ else
     echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." | colorize RED
 fi
 
+cd ${ROSE_TOOLS}/scripts
+
 # Update the workspace build_order
 echo "Updating workspaces build order..." | colorize BLUE
+sleep 2
 ${ROSE_TOOLS}/scripts/update_workspace_build_order.sh
 if [ $? == 0 ]; then
 	echo "Done updating workspaces build order." | colorize GREEN
@@ -284,7 +287,11 @@ else
 fi
 
 # Run first compile to compile the deployed code
-echo "Running 'cm-clean all' to install the deployed code base." | colorize GREEN
+echo "Running 'cm-clean all' to install the deployed code base." | colorize BLUE
 cm-clean all
+if [ $? != 0 ]; then
+	return 1
+fi
 
-cd ${ROSE_TOOLS}/scripts
+echo -en "Successfully deployed: " | colorize BLUE
+echo "$DEPLOYMENT_ID" 	| colorize GREEN
