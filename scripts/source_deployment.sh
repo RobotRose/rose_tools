@@ -41,4 +41,6 @@ echo 'done' | colorize GREEN
 # Source installation
 source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/pc1.sh"
 
+export ROSINSTALL_FILE="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}/.rosinstall"
+
 echo "Deployment '${DEPLOYMENT_ID}' sourced." | colorize GREEN
