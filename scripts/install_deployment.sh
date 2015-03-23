@@ -63,20 +63,20 @@ if [ "${OLD_TOOLS}" == "" ]; then
 	return 1
 fi
 
-# Check for existence of the new deployment file to
-if [ -f ${NEW_DEPLOYMENT_FILE} ]; then
-	echo "Deployment ${NEW_DEPLOYMENT_FILE} found." | colorize BLUE
-else
-	echo "Deployment ${NEW_DEPLOYMENT_FILE} is non existing." | colorize RED
-	return 1
-fi	
+# # Check for existence of the new deployment file to
+# if [ -f ${NEW_DEPLOYMENT_FILE} ]; then
+# 	echo "Deployment ${NEW_DEPLOYMENT_FILE} found." | colorize BLUE
+# else
+# 	echo "Deployment ${NEW_DEPLOYMENT_FILE} is non existing." | colorize RED
+# 	return 1
+# fi	
 
 # Source deployment file to read parameters
-source ${NEW_DEPLOYMENT_FILE}
+source ${NEW_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
 
 # Store new values
 NEW_REPOS_ROOT=${HOME}/${REPOS_LOCATION}
-NEW_ROSINSTALL_OLD_ROOT="${OLD_CONFIG}/rosinstall/${ROBOT_INSTALLATION}"
+NEW_ROSINSTALL_OLD_ROOT="${OLD_CONFIG}/rosinstall/${ROSINSTALL}"
 
 # Check if we now have a new repositories root
 if [ ${NEW_REPOS_ROOT} == "" ]; then
@@ -86,6 +86,9 @@ else
 	echo -en "New repositories root is: " | colorize BLUE 
 	echo "${NEW_REPOS_ROOT}" | colorize YELLOW
 fi
+
+echo -en "New .rosintall, located at old root: " | colorize BLUE
+echo "${NEW_ROSINSTALL_OLD_ROOT}" | colorize YELLOW
 
 # If we had an previous 'old' install, check difference
 if [ HAVE_OLD_REPOS_ROOT ]; then
@@ -179,7 +182,7 @@ fi
 NEW_TOOLS=${NEW_REPOS_ROOT}/deployment/src/rose_tools
 source ${NEW_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
 NEW_CONFIG=${ROSE_CONFIG}
-NEW_ROSINSTALL_ROOT="${NEW_CONFIG}/rosinstall/${DEPLOYMENT_ID}"
+NEW_ROSINSTALL_ROOT="${ROSINSTALL_DIR}"
 
 # Store the old workspaces for clearing them later, before copying the rosinstall
 OLD_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${OLD_ROSINSTALL_ROOT} | sort -u | uniq -u)
