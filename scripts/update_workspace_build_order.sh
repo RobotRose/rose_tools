@@ -116,8 +116,6 @@ while read -r WORKSPACE; do
 				echo "$WORKSPACE -> $DEPEND_ON_WORKSPACE" | colorize CYAN
 				if [ $(echo "${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPEND_ON_WORKSPACE]}" | wc -l) != "0" ]; then
 					PKG_LIST=$(echo -en ${ws_ws_pkg_dependencies[$WORKSPACE -> $DEPEND_ON_WORKSPACE]} | tr ' ' $'\n')
-					# PKG_LIST=${PKG_LIST// /'/n'}
-
 					echo -e "${PKG_LIST}"
 				fi
 			fi

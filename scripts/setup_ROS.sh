@@ -42,5 +42,5 @@ echo ${LD_LIBRARY_PATH}
 source ${ROSE_TOOLS}/scripts/overlay_workspaces.sh
 
 # Set rosconsole format
-echo "Setting rosconsole format"  | colorize BLUE
+echo "Setting rosconsole format..."  | colorize BLUE
 export ROSCONSOLE_FORMAT='${time}|${logger}[${severity}]: ${message}' 
