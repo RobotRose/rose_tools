@@ -8,8 +8,8 @@ fi
 
 # Read arguments
 DEPLOYMENT_ID=$1 		# Deployment ID as in current 'old' install
-FORCE_ROSE_CONFIG=$2	# Full path ro rose_config package
-FORCE_ROSE_TOOLS=$3		# Full path ro rose_config package
+FORCE_ROSE_CONFIG=$2	# Full path to rose_config package
+FORCE_ROSE_TOOLS=$3		# Full path to rose_config package
 
 # Handy variables
 CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -22,6 +22,9 @@ else
 	echo -en "Installing deployment: " | colorize BLUE
 	echo "${DEPLOYMENT_ID}" | colorize YELLOW
 fi
+
+# Prompt user for entering sudo password at this time, such that the whole script continues at once
+sudo ls  > /dev/null 2>&1
 
 # Store old values
 OLD_REPOS_ROOT=${REPOS_ROOT}
@@ -141,7 +144,7 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 	    	echo " Added to remove list." | colorize YELLOW
 	    	echo -en " Path: " | colorize BLUE
 	    	echo     "${OLD_PATH}" | colorize YELLOW
-	    	TO_REMOVE+=("${OLD_PATH}")
+	    	TO_REMOVE+=("${OLD_REPOS_ROOT}/${OLD_PATH}")
 	    fi
 	done <<< "${OLD_URIS}"
 
@@ -276,18 +279,6 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 	done <<< "${REMOVE_WORKSPACES}"
 fi
 
-# Update links to new deployment 
-source "${ROSE_TOOLS}/scripts/link_deployment.sh"
-
-# Force the environment to be setup with all new stuff installed
-if [ -f /usr/bin/setup_environment.sh ]; then
-    source /usr/bin/setup_environment.sh
-else
-    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." | colorize RED
-fi
-
-cd ${ROSE_TOOLS}/scripts
-
 # Update the workspace build_order
 echo "Updating workspaces build order..." | colorize BLUE
 sleep 2
@@ -298,12 +289,24 @@ else
 	return 1
 fi
 
+# Update links to new deployment 
+source "${ROSE_TOOLS}/scripts/link_deployment.sh"
+
 # Run first compile to compile the deployed code
 echo "Running 'cm-clean all' to install the deployed code base." | colorize BLUE
 cm-clean all
 if [ $? != 0 ]; then
 	return 1
 fi
+
+# Force the environment to be setup with all new stuff installed
+if [ -f /usr/bin/setup_environment.sh ]; then
+    source /usr/bin/setup_environment.sh
+else
+    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." | colorize RED
+fi
+
+cd ${ROSE_TOOLS}/scripts
 
 echo -en "Successfully deployed: " | colorize BLUE
 echo "$DEPLOYMENT_ID" 	| colorize GREEN
