@@ -187,7 +187,7 @@ function cm {
   	if [ "$#" = 0 ]; then
   		ws=`pwd`
   		echo "Building current workspace $ws" | colorize BLUE
-  		catkin_make
+  		catkin_make && source devel/setup.sh --extend
   		if [ $? -ne 0 ]
 		then
 			failed_workspaces+=( $(get-workspace-path $var) )
@@ -199,7 +199,7 @@ function cm {
 	  		echo "Building all workspaces" | colorize BLUE
 	  		for ws in `get-all-workspace-paths`
 	  		do
-	  			cd $ws && catkin_make
+	  			cd $ws && catkin_make && source devel/setup.sh --extend
 	  			if [ $? -ne 0 ]
 	  			then
 	  				failed_workspaces+=( $(get-workspace-path $var) )
@@ -210,7 +210,7 @@ function cm {
 	  	else
 			for var	do
 			    echo "Building $var..." | colorize BLUE
-			    cdws $var && catkin_make
+			    cdws $var && catkin_make && source devel/setup.sh --extend
 			    
 			    if [ $? -ne 0 ]
 			    then
