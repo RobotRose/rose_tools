@@ -76,8 +76,16 @@ if [ "${OLD_TOOLS}" == "" ]; then
 	return 1
 fi
 
+# Check for existence of the new deployment file to
+if [ -f ${NEW_DEPLOYMENT_FILE} ]; then
+	echo "Deployment ${NEW_DEPLOYMENT_FILE} found." | colorize BLUE
+else
+	echo "Deployment ${NEW_DEPLOYMENT_FILE} is non existing." | colorize RED
+	return 1
+fi	
+
 # Source deployment file to read parameters
-source ${OLD_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
+source ${NEW_DEPLOYMENT_FILE}
 
 # Store new values
 NEW_REPOS_ROOT=${HOME}/${REPOS_LOCATION}

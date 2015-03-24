@@ -10,7 +10,11 @@ fi
 
 echo "Installing the Rose B.V. software."
 
+# Turn on git credentials cache
+git config --global credential.helper cache
+
 cd ${FIRST_COMPILE_ROOT}
+rm -rf rose_config
 git clone https://github.com/RobotRose/rose_config.git -b requirement/1207_platform_params_configurable
 
 echo "Copying the default bashrc to ~/.bashrc"
