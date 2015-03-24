@@ -17,14 +17,6 @@ fi
 echo -n 'WORKSPACES FILE = ' | colorize YELLOW
 echo ${WORKSPACES_FILE}
 
-echo -n 'ROSCONSOLE_CONFIG_FILE = ' | colorize YELLOW
-echo ${ROSCONSOLE_CONFIG_FILE}
-
-# Set ROSLAUNCH_SSH_UNKNOWN to true
-export ROSLAUNCH_SSH_UNKNOWN=1
-echo -n "ROSLAUNCH_SSH_UNKNOWN = " | colorize YELLOW
-echo "enabled"
-
 # Setup ROS environment
 source "${ROSE_TOOLS}/scripts/setup_ROS.sh"
 

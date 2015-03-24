@@ -5,7 +5,6 @@
 # ROS_IP
 # ROS_MASTER_URI
 
-
 echo 'Setting up ROS environment...' | colorize BLUE
 
 echo -n 'ROS_VERSION             = ' | colorize YELLOW
@@ -21,7 +20,16 @@ echo ${ROS_IP}
 echo -n 'ROS_MASTER_URI          = ' | colorize YELLOW
 echo ${ROS_MASTER_URI}
 
+echo -n 'ROSCONSOLE_CONFIG_FILE  = ' | colorize YELLOW
+echo ${ROSCONSOLE_CONFIG_FILE}
+
+# Set ROSLAUNCH_SSH_UNKNOWN to true
+export ROSLAUNCH_SSH_UNKNOWN=1
+echo -n "ROSLAUNCH_SSH_UNKNOWN  = " | colorize YELLOW
+echo "enabled"
+
 source "${ROS_ROOT_DIR}/setup.bash"
+
 
 # echo 'Setting up Rose Simulator...'  | colorize BLUE
 # export GAZEBO_PLUGIN_PATH=/usr/lib/gazebo-1.9/plugins:~/git/rose2_0/simulator/devel/lib
@@ -38,14 +46,10 @@ echo -n 'ROS_PACKAGE_PATH	= ' | colorize YELLOW
 echo ${ROS_PACKAGE_PATH}
 
 # Update library path
-# source ${ROSE_TOOLS}/scripts/update_library_path.sh
-export LD_LIBRARY_PATH="${ROS_ROOT_DIR}/lib/:/usr/lib/gazebo-1.9/plugins" #:~/git/rose2_0/simulator/devel/lib
-echo -n 'LD_LIBRARY_PATH		= ' | colorize YELLOW
-echo ${LD_LIBRARY_PATH}
+source ${ROSE_TOOLS}/scripts/update_library_path.sh
 
 #Overlay workspaces
 source ${ROSE_TOOLS}/scripts/overlay_workspaces.sh
 
 # Set rosconsole format
-echo "Setting rosconsole format..."  | colorize BLUE
-export ROSCONSOLE_FORMAT='${time}|${logger}[${severity}]: ${message}' 
+source ${ROSE_TOOLS}/scripts/setup_rosconsole_format.sh

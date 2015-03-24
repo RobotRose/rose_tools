@@ -84,8 +84,9 @@ else
 	return 1
 fi	
 
-# Source deployment file to read parameters
+# Source deployment and its corresponding installation file to read its parameters
 source ${NEW_DEPLOYMENT_FILE}
+source ${OLD_CONFIG}/installations/${ROBOT_INSTALLATION}/pc1.sh
 
 # Store new values
 NEW_REPOS_ROOT=${HOME}/${REPOS_LOCATION}
@@ -100,11 +101,11 @@ else
 	echo "${NEW_REPOS_ROOT}" | colorize YELLOW
 fi
 
-echo -en "New .rosintall, located at old root: " | colorize BLUE
+echo -en "New .rosintall, located at old rose_config: " | colorize BLUE
 echo "${NEW_ROSINSTALL_OLD_ROOT}" | colorize YELLOW
 
 # If we had an previous 'old' install, check difference
-if [ HAVE_OLD_REPOS_ROOT ]; then
+if [ "${HAVE_OLD_REPOS_ROOT}" == true ]; then
 
 	# Extract old uris
 	OLD_URIS=$(${OLD_TOOLS}/scripts/extract_rosinstall_uris.sh ${OLD_ROSINSTALL_ROOT})
@@ -159,7 +160,7 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 	done <<< "${OLD_URIS}"
 
 	echo "All URI's compared, will now process moved and removed repositories." | colorize BLUE
-	sleep 2
+	sleep 1
 
 	for MOVE in "${TO_MOVE[@]}"
 	do
@@ -186,41 +187,39 @@ if [ HAVE_OLD_REPOS_ROOT ]; then
 	done
 
 	# All new URI's added by the new deployment will be installed by git-update-all
+	# ROSE TOOLS AND CONFIG HAVE ALSO BEEN MOVED FROM THIS POINT ON (IN CASE THE DIR CHANGED)
 fi
-
-# ROSE TOOLS AND CONFIG HAVE ALSO BEEN MOVED FROM THIS POINT ON (IF THEY HAD TO BE MOVED)
-
-# Run source deployment script
-NEW_TOOLS=${NEW_REPOS_ROOT}/deployment/src/rose_tools
-source ${NEW_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
-NEW_CONFIG=${ROSE_CONFIG}
-NEW_ROSINSTALL_ROOT="${ROSINSTALL_DIR}"
 
 # Store the old workspaces for clearing them later, before copying the rosinstall
 OLD_WORKSPACES=$(${OLD_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${OLD_ROSINSTALL_ROOT} | sort -u | uniq -u)
 
+# In case the new repository root does not exist, create it
+mkdir -p ${NEW_REPOS_ROOT}/
+cd ${NEW_REPOS_ROOT}
+
 # Copy the new .rosinstall to the repository root directory
 echo -en "Copying new .rosinstall to the repository root... " | colorize BLUE
-sleep 2
+sleep 1
 cp -f ${NEW_ROSINSTALL_OLD_ROOT}/.rosinstall  ${NEW_REPOS_ROOT}/
 echo "done." | colorize GREEN
 
-# Run wtool to install the new .rosinstall
+# Run wstool to install the new .rosinstall
 # Thus also installing new rose_tools and rose_config packages
 RETRY_WSTOOL=true
 NR_PARALLEL=50
 while $RETRY_WSTOOL; do
 	echo "Running 'wstool update' to install new .rosinstall... " | colorize BLUE
-	sleep 2
+	sleep 1
 	wstool update --target-workspace=${NEW_REPOS_ROOT} --parallel=${NR_PARALLEL}
 	if [ $? == 0 ]; then
 		RETRY_WSTOOL=false; break;
 	else
 		echo "wstool update failed." | colorize RED
-		echo "Do you want to retry/skip/abort?"
-		select yn in "Retry" "Skip" "Abort" ; do
+		echo "Do you want to retry/retry single threaded/skip/abort?"
+		select yn in "Retry" "RetrySingle" "Skip" "Abort" ; do
 		    case $yn in
-		        Retry ) break;;
+		        Retry ) NR_PARALLEL=50; break;;
+		        RetrySingle ) NR_PARALLEL=1; break;;
 				Skip ) echo "Skipping wstool update!" | colorize RED; RETRY_WSTOOL=false; break;;
 		        Abort ) RETRY_WSTOOL=false; return 1;;
 		    esac
@@ -230,32 +229,39 @@ while $RETRY_WSTOOL; do
 done
 echo "Done running 'wstool update'." | colorize GREEN
 
+# Setup the environment, including ROS etc.
+if [ -f ${OLD_TOOLS}/scripts/setup_environment.sh ]; then
+    source ${OLD_TOOLS}/scripts/setup_environment.sh
+else
+    echo "Could not find and run environment script '${OLD_TOOLS}/scripts/setup_environment.sh'." | colorize RED
+fi
+
+# Update links to new deployment 
+source "${ROSE_TOOLS}/scripts/link_deployment.sh"
+
 # If we forced the OLD_CONFIG variable, remove it if the new ROSE_CONFIG path is different
 if [ "${CONFIG_FORCED}" == true ] && [ "${OLD_CONFIG}" != "${ROSE_CONFIG}" ]; then
-	echo "Removing old config folder '${OLD_CONFIG}." | colorize RED
+	echo "Removing old configuration folder '${OLD_CONFIG}'." | colorize RED
 	rm -rf ${OLD_CONFIG}
 fi
 # If we forced the OLD_TOOLS variable, remove it if the new ROSE_TOOLS path is different
 if [ "${TOOLS_FORCED}" == true ] && [ "${OLD_TOOLS}" != "${ROSE_TOOLS}" ]; then
-	echo "Removing old tools folder '${OLD_TOOLS}." | colorize RED
+	echo "Removing old tools folder '${OLD_TOOLS}'." | colorize RED
 	rm -rf ${OLD_TOOLS}
 fi
 
 # UPDATE WORKSPACES
-NEW_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${NEW_ROSINSTALL_ROOT} | sort -u | uniq -u)
+NEW_WORKSPACES=$(${ROSE_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${ROSINSTALL_DIR} | sort -u | uniq -u)
 echo "Creating new workspaces... " | colorize BLUE
+
 # Create new workspaces file
-
-echo -e "$NEW_WORKSPACES" > ${NEW_REPOS_ROOT}/.workspaces
-
-# Initialize workspaces if needed
-${ROSE_TOOLS}/scripts/init_workspaces.sh
+echo -e "$NEW_WORKSPACES" > ${REPOS_ROOT}/.workspaces
 
 # If we had an previous 'old' install, remove them old empty workspaces
-if [ HAVE_OLD_REPOS_ROOT ]; then
+if [ "${HAVE_OLD_REPOS_ROOT}" == true ]; then
 	# Remove old empty workspaces
 	echo "Removing old empty workspaces." | colorize BLUE
-	sleep 2
+	sleep 1
 	
 	REMOVE_WORKSPACES=$(echo -e "${OLD_WORKSPACES}" | sort -u | uniq -u)
 
@@ -299,7 +305,7 @@ fi
 
 # Update the workspace build_order
 echo "Updating workspaces build order..." | colorize BLUE
-sleep 2
+sleep 1
 ${ROSE_TOOLS}/scripts/update_workspace_build_order.sh
 if [ $? == 0 ]; then
 	echo "Done updating workspaces build order." | colorize GREEN
@@ -307,15 +313,8 @@ else
 	return 1
 fi
 
-# Update links to new deployment 
-source "${ROSE_TOOLS}/scripts/link_deployment.sh"
-
-# Force the environment to be setup with all new stuff installed
-if [ -f /usr/bin/setup_environment.sh ]; then
-    source /usr/bin/setup_environment.sh
-else
-    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." | colorize RED
-fi
+# Initialize workspaces if needed
+${ROSE_TOOLS}/scripts/init_workspaces.sh
 
 # Run first compile to compile the deployed code
 echo "Running 'cm-clean all' to install the deployed code base." | colorize BLUE
@@ -324,7 +323,7 @@ if [ $? != 0 ]; then
 	return 1
 fi
 
-# Force the environment to be setup with all new stuff installed
+# Setup the environment once again
 if [ -f /usr/bin/setup_environment.sh ]; then
     source /usr/bin/setup_environment.sh
 else
