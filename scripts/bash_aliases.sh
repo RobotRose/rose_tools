@@ -26,6 +26,17 @@ alias alert='notify-send -i /usr/share/icons/gnome/32x32/apps/gnome-terminal.png
 alias notify_done='alert "Done" &'
 alias notify_failed='alert "Failed" &'
 
+# Updated cd function. Usage cd ......
+function cd () {
+	local -ri n=${#*};
+	if [ $n -eq 0 -o -d "${!n}" -o "${!n}" == "-" ]; then
+	builtin cd "$@";
+	else
+	local e="s:\.\.\.:../..:g";
+	builtin cd "${@:1:$n-1}" $(sed -e$e -e$e -e$e <<< "${!n}");
+	fi
+}
+
 function gitff {
 	git fetch && git pull --ff --ff-only origin $(git rev-parse --abbrev-ref HEAD)
 }

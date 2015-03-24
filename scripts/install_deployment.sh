@@ -13,6 +13,8 @@ FORCE_ROSE_TOOLS=$3		# Full path to rose_config package
 
 # Handy variables
 CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+CONFIG_FORCED=false
+TOOLS_FORCED=false
 
 # Check if identifier was provided
 if [ "${DEPLOYMENT_ID}" == "" ]; then
@@ -22,9 +24,6 @@ else
 	echo -en "Installing deployment: " | colorize BLUE
 	echo "${DEPLOYMENT_ID}" | colorize YELLOW
 fi
-
-# Prompt user for entering sudo password at this time, such that the whole script continues at once
-sudo ls  > /dev/null 2>&1
 
 # Store old values
 OLD_REPOS_ROOT=${REPOS_ROOT}
@@ -44,13 +43,24 @@ if [ "$FORCE_ROSE_CONFIG" == "" ]; then
 	OLD_CONFIG=${ROSE_CONFIG}
 else
 	OLD_CONFIG=${FORCE_ROSE_CONFIG}
+	CONFIG_FORCED=true
 fi
 
 if [ "$FORCE_ROSE_TOOLS" == "" ]; then
 	OLD_TOOLS=${ROSE_TOOLS}
 else
 	OLD_TOOLS=${FORCE_ROSE_TOOLS}
+	TOOLS_FORCED=true
 fi
+
+# Prompt user for entering sudo password at this time, such that the whole script continues at once
+sudo ls  > /dev/null 2>&1
+
+# Promt user for github account username and password
+pushd . > /dev/null 2>&1
+cd ${OLD_TOOLS} > /dev/null 2>&1
+git fetch > /dev/null 2>&1
+popd > /dev/null 2>&1
 
 NEW_DEPLOYMENT_FILE="${OLD_CONFIG}/deployment/${DEPLOYMENT_ID}/deployment.sh"
 OLD_DEPLOYMENT_FILE="$(readlink /usr/bin/deployment_file.sh)"
@@ -65,14 +75,6 @@ if [ "${OLD_TOOLS}" == "" ]; then
 	echo "No rose_tools package detected, provide as 3th argument." | colorize RED
 	return 1
 fi
-
-# # Check for existence of the new deployment file to
-# if [ -f ${NEW_DEPLOYMENT_FILE} ]; then
-# 	echo "Deployment ${NEW_DEPLOYMENT_FILE} found." | colorize BLUE
-# else
-# 	echo "Deployment ${NEW_DEPLOYMENT_FILE} is non existing." | colorize RED
-# 	return 1
-# fi	
 
 # Source deployment file to read parameters
 source ${OLD_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
@@ -188,7 +190,7 @@ NEW_CONFIG=${ROSE_CONFIG}
 NEW_ROSINSTALL_ROOT="${ROSINSTALL_DIR}"
 
 # Store the old workspaces for clearing them later, before copying the rosinstall
-OLD_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${OLD_ROSINSTALL_ROOT} | sort -u | uniq -u)
+OLD_WORKSPACES=$(${OLD_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${OLD_ROSINSTALL_ROOT} | sort -u | uniq -u)
 
 # Copy the new .rosinstall to the repository root directory
 echo -en "Copying new .rosinstall to the repository root... " | colorize BLUE
@@ -196,9 +198,8 @@ sleep 2
 cp -f ${NEW_ROSINSTALL_OLD_ROOT}/.rosinstall  ${NEW_REPOS_ROOT}/
 echo "done." | colorize GREEN
 
-# Run git-update-all to install the new .rosinstall
-# Thus also installing rose_tools and rose_config packages
-
+# Run wtool to install the new .rosinstall
+# Thus also installing new rose_tools and rose_config packages
 RETRY_WSTOOL=true
 NR_PARALLEL=50
 while $RETRY_WSTOOL; do
@@ -222,6 +223,16 @@ while $RETRY_WSTOOL; do
 done
 echo "Done running 'wstool update'." | colorize GREEN
 
+# If we forced the OLD_CONFIG variable, remove it if the new ROSE_CONFIG path is different
+if [ "${CONFIG_FORCED}" == true ] && [ "${OLD_CONFIG}" != "${ROSE_CONFIG}" ]; then
+	echo "Removing old config folder '${OLD_CONFIG}." | colorize RED
+	rm -rf ${OLD_CONFIG}
+fi
+# If we forced the OLD_TOOLS variable, remove it if the new ROSE_TOOLS path is different
+if [ "${TOOLS_FORCED}" == true ] && [ "${OLD_TOOLS}" != "${ROSE_TOOLS}" ]; then
+	echo "Removing old tools folder '${OLD_TOOLS}." | colorize RED
+	rm -rf ${OLD_TOOLS}
+fi
 
 # UPDATE WORKSPACES
 NEW_WORKSPACES=$(${NEW_TOOLS}/scripts/extract_rosinstall_workspaces.sh ${NEW_ROSINSTALL_ROOT} | sort -u | uniq -u)
