@@ -1,9 +1,4 @@
 #!/bin/bash  
-# Bash Menu Script Example
-
-# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
-# This file is installed by running the first_install.sh script
-source robot_file.sh
 
 SSH_RSA_SCRIPT="$ROSE_TOOLS/scripts/setup_SSHRSA.sh"
 VPN_CONFIGS_DIR="/etc/openvpn"

@@ -4,10 +4,6 @@ KEYS="/etc/openvpn/easy-rsa/keys"
 OPENVPN="/etc/openvpn"
 EASYRSA="$OPENVPN/easy-rsa"
 
-# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
-# This file is installed by running the first_install.sh script
-source robot_file.sh
-
 SSH_RSA_SCRIPT="${ROSE_TOOLS}/scripts/setup_SSHRSA.sh"
 DEFAULT_RSA_VARS="${ROSE_TOOLS}/scripts/default_easyrsa_vars"
 DEFAULT_CLIENT_CONF="${ROSE_TOOLS}/scripts/default_client_vpn.conf"

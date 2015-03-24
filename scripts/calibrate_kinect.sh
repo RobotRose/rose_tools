@@ -1,9 +1,5 @@
 #!/usr/bin/env sh
 
-# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
-# This file is installed by running the first_install.sh script
-source robot_file.sh
-
 CROSSINGS=$1
 SQUARESIZE=$2
 KINECT_SERIAL=$3

@@ -1,9 +1,5 @@
 #!/bin/bash  
 
-# Setup the vars in robot_file.sh by sourcing the symlinked file in /usr/bin.
-# This file is installed by running the first_install.sh script
-source robot_file.sh
-
 PC1=$1
 PC1_USER=$2
 PC1_PASS=$3

@@ -182,7 +182,6 @@ fi
 
 # ROSE TOOLS AND CONFIG HAVE ALSO BEEN MOVED FROM THIS POINT ON (IF THEY HAD TO BE MOVED)
 
-
 # Run source deployment script
 NEW_TOOLS=${NEW_REPOS_ROOT}/deployment/src/rose_tools
 source ${NEW_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
