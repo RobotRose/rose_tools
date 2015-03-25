@@ -53,7 +53,7 @@ if [ $? == 1 ]; then
 fi
 
 echo "Preparing \"sudo ${ROSE_TOOLS}/scripts/setup_vpn_client.sh ${TO_USERNAME} ${ROBOT_NAME} ${PC_FROM}\"" | colorize GREEN
-ssh -t ${FROM_USERNAME}@${PC_FROM} "	source /usr/bin/robot_file.sh && \
+ssh -t ${FROM_USERNAME}@${PC_FROM} "	source /usr/bin/setup_environment.sh && \
 										sudo \${ROSE_TOOLS}/scripts/setup_vpn_client.sh ${TO_USERNAME} ${ROBOT_NAME} ${PC_FROM}"
 
 if [ $? == 1 ]; then

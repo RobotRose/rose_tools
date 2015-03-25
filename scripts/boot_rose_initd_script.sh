@@ -17,7 +17,11 @@ stderr_log="/var/log/$name.err"
 date > "$stdout_log" 
 date > "$stderr_log"
 
-source /usr/bin/robot_file.sh >> "$stdout_log" 2>> "$stderr_log"
+if [ -f /usr/bin/setup_environment.sh ]; then
+    source /usr/bin/setup_environment.sh >> "$stdout_log" 2>> "$stderr_log"
+else
+    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." >> "$stdout_log" 2>> "$stderr_log"
+fi
 
 user="rose"
 cmd="${ROSE_TOOLS}/scripts/boot_rose.py"
