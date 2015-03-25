@@ -17,6 +17,13 @@ then
     WS_ROOT=$2
 fi
 
+trap ctrl_c INT
+
+function ctrl_c() {
+        echo "** Trapped CTRL-C"
+}
+
+
 TEMP_FILE=$(mktemp) 
 
 REPOS=$(wstool info --only=localname)

@@ -81,7 +81,9 @@ function git-update-all {
 
 	pushd . 2>&1 1> /dev/null
 
+	echo "Updating rose_tools" | colorize BLUE
 	cd ${ROSE_TOOLS} && gitff ;
+	echo "Updating rose_config" | colorize BLUE
 	cd ${ROSE_CONFIG} && gitff ;
 	source ${ROSE_TOOLS}/scripts/wstool_retry_enabled.sh ${parallelism} ${REPOS_ROOT}
 
