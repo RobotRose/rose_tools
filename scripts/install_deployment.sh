@@ -214,17 +214,17 @@ cp -f ${NEW_ROSINSTALL_OLD_ROOT}/.rosinstall  ${NEW_REPOS_ROOT}/
 echo "done." | colorize GREEN
 
 # Run wstool to install the new .rosinstall
-source ${OLD_TOOLS}/scripts/wstool_retry_enabled.sh
+source ${OLD_TOOLS}/scripts/wstool_retry_enabled.sh 50 ${NEW_REPOS_ROOT}
 if [ $? != 0 ]; then
 	return 1
 fi
-echo "Done running 'wstool update'." | colorize GREEN
 
 # Setup the environment, including ROS etc.
 if [ -f ${OLD_TOOLS}/scripts/setup_environment.sh ]; then
-    source ${OLD_TOOLS}/scripts/setup_environment.sh
+    source ${OLD_TOOLS}/scripts/setup_environment.sh ${OLD_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
 else
     echo "Could not find and run environment script '${OLD_TOOLS}/scripts/setup_environment.sh'." | colorize RED
+    return 1
 fi
 
 # Update links to new deployment 
@@ -319,6 +319,7 @@ if [ -f /usr/bin/setup_environment.sh ]; then
     source /usr/bin/setup_environment.sh
 else
     echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." | colorize RED
+    return 1
 fi
 
 cd ${ROSE_TOOLS}/scripts

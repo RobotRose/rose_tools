@@ -1,17 +1,26 @@
 #!/bin/bash  
 
-DEPLOYMENT_SCRIPT="/usr/bin/deployment_script.sh"
-DEPLOYMENT_FILE="/usr/bin/deployment_file.sh"
+if [ "$1" == "" ]; then
+	DEPLOYMENT_SCRIPT="/usr/bin/deployment_script.sh"
+else
+	DEPLOYMENT_SCRIPT="$1"
+fi
+
+if [ "$2" == "" ]; then
+	DEPLOYMENT_FILE="/usr/bin/deployment_file.sh"
+else
+	DEPLOYMENT_FILE="$2"
+fi
 
 # Activate Deployment
 if [ -e ${DEPLOYMENT_SCRIPT} ]; then
 	if [ -e ${DEPLOYMENT_FILE} ]; then	
-		source ${DEPLOYMENT_SCRIPT} $(readlink ${DEPLOYMENT_FILE})
+		source ${DEPLOYMENT_SCRIPT} ${DEPLOYMENT_FILE}
 	else
-		echo "Deployment file '$(readlink ${DEPLOYMENT_FILE})' not found." | colorize RED
+		echo "Deployment file ${DEPLOYMENT_FILE} links to '$(readlink ${DEPLOYMENT_FILE})' not found." | colorize RED
 	fi
 else
-	echo "Deployment script '$(readlink ${DEPLOYMENT_SCRIPT})' not found." | colorize RED
+	echo "Deployment script ${DEPLOYMENT_SCRIPT} links to '$(readlink ${DEPLOYMENT_SCRIPT})' not found." | colorize RED
 fi
 
 echo -n 'WORKSPACES FILE = ' | colorize YELLOW

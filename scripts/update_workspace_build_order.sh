@@ -20,10 +20,10 @@ echo -n "Setting ROS_PACKAGE_PATH to: " | colorize BLUE
 echo "$ROS_PACKAGE_PATH" | colorize YELLOW
 
 echo -n "Running 'sudo rosdep init'... " | colorize BLUE
-sudo rosdep init
+sudo rosdep init > /dev/null 2>&1  
 echo "done." | colorize GREEN
 echo -n "Running 'rosdep update'... " | colorize BLUE
-rosdep update
+rosdep update > /dev/null 2>&1
 echo "done." | colorize GREEN
 
 # Get packages in repository root

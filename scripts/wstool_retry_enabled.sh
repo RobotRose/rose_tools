@@ -11,7 +11,7 @@ then
     NR_PARALLEL=$1
 fi
 
-WS_ROOT=$REPOS_ROOT
+WS_ROOT=${REPOS_ROOT}
 if [ "$2" ]
 then
     WS_ROOT=$2
