@@ -125,7 +125,11 @@ function vpn {
 }
 
 function deploy {
-	source ${ROSE_TOOLS}/scripts/install_deployment.sh
+	if [ "$1" != "" ]; then
+		source ${ROSE_TOOLS}/scripts/select_deployment.sh $1
+	else
+		source ${ROSE_TOOLS}/scripts/install_deployment.sh
+	fi
 }
 
 function source-deployment {
