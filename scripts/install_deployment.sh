@@ -7,14 +7,16 @@ if [ "$(id -u)" == "0" ]; then
 fi
 
 # Read arguments
-DEPLOYMENT_ID=$1 		# Deployment ID as in current 'old' install
-FORCE_ROSE_CONFIG=$2	# Full path to rose_config package
-FORCE_ROSE_TOOLS=$3		# Full path to rose_config package
+DEPLOYMENT_ID=$1 		 # Deployment ID as in current 'old' install
+FORCE_ROSE_CONFIG=$2	 # Full path to rose_config package
+FORCE_ROSE_TOOLS=$3		 # Full path to rose_config package
+FORCE_DEPLOYMENT_FILE=$4 # Full path to a deployment file
 
 # Handy variables
 CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 CONFIG_FORCED=false
 TOOLS_FORCED=false
+DEPLOYMENT_FORCED=false
 
 # Check if identifier was provided
 if [ "${DEPLOYMENT_ID}" == "" ]; then
@@ -55,6 +57,9 @@ fi
 
 # Prompt user for entering sudo password at this time, such that the whole script continues at once
 sudo ls  > /dev/null 2>&1
+if [ $? != 0 ]; then
+	return 1
+fi
 
 # Promt user for github account username and password
 pushd . > /dev/null 2>&1
@@ -62,7 +67,12 @@ cd ${OLD_TOOLS} > /dev/null 2>&1
 git fetch > /dev/null 2>&1
 popd > /dev/null 2>&1
 
-NEW_DEPLOYMENT_FILE="${OLD_CONFIG}/deployment/${DEPLOYMENT_ID}/deployment.sh"
+if [ "$FORCE_DEPLOYMENT_FILE" == "" ]; then
+	NEW_DEPLOYMENT_FILE="${OLD_CONFIG}/deployment/${DEPLOYMENT_ID}/deployment.sh"
+else
+	NEW_DEPLOYMENT_FILE="${FORCE_DEPLOYMENT_FILE}"
+fi
+
 OLD_DEPLOYMENT_FILE="$(readlink /usr/bin/deployment_file.sh)"
 
 # Check if we have a path to the rose_config package
