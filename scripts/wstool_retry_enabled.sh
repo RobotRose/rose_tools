@@ -3,11 +3,18 @@
 # Wrapper for wstool update, adding retry unfinished repo's ability
 # Press CTRL+C or wait for failure, to bring up retry menu
 # Argument $1 specifies the number of parallel jobs to use
+# Argument $2 specifies the workspace root
 
 NR_PARALLEL=50
 if [ "$1" ]
 then
     NR_PARALLEL=$1
+fi
+
+WS_ROOT=$REPOS_ROOT
+if [ "$2" ]
+then
+    WS_ROOT=$2
 fi
 
 TEMP_FILE=$(mktemp) 
@@ -24,7 +31,7 @@ done <<< "${REPOS}"
 RETRY_WSTOOL=true
 RETRY_LIST=${REPO_LIST}
 while $RETRY_WSTOOL; do
-	COMMAND="wstool update ${RETRY_LIST} --target-workspace=${REPOS_ROOT} --parallel=${NR_PARALLEL}"
+	COMMAND="wstool update ${RETRY_LIST} --target-workspace=${WS_ROOT} --parallel=${NR_PARALLEL}"
 	echo "$COMMAND" | colorize BLUE
 	stdbuf -oL -eL $COMMAND | tee >(grep "Done." | grep -oPi "\[.*\]" | grep -oPi "[(\w\/)]*" > $TEMP_FILE)
 		

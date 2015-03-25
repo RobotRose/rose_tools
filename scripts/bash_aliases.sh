@@ -83,7 +83,7 @@ function git-update-all {
 
 	cd ${ROSE_TOOLS} && gitff ;
 	cd ${ROSE_CONFIG} && gitff ;
-	source ${ROSE_TOOLS}/scripts/wstool_retry_enabled.sh ${parallelism}
+	source ${ROSE_TOOLS}/scripts/wstool_retry_enabled.sh ${parallelism} ${REPOS_ROOT}
 
 	popd 2>&1 1> /dev/null
 }

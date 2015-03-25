@@ -204,29 +204,10 @@ cp -f ${NEW_ROSINSTALL_OLD_ROOT}/.rosinstall  ${NEW_REPOS_ROOT}/
 echo "done." | colorize GREEN
 
 # Run wstool to install the new .rosinstall
-# Thus also installing new rose_tools and rose_config packages
-RETRY_WSTOOL=true
-NR_PARALLEL=50
-while $RETRY_WSTOOL; do
-	echo "Running 'wstool update' to install new .rosinstall... " | colorize BLUE
-	sleep 1
-	wstool update --target-workspace=${NEW_REPOS_ROOT} --parallel=${NR_PARALLEL}
-	if [ $? == 0 ]; then
-		RETRY_WSTOOL=false; break;
-	else
-		echo "wstool update failed." | colorize RED
-		echo "Do you want to retry/retry single threaded/skip/abort?"
-		select yn in "Retry" "RetrySingle" "Skip" "Abort" ; do
-		    case $yn in
-		        Retry ) NR_PARALLEL=50; break;;
-		        RetrySingle ) NR_PARALLEL=1; break;;
-				Skip ) echo "Skipping wstool update!" | colorize RED; RETRY_WSTOOL=false; break;;
-		        Abort ) RETRY_WSTOOL=false; return 1;;
-		    esac
-		done	
-
-	fi
-done
+source ${OLD_TOOLS}/scripts/wstool_retry_enabled.sh
+if [ $? != 0 ]; then
+	return 1
+fi
 echo "Done running 'wstool update'." | colorize GREEN
 
 # Setup the environment, including ROS etc.
