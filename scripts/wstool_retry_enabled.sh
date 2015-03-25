@@ -17,21 +17,8 @@ then
     WS_ROOT=$2
 fi
 
-
-function run_wstool {
-	COMMAND="wstool update ${RETRY_LIST} --target-workspace=${WS_ROOT} --parallel=${NR_PARALLEL}"
-	echo "$COMMAND" | colorize BLUE
-	stdbuf -oL -eL $COMMAND | tee >(grep "Done." | grep -oPi "\[.*\]" | grep -oPi "[(\w\/)]*" > $TEMP_FILE)
-	if [ $? == 0 ]; then
-		echo "wstool update success." | colorize GREEN
-	else
-		echo "wstool update failed." | colorize RED
-		wstool_fail
-	fi
-}
-
 function wstool_fail {
-	echo "WSTOOL FAIL"
+	trap 'wstool_fail' SIGINT
 	killall wstool > /dev/null 2>&1
 	ABORT=false
 	SKIP=false
@@ -96,7 +83,17 @@ function wstool_fail {
 	fi
 }
 
-trap 'wstool_fail' SIGINT
+function run_wstool {
+	COMMAND="wstool update ${RETRY_LIST} --target-workspace=${WS_ROOT} --parallel=${NR_PARALLEL}"
+	echo "$COMMAND" | colorize BLUE
+	stdbuf -oL -eL $COMMAND | tee >(grep "Done." | grep -oPi "\[.*\]" | grep -oPi "[(\w\/)]*" > $TEMP_FILE)
+	if [ $? == 0 ]; then
+		echo "wstool update success." | colorize GREEN
+	else
+		echo "wstool update failed." | colorize RED
+		wstool_fail
+	fi
+}
 
 TEMP_FILE=$(mktemp) 
 
