@@ -27,7 +27,16 @@ function gitff {
 	git fetch && git pull --ff --ff-only origin $(git rev-parse --abbrev-ref HEAD)
 }
 
-function git-update-with-wstool {
+function git-update-with-wstool () {
+    
+    local parallelism=1
+    if [ "$1" ]
+    then
+        # echo "parallel: \"$1\""
+        parallelism=$1
+    fi
+
+
     # Check if wstool is installed
     wstool 2>&1 1> /dev/null
 
@@ -42,16 +51,23 @@ function git-update-with-wstool {
 
     fi
 
-    wstool update --target-workspace=$ROSINSTALL_ROOT --parallel=50
+    wstool update --target-workspace=$ROSINSTALL_ROOT --parallel="$parallelism"
 }
 
-function git-update-all 
+function git-update-all ()
 {
+    local parallelism=1
+    if [ "$1" ]
+    then
+        # echo "parallel: \"$1\""
+        parallelism=$1
+    fi
+
 	pushd . 
 
 	cd ${ROSE_TOOLS} && gitff ;
 	cd ${ROSE_CONFIG} && gitff ;
-	git-update-with-wstool
+	git-update-with-wstool "$parallelism"
 
 	popd
 }
