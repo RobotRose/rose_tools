@@ -83,7 +83,7 @@ function git-update-all {
 
 	cd ${ROSE_TOOLS} && gitff ;
 	cd ${ROSE_CONFIG} && gitff ;
-    wstool update --target-workspace=${ROSINSTALL_ROOT} --parallel=${parallelism}
+	source ${ROSE_TOOLS}/scripts/wstool_retry_enabled.sh ${parallelism}
 
 	popd 2>&1 1> /dev/null
 }
