@@ -42,6 +42,13 @@ function gitff {
 }
 
 function git-update-all {
+
+	local parallelism=50
+    if [ "$1" ]
+    then
+        parallelism=$1
+    fi
+
     # Check if wstool is installed
     wstool 2>&1 1> /dev/null
 
@@ -76,7 +83,7 @@ function git-update-all {
 
 	cd ${ROSE_TOOLS} && gitff ;
 	cd ${ROSE_CONFIG} && gitff ;
-    wstool update --target-workspace=$ROSINSTALL_ROOT --parallel=50
+    wstool update --target-workspace=${ROSINSTALL_ROOT} --parallel=${parallelism}
 
 	popd 2>&1 1> /dev/null
 }
