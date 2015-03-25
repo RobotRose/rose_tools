@@ -17,7 +17,6 @@ then
     WS_ROOT=$2
 fi
 
-
 function run_wstool {
 	COMMAND="wstool update ${RETRY_LIST} --target-workspace=${WS_ROOT} --parallel=${NR_PARALLEL}"
 	echo "$COMMAND" | colorize BLUE
@@ -31,7 +30,6 @@ function run_wstool {
 }
 
 function wstool_fail {
-	echo "WSTOOL FAIL"
 	killall wstool > /dev/null 2>&1
 	ABORT=false
 	SKIP=false
@@ -83,11 +81,10 @@ function wstool_fail {
 		done	
 	fi
 
-	trap - SIGINT
-
 	if [ "$ABORT" == false ]; then
 		run_wstool
 	else
+		trap - SIGINT
 		if [ "$SKIP" == false ]; then
 			return 1
 		else
