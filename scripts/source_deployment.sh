@@ -44,7 +44,8 @@ source ${ROSE_TOOLS}/scripts/bash_aliases.sh
 echo "done." | colorize GREEN
 
 # Source installation
-source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/pc1.sh"
+source ${ROSE_TOOLS}/scripts/pc_id.sh "" ""
+source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/${PC_ID}.sh"
 
 export ROSINSTALL_DIR="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}"
 export ROSINSTALL_FILE="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}/.rosinstall"
