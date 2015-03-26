@@ -55,14 +55,19 @@ source ${ROSE_TOOLS}/scripts/determine_ros_ip.sh "${ROS_INTERFACE}"
 export ROSINSTALL_DIR="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}"
 export ROSINSTALL_FILE="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}/.rosinstall"
 
+# Location of the logging configuration files
+export LOGGING_CONF_DIR="${ROSE_CONFIG}/logging/${ROBOT_LOGGING}"
+
 # Location of the launch files
 export LAUNCH_DIR="${ROSE_CONFIG}/launch_files/${ROBOT_LAUNCH}"
 
 # Location of the robot parameters
 export PARAM_DIR="${ROSE_CONFIG}/configurations/${ROBOT_CONFIG}"
 
-# Location of the logging configuration files
-export LOGGING_CONF_DIR="${ROSE_CONFIG}/logging/${ROBOT_LOGGING}"
+# Source the location
+export LOCATION_DIR="${ROSE_CONFIG}/configurations/${ROBOT_LOCATION}"
+export LOCALIZATION_MAP="${LOCATION_DIR}/localization"
+export NAVIGATION_MAP="${LOCATION_DIR}/navigation"
 
 echo -en "Deployment " | colorize BLUE
 echo -en "'$(readlink -f ${DEPLOYMENT_FILE})' " | colorize YELLOW
