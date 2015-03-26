@@ -125,7 +125,7 @@ function speech_report {
 }
 
 function vpn {
-	sudo ${ROSE_TOOLS}/scripts/select_vpn.sh $1
+	sudo -E bash -c "${ROSE_TOOLS}/scripts/select_vpn.sh $1"
 }
 
 function deploy {
