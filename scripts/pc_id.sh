@@ -14,7 +14,7 @@ function export_pc_id {
 function set_pc_id {
 	if [ "${1}" != "" ]; then
 		echo ${1} > ${PC_ID_FILE}
-		export_pc_id
+		export_pc_id ${1}
 	else
 		echo "No id provided, not setting PC_ID."
 		return 1
