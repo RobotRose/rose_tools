@@ -11,8 +11,8 @@ alias rviz="rosrun rviz rviz"
 alias view_camera="rosrun image_view image_view image:=/camera/rgb/image_color _image_transport:=theora"
 alias tf='cd /var/tmp && rosrun tf view_frames && evince frames.pdf &'
 
-alias body='roslaunch ${ROSE_LAUNCH}/body.launch hardware:="rose21" 2>&1 | grep -v "\[pcl::"' #ignoring irrelevant PCL errors
-alias platform='roslaunch  ${ROSE_LAUNCH}/platform.launch hardware:="rose21"'
+alias body='roslaunch ${LAUNCH_DIR}/body.launch hardware:="rose21" 2>&1 | grep -v "\[pcl::"' #ignoring irrelevant PCL errors
+alias platform='roslaunch  ${LAUNCH_DIR}/platform.launch hardware:="rose21"'
 
 alias gui="roslaunch rose_gui_application ui.launch"
 alias app="roslaunch rose_gui_application application.launch"
