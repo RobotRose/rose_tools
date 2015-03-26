@@ -96,7 +96,7 @@ else
 fi	
 
 # Source PC_ID if it exists, otherwise ask.
-source ${OLD_TOOLS}/scripts/pc_id.sh
+source ${OLD_TOOLS}/scripts/pc_id.sh "" ""
 
 # Source deployment and its corresponding installation file to read its parameters
 source ${NEW_DEPLOYMENT_FILE}
