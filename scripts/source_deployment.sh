@@ -8,7 +8,7 @@
 DEPLOYMENT_FILE=$1
 
 echo -en "Sourcing deployment " | colorize BLUE
-echo "'${DEPLOYMENT_FILE}' " | colorize YELLOW
+echo "'$(readlink -f ${DEPLOYMENT_FILE})' " | colorize YELLOW
 
 if [ -f ${DEPLOYMENT_FILE} ]; then
 	echo -en "Deployment file " | colorize BLUE
