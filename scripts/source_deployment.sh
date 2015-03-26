@@ -49,9 +49,12 @@ echo -en "Using PC_ID: " | colorize BLUE
 echo "${PC_ID}" | colorize YELLOW
 source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/${PC_ID}.sh"
 
+# Determine ROS_IP from ROS_INTERFACE
+source ${ROSE_TOOLS}/scripts/determine_ros_ip.sh "${ROS_INTERFACE}"
+
 export ROSINSTALL_DIR="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}"
 export ROSINSTALL_FILE="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}/.rosinstall"
 
 echo -en "Deployment " | colorize BLUE
-echo -en "'${DEPLOYMENT_ID}' " | colorize YELLOW
+echo -en "'$(readlink -f ${DEPLOYMENT_FILE})' " | colorize YELLOW
 echo "sourced." | colorize GREEN
