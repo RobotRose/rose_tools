@@ -124,12 +124,12 @@ if [ "$CONNECTED" == "TRUE" ]; then
 
     read -s -p "Please enter password for user ${SUDO_USER}: " PASS
     stty sane
-    echo -en "\nSetting up password-less connection, this can take a second, or five...\n" | colorize BLUE
-    sudo -u ${SUDO_USER} ${SSH_RSA_SCRIPT} rosepc1 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1
-    sudo -u ${SUDO_USER} ${SSH_RSA_SCRIPT} rosepc2 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1
+    echo -en "\nSetting up password-less connection, this can take a second, or five, or more...\n" | colorize BLUE
+    ${SSH_RSA_SCRIPT} rosepc1 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1 
+    ${SSH_RSA_SCRIPT} rosepc2 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1 
     
-    sudo -u ${SUDO_USER} ${SSH_RSA_SCRIPT} ${MYIP} ${SUDO_USER} ${PASS} rosepc1 rose rose > /dev/null 2>&1 
-    sudo -u ${SUDO_USER} ${SSH_RSA_SCRIPT} ${MYIP} ${SUDO_USER} ${PASS} rosepc2 rose rose > /dev/null 2>&1
+    ${SSH_RSA_SCRIPT} ${MYIP} ${SUDO_USER} ${PASS} rosepc1 rose rose > /dev/null 2>&1 
+    ${SSH_RSA_SCRIPT} ${MYIP} ${SUDO_USER} ${PASS} rosepc2 rose rose > /dev/null 2>&1 
 else
     echo -en "\nNot connected, skipping configuring known_hosts and RSA keys.\n" | colorize YELLOW
 fi
