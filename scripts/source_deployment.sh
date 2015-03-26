@@ -45,6 +45,8 @@ echo "done." | colorize GREEN
 
 # Source installation
 source ${ROSE_TOOLS}/scripts/pc_id.sh "" ""
+echo -en "Using PC_ID: " | colorize BLUE
+echo "${PC_ID}" | colorize YELLOW
 source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/${PC_ID}.sh"
 
 export ROSINSTALL_DIR="${ROSE_CONFIG}/rosinstall/${ROSINSTALL}"

@@ -97,6 +97,8 @@ fi
 
 # Source PC_ID if it exists, otherwise ask.
 source ${OLD_TOOLS}/scripts/pc_id.sh "" ""
+echo -en "Using PC_ID: " | colorize BLUE
+echo "${PC_ID}" | colorize YELLOW
 
 # Source deployment and its corresponding installation file to read its parameters
 source ${NEW_DEPLOYMENT_FILE}
