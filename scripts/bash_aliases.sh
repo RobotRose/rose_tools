@@ -101,21 +101,21 @@ function gitm {
 }
 
 function rose-core {
-    #Get the IP you use for VPN:
-    local vpn_ip=$(ifconfig tap0 | grep 'inet addr:'  | cut -d: -f2 | awk '{ print $1}')
-    if [ "$vpn_ip" == "" ]; then
-        echo -e "\e[31mAre you only VPN? Cannot find tap0 in ifconfig. Aborting, leaving you on local-core\e[0m"
-    else
-        export ROS_IP="$vpn_ip"
+    # Determine ROS_IP from tap0
+	source ${ROSE_TOOLS}/scripts/determine_ros_ip.sh "tap0"
+	if [ $? == 0 ]; then
         export ROS_MASTER_URI="http://10.8.0.1:11311"
         source ${ROSE_TOOLS}/scripts/setup_ROS.sh
     fi
 }
 
 function local-core {
-    export ROS_IP="1270.0.1"
-    export ROS_MASTER_URI="http://localhost:11311"
-    source ${ROSE_TOOLS}/scripts/setup_ROS.sh
+	# Determine ROS_IP from lo
+    source ${ROSE_TOOLS}/scripts/determine_ros_ip.sh "lo"
+    if [ $? == 0 ]; then
+	    export ROS_MASTER_URI="http://localhost:11311"
+	    source ${ROSE_TOOLS}/scripts/setup_ROS.sh
+	fi
 }
 
 function speech_report {

@@ -4,9 +4,6 @@ NEW_PC_ID=$1
 FORCE=$2 			# provide an f as second argument to not ask if you want to set the id
 PC_ID_FILE=${HOME}/.PC_ID
 
-echo $1
-echo $2
-
 function export_pc_id {
 	export PC_ID=$1
 }
