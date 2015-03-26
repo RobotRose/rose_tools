@@ -57,7 +57,7 @@ dialog --title "Select deployment" \
 result=$(cat /tmp/vpn_dialog.ans)
 if [ "$result" == "" ]; then
     echo "Canceled." | colorize BLUE
-    exit 1
+    return 1
 fi
 selected_nr=$result
 
