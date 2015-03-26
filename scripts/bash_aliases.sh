@@ -11,10 +11,8 @@ alias rviz="rosrun rviz rviz"
 alias view_camera="rosrun image_view image_view image:=/camera/rgb/image_color _image_transport:=theora"
 alias tf='cd /var/tmp && rosrun tf view_frames && evince frames.pdf &'
 
-alias body='echo "Use bodyXX (for example body20)"'
-alias body21='roslaunch rose21_platform body.launch hardware:="rose21" 2>&1 | grep -v "\[pcl::"' #ignoring irrelevant PCL errors
-alias platform='echo "Use platformXX (for example platform20)"'
-alias platform21='roslaunch rose21_platform platform.launch hardware:="rose21"'
+alias body='roslaunch ${ROSE_LAUNCH}/body.launch hardware:="rose21" 2>&1 | grep -v "\[pcl::"' #ignoring irrelevant PCL errors
+alias platform='roslaunch  ${ROSE_LAUNCH}/platform.launch hardware:="rose21"'
 
 alias gui="roslaunch rose_gui_application ui.launch"
 alias app="roslaunch rose_gui_application application.launch"

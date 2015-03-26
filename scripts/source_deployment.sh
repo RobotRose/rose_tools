@@ -34,6 +34,9 @@ export ROSE_CONFIG="${REPOS_ROOT}/deployment/src/rose_config/rose_config"
 # Location of the rose_tools package
 export ROSE_TOOLS="${REPOS_ROOT}/deployment/src/rose_tools"
 
+# Location of the launch files
+export ROSE_LAUNCH="${ROSE_CONFIG}/launch_files/${ROBOT_LAUNCH}"
+
 # Initialize environment
 echo -n "Adding the rose scripts directory to \$PATH... " | colorize BLUE
 export PATH="${ROSE_TOOLS}/scripts:$PATH"
