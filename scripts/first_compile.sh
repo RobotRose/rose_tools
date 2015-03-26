@@ -15,7 +15,7 @@ git config --global credential.helper cache
 
 cd ${FIRST_COMPILE_ROOT}
 rm -rf rose_config
-git clone https://github.com/RobotRose/rose_config.git -b requirement/1207_platform_params_configurable
+git clone https://github.com/RobotRose/rose_config.git -b develop
 
 echo "Copying the default bashrc to ~/.bashrc"
 cp ${FIRST_COMPILE_ROOT}/rose_tools/scripts/default_bashrc ~/.bashrc
