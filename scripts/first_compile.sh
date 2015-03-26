@@ -9,6 +9,7 @@ if [ "$(id -u)" == "0" ]; then
 fi
 
 echo "Installing the Rose B.V. software."
+echo "FIRST_COMPILE_ROOT = ${FIRST_COMPILE_ROOT}"
 
 # Turn on git credentials cache
 git config --global credential.helper cache
@@ -22,7 +23,6 @@ cp ${FIRST_COMPILE_ROOT}/rose_tools/scripts/default_bashrc ~/.bashrc
 echo "Done. "
 
 read -p "Please provide the deployment id: " DEPLOYMENT_ID
-cd rose_tools/scripts/
-source install_deployment.sh ${DEPLOYMENT_ID} ${FIRST_COMPILE_ROOT}/rose_config/rose_config ${FIRST_COMPILE_ROOT}/rose_tools
+source ${FIRST_COMPILE_ROOT}/rose_tools/scripts/install_deployment.sh ${DEPLOYMENT_ID} ${FIRST_COMPILE_ROOT}/rose_config/rose_config ${FIRST_COMPILE_ROOT}/rose_tools
 
 popd > /dev/null 2>&1

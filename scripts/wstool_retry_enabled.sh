@@ -25,6 +25,7 @@ function run_wstool {
 	
 	if [ $? == 0 ]; then
 		echo "wstool update success." | colorize GREEN
+		trap - SIGINT
 	else
 		echo "wstool update failed." | colorize RED
 		if [ "$ABORT" == false ]; then
@@ -109,3 +110,4 @@ RETRY_LIST=${REPO_LIST}
 
 run_wstool	
 
+trap - SIGINT

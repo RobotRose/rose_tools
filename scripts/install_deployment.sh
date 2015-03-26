@@ -55,6 +55,11 @@ else
 	TOOLS_FORCED=true
 fi
 
+echo -en "Using OLD_CONFIG: " | colorize BLUE
+echo "${OLD_CONFIG}" | colorize YELLOW
+echo -en "Using OLD_TOOLS: " | colorize BLUE
+echo "${OLD_TOOLS}" | colorize YELLOW
+
 # Prompt user for entering sudo password at this time, such that the whole script continues at once
 sudo ls  > /dev/null 2>&1
 if [ $? != 0 ]; then
@@ -66,6 +71,7 @@ pushd . > /dev/null 2>&1
 cd ${OLD_TOOLS} > /dev/null 2>&1
 git fetch > /dev/null 2>&1
 popd > /dev/null 2>&1
+
 
 if [ "$FORCE_DEPLOYMENT_FILE" == "" ]; then
 	NEW_DEPLOYMENT_FILE="${OLD_CONFIG}/deployment/${DEPLOYMENT_ID}/deployment.sh"
@@ -94,9 +100,14 @@ else
 	return 1
 fi	
 
+# Source PC_ID if it exists, otherwise ask.
+source ${OLD_TOOLS}/scripts/pc_id.sh "" ""
+echo -en "Using PC_ID: " | colorize BLUE
+echo "${PC_ID}" | colorize YELLOW
+
 # Source deployment and its corresponding installation file to read its parameters
 source ${NEW_DEPLOYMENT_FILE}
-source ${OLD_CONFIG}/installations/${ROBOT_INSTALLATION}/pc1.sh
+source ${OLD_CONFIG}/installations/${ROBOT_INSTALLATION}/${PC_ID}.sh
 
 # Store new values
 NEW_REPOS_ROOT=${HOME}/${REPOS_LOCATION}
