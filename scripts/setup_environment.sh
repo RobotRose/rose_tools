@@ -15,12 +15,13 @@ fi
 # Activate Deployment
 if [ -e ${DEPLOYMENT_SCRIPT} ]; then
 	if [ -e ${DEPLOYMENT_FILE} ]; then	
+		echo "Sourcing deployment file '$(readlink -f ${DEPLOYMENT_FILE})'." | colorize GREEN
 		source ${DEPLOYMENT_SCRIPT} ${DEPLOYMENT_FILE}
 	else
-		echo "Deployment file ${DEPLOYMENT_FILE} links to '$(readlink ${DEPLOYMENT_FILE})' not found." | colorize RED
+		>&2 echo "Deployment file ${DEPLOYMENT_FILE} links to '$(readlink -f ${DEPLOYMENT_FILE})' not found." | colorize RED
 	fi
 else
-	echo "Deployment script ${DEPLOYMENT_SCRIPT} links to '$(readlink ${DEPLOYMENT_SCRIPT})' not found." | colorize RED
+	>&2 echo "Deployment script ${DEPLOYMENT_SCRIPT} links to '$(readlink -f ${DEPLOYMENT_SCRIPT})' not found." | colorize RED
 fi
 
 echo -n 'WORKSPACES FILE = ' | colorize YELLOW

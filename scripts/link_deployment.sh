@@ -43,3 +43,17 @@ if [ $? -eq 1 ]; then
     return 1
 fi
 echo "Done linking environment script." | colorize GREEN
+
+# Create link to machine environment script in /usr/bin/
+MACHINE_ENVIRONMENT_SCRIPT="${ROSE_TOOLS}/scripts/setup_machine_env.sh"
+MACHINE_ENVIRONMENT_SCRIPT_LINKNAME="/usr/bin/setup_machine_env.sh"
+
+echo "Linking machine enviroment script: '${MACHINE_ENVIRONMENT_SCRIPT_LINKNAME}' to '${MACHINE_ENVIRONMENT_SCRIPT}'... " | colorize BLUE
+
+sudo ln -s -f $MACHINE_ENVIRONMENT_SCRIPT $MACHINE_ENVIRONMENT_SCRIPT_LINKNAME
+if [ $? -eq 1 ]; then    
+    echo "Failed linking." | colorize RED
+    echo "Could not symlink '${MACHINE_ENVIRONMENT_SCRIPT_LINKNAME}' to '${MACHINE_ENVIRONMENT_SCRIPT}'."
+    return 1
+fi
+echo "Done linking environment script." | colorize GREEN
