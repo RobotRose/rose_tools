@@ -55,6 +55,11 @@ else
 	TOOLS_FORCED=true
 fi
 
+echo -en "Using OLD_CONFIG: " | colorize BLUE
+echo "${OLD_CONFIG}" | colorize YELLOW
+echo -en "Using OLD_TOOLS: " | colorize BLUE
+echo "${OLD_TOOLS}" | colorize YELLOW
+
 # Prompt user for entering sudo password at this time, such that the whole script continues at once
 sudo ls  > /dev/null 2>&1
 if [ $? != 0 ]; then
