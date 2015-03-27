@@ -232,7 +232,7 @@ fi
 
 # Setup the environment, including ROS etc.
 if [ -f ${OLD_TOOLS}/scripts/setup_environment.sh ]; then
-    source ${OLD_TOOLS}/scripts/setup_environment.sh ${OLD_TOOLS}/scripts/source_deployment.sh ${NEW_DEPLOYMENT_FILE}
+    source ${OLD_TOOLS}/scripts/setup_environment.sh -s ${OLD_TOOLS}/scripts/source_deployment.sh -d ${NEW_DEPLOYMENT_FILE}
 else
     echo "Could not find and run environment script '${OLD_TOOLS}/scripts/setup_environment.sh'." | colorize RED
     return 1

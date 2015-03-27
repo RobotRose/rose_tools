@@ -1,14 +1,11 @@
 #!/bin/bash  
 
-SSH_RSA_SCRIPT="$ROSE_TOOLS/scripts/setup_SSHRSA.sh"
+SSH_RSA_SCRIPT="${ROSE_TOOLS}/scripts/setup_SSHRSA.sh"
 VPN_CONFIGS_DIR="/etc/openvpn"
 SET_VPN_NAME=$1
 selectednr=-1
 
 if [ "$SET_VPN_NAME" == "" ]; then
-  
-
-
     # Check if we are sudo user
     if [ "$(id -u)" != "0" ]; then
         echo -e "Sorry, you are not root, run with sudo." | colorize RED
@@ -120,23 +117,23 @@ trap - SIGINT SIGTERM SIGTSTP
 
 if [ "$CONNECTED" == "TRUE" ]; then
     echo "Setting up known_hosts file." | colorize BLUE
-    $ROSE_TOOLS/scripts/setup_known_hosts.sh rosepc1 > /dev/null 2>&1 
-    $ROSE_TOOLS/scripts/setup_known_hosts.sh rosepc2 > /dev/null 2>&1
+    ${ROSE_TOOLS}/scripts/setup_known_hosts.sh rosepc1 > /dev/null 2>&1 
+    ${ROSE_TOOLS}/scripts/setup_known_hosts.sh rosepc2 > /dev/null 2>&1 
 
     MYIP=$(ifconfig | grep "inet addr:10.8.0." | grep -oP 'inet addr:\K([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})')
 
     read -s -p "Please enter password for user ${SUDO_USER}: " PASS
     stty sane
-    echo -en "\nSetting up password-less connection, this can take a second, or five...\n" | colorize BLUE
-    sudo -u ${SUDO_USER} $SSH_RSA_SCRIPT rosepc1 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1
-    sudo -u ${SUDO_USER} $SSH_RSA_SCRIPT rosepc2 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1
+    echo -en "\nSetting up password-less connection, this can take a second, or five, or more...\n" | colorize BLUE
+    ${SSH_RSA_SCRIPT} rosepc1 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1 
+    ${SSH_RSA_SCRIPT} rosepc2 rose rose ${MYIP} ${SUDO_USER} ${PASS} > /dev/null 2>&1 
     
-    sudo -u ${SUDO_USER} $SSH_RSA_SCRIPT ${MYIP} ${SUDO_USER} ${PASS} rosepc1 rose rose  > /dev/null 2>&1
-    sudo -u ${SUDO_USER} $SSH_RSA_SCRIPT ${MYIP} ${SUDO_USER} ${PASS} rosepc2 rose rose  > /dev/null 2>&1
+    ${SSH_RSA_SCRIPT} ${MYIP} ${SUDO_USER} ${PASS} rosepc1 rose rose > /dev/null 2>&1 
+    ${SSH_RSA_SCRIPT} ${MYIP} ${SUDO_USER} ${PASS} rosepc2 rose rose > /dev/null 2>&1 
 else
     echo -en "\nNot connected, skipping configuring known_hosts and RSA keys.\n" | colorize YELLOW
 fi
 
-echo -en "\nDone.\n" | colorize GREEN
+echo "Done." | colorize GREEN
 
 exit 0

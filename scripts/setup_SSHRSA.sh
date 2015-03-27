@@ -27,6 +27,8 @@ else
     echo "Second pc is: $PC2" | colorize GREEN
 fi
 
+echo "ROSE_TOOLS = $ROSE_TOOLS"
+sleep 5
 
 if [ -f ~/.ssh/*.pub ]; then
   echo "Not generating, we already have a public key." | colorize GREEN
@@ -40,8 +42,14 @@ else
   echo -e "\nGenerating SSH key @ ${PC1}..." | colorize BLUE
   expect -c "
     set timeout 6
-    spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \" \ sed -i'.bak' '/$PCNAME/d' ~/.ssh/authorized_keys ; \
-                                                ${ROSE_TOOLS}/scripts/setup_generate_SSHRSA\"
+    spawn rsync -Ive ssh ${ROSE_TOOLS}/scripts/setup_generate_SSHRSA $PC1_USER@$PC1:~/gen_SSHRSA
+    expect {
+      \"yes/no\" { send yes\n; exp_continue }
+      \"password:\" { send $PC1_PASS\n }
+    }
+    expect \"\$\"
+
+    spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \" \ sed -i'.bak' '/$PCNAME/d' ~/.ssh/authorized_keys ; ~/gen_SSHRSA; rm ~/gen_SSHRSA\"
     expect {
     	\"yes/no\" { send yes\n; exp_continue }
     	\"password:\" { send $PC1_PASS\n }
@@ -53,8 +61,14 @@ fi
 echo -e "\nPushing SSH key ${PC1} -> ${PC2}..." | colorize BLUE
 expect -c "
   set timeout 6
-  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"${ROSE_TOOLS}/scripts/setup_push_SSHRSA $PC2_USER $PC2_PASS $PC2\"
+  spawn rsync -Ive ssh ${ROSE_TOOLS}/scripts/setup_push_SSHRSA $PC1_USER@$PC1:~/push_SSHRSA
+  expect {
+    \"yes/no\" { send yes\n; exp_continue }
+    \"password:\" { send $PC1_PASS\n }
+  }
   expect \"\$\"
+
+  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"~/push_SSHRSA $PC2_USER $PC2_PASS $PC2; rm ~/push_SSHRSA \"
   expect {
   	\"yes/no\" { send yes\n; exp_continue }
   	\"password:\" { send $PC1_PASS\n }
@@ -67,7 +81,14 @@ expect -c "
 echo -e "\nSetting ssh-agent socket @${PC1}..." | colorize BLUE
 expect -c "
   set timeout 6
-  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"source ${ROSE_TOOLS}/scripts/ssh-find-agent.bash set_ssh_agent_socket\"
+  spawn rsync -Ive ssh ${ROSE_TOOLS}/scripts/ssh-find-agent.bash $PC1_USER@$PC1:~/ssh-find-agent.bash
+  expect {
+    \"yes/no\" { send yes\n; exp_continue }
+    \"password:\" { send $PC1_PASS\n }
+  }
+  expect \"\$\"
+
+  spawn sudo -u $USER ssh -t $PC1_USER@$PC1 \"~/ssh-find-agent.bash set_ssh_agent_socket; rm ~/ssh-find-agent.bash\"
   expect {
   	\"yes/no\" { send yes\n; exp_continue }
   	\"password:\" { send $PC1_PASS\n }

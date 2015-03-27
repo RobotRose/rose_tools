@@ -45,14 +45,14 @@ print "Sleeping 30s..."
 time.sleep(30)
 
 print "Starting platform{version}...".format(version=version)
-platform_proc 	= subprocess.Popen("""screen -S platform -p 0 -X stuff 'roslaunch rose{version}_platform platform.launch\015'""".format(version=version), 
+platform_proc 	= subprocess.Popen("""screen -S platform -p 0 -X stuff 'roslaunch  ${LAUNCH_DIR}/platform.launch\015'""".format(version=version), 
                                     stdout=subprocess.PIPE, shell=True)
 print roscore_proc.stdout.read()
 print "Sleeping 5s..."
 time.sleep(5)
 
 print "Starting body{version}...".format(version=version)
-body_proc 		= subprocess.Popen("""screen -S body -p 0 -X stuff 'roslaunch rose{version}_platform body.launch\015'""".format(version=version), 
+body_proc 		= subprocess.Popen("""screen -S body -p 0 -X stuff 'roslaunch ${LAUNCH_DIR}/body.launch\015'""".format(version=version), 
                                     stdout=subprocess.PIPE, shell=True)
 print roscore_proc.stdout.read()
 
