@@ -19,7 +19,7 @@ LOW_PERCENTAGE=""
 BETTER_PERCENTAGE=""
 MINIMAL_SWITCH_DELAY=""
 DEFAULT_SSID="ROSE_WIFI"
-while getopts ":w:i:b:d:" opt; do
+while getopts ":w:l:h:d:i:" opt; do
   case $opt in
     w)	# complete path to white-listed access point SSID's file (each line a new SSID)
 		echo "Using $OPTARG as white-listed access points SSID's file." >&2
@@ -33,14 +33,14 @@ while getopts ":w:i:b:d:" opt; do
 				;;
 		    *)  ;;
 		esac
-		if [ "$OPTARG" -l 0 ] && [ "$OPTARG" -gt 100 ]; then
+		if [ "$OPTARG" -lt 0 ] && [ "$OPTARG" -gt 100 ]; then
 			echo "$OPTARG is not a valid low 'signal strength' percentage (valid is integer from 0 to 100, without %)." | colorize RED; 
 			exit 1 
 		fi
 		echo "Setting $OPTARG% as low 'signal strength' percentage." >&2
 		LOW_PERCENTAGE=$OPTARG
 		;;
-    i)  # How much percent does the other AP need to be better than the current one before switching
+    h)  # How much percent does the other AP need to be better than the current one before switching
 		case $OPTARG in
 		    ''|*[!0-9]*) 
 				echo "$OPTARG is not a valid minimal improvement 'signal strength' percentage (valid is integer from 0 to 100, without %)." | colorize RED; 
@@ -48,7 +48,7 @@ while getopts ":w:i:b:d:" opt; do
 				;;
 		    *)  ;;
 		esac
-		if [ "$OPTARG" -l 0 ] && [ "$OPTARG" -gt 100 ]; then
+		if [ "$OPTARG" -lt 0 ] && [ "$OPTARG" -gt 100 ]; then
 			echo "$OPTARG is not a valid minimal improvement 'signal strength' percentage (valid is integer from 0 to 100, without %)." | colorize RED; 
 			exit 1 
 		fi
@@ -65,6 +65,10 @@ while getopts ":w:i:b:d:" opt; do
 		esac	
 		echo "Setting $OPTARGs as minimal switching delay." >&2	
 		MINIMAL_SWITCH_DELAY=$OPTARG
+		;;
+	i)	# Wireless Interface 
+		echo "Using wireless interface $OPTARG." >&2	
+		INTERFACE=$OPTARG
 		;;
     \?)
 		echo "Invalid option: -$OPTARG" >&2
@@ -89,33 +93,37 @@ function parse_white_list_file
 
 function scan_access_points
 {
-	# $1 - WHITE_LIST
-	LIST=$(sudo iwlist wlan0 scan | egrep -B 5 '$1')
+	# $1 - interface
+	# $2 - WHITE_LIST
+	echo "scan_access_points: $2"
+	echo "scan_access_points: sudo iwlist $1 scan | egrep -B 5 \"$2\""
+	sudo iwlist $1 scan | egrep -B 5 \"$2\"
 }
 
 function get_list_size
 {
 	# $1 - \n LIST
-	return $(echo "$1" | wc -l)
+	echo "$1" | wc -l
 }
 
 function is_valid_index
 {
 	# $1 \n LIST
 	# $2 index
-	if [ "$2" -l "0" ] || [ "$2" -ge "$(get_list_size $1)" ]; then
+	echo "is_valid_index: $1 $2"
+	if [ "$2" -lt 0 ] || [ "$2" -ge "$(get_list_size $1)" ]; then
 		echo "Index $2 out of bounds, list:" | colorize RED
 		echo -e $1
-		return false
+		echo false
 	fi
-	return true
+	echo true
 }
 
 function get_AP_address
 {
 	# $1 - ACCESS_POINTS from scan
 	# $2 - index
-	if [ $(is_valid_index $1 $2) ]; then
+	if [ $(is_valid_index $1 $2) == true ]; then
 		sed -n $2p <<< $(echo -en "$1" | grep 'Address:')
 	else
 		echo ""
@@ -130,7 +138,7 @@ function get_AP_DB
 }
 
 ### Main ###
-if[ "$WHITE_LIST_FILE" == "" ]; then
+if [ "$WHITE_LIST_FILE" == "" ]; then
 	echo "No white-list file provided (-w), using '$DEFAULT_SSID' as default white-listed SSID." | colorize YELLOW
 	WHITE_LIST="$DEFAULT_SSID"
 else
@@ -142,13 +150,18 @@ else
 	fi
 fi
 
+if [ "$INTERFACE" == "" ]; then
+	echo "No interface provided (-i)." | colorize RED
+	exit 1
+fi
+
 if [ "$LOW_PERCENTAGE" == "" ]; then
 	echo "No low signal strength switch percentage provided (-l)." | colorize RED
 	exit 1
 fi
 
 if [ "$BETTER_PERCENTAGE" == "" ]; then
-	echo "No improvement signal strength switch percentage provided (-i)." | colorize RED
+	echo "No improvement signal strength switch percentage provided (-h)." | colorize RED
 	exit 1
 fi
 
@@ -157,9 +170,11 @@ if [ "$MINIMAL_SWITCH_DELAY" == "" ]; then
 	MINIMAL_SWITCH_DELAY=10
 fi
 
+ACCESS_POINTS=$(scan_access_points $INTERFACE $WHITE_LIST)
+echo "ACCESS_POINTS"
+echo "$ACCESS_POINTS"
 
-ACCESS_POINTS=$(scan_access_points $WHITE_LIST)
-ACCESS_POINTS_DB=$(get_AP_address $ACCESS_POINTS)
+ACCESS_POINTS_DB=$(get_AP_address $ACCESS_POINTS 1)
 
 echo "ACCESS_POINTS_DB"
 echo "$ACCESS_POINTS_DB"
