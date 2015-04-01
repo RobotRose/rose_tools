@@ -24,7 +24,7 @@ CONFIG=$(echo -en "$RAW" | grep -v "#")
 
 # Add default bgscan parameter
 BGSCAN="$(cat ${ROSE_TOOLS}/scripts/default_wpa_supplicant_bgscan)"
-CONFIG="${CONFIG/\}/\t${BGSCAN}\n\}}"
+CONFIG="${CONFIG/\}/\t${BGSCAN}\n}}"
 
 echo "Configuration created:" | colorize GREEN
 echo -e "${CONFIG}"
