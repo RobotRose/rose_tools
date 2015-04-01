@@ -25,7 +25,7 @@ Options:
 """
 
 from docopt import docopt
-from sh import iwconfig, iwlist, egrep, killall,dhclient, ErrorReturnCode
+from sh import iwconfig, iwlist, egrep, killall,dhclient, ErrorReturnCode, wpa_cli
 from termcolor import colored, cprint
 import os
 import pprint
@@ -37,7 +37,9 @@ def get_raw_current_ap():
     current_ap = {}
     raw = iwconfig(arguments["--interface"])
     current_ap["BSSID"] = [line.split("Access Point: ", 1)[1].strip().encode("ascii", "ignore") for line in raw.split("\n") if "Access Point: " in line][0]
-    current_ap["dBm"]   = [float(line.split("Signal level=", 1)[1].strip().split(" ", 1)[0].encode("ascii", "ignore")) for line in raw.split("\n") if "Signal level=" in line][0]
+    current_ap["dBm"]   = [float(line.split("Signal level=", 1)[1].strip().split(" ", 1)[0].encode("ascii", "ignore")) \
+                            for line in raw.split("\n") if "Signal level=" in line]
+    print current_ap["dBm"]
     return current_ap
 
 def get_raw_scan():
@@ -60,12 +62,7 @@ def get_raw_aps(rawscan):
         yield values
 
 def switch_to_ap(access_point_bssid):
-    try: killall("dhclient")
-    except ErrorReturnCode:
-        print "No dhclient to kill!"
-
-    iwconfig(arguments["--interface"], "ap", access_point_bssid) 
-    dhclient(arguments["--interface"])
+    wpa_cli("roam", access_point_bssid) 
 
 def process_raw_scan(rawscan):
     mac_map = {}
