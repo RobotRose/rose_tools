@@ -1,5 +1,7 @@
 #!/bin/bash
+# Create an encrypted WPA2 network.conf file for use with wpa_supplicant
 
+echo "Encrypted wpa_supplicant WPA2 configuration creator."
 
 if [ "${LOCATIONS_ROOT}" == "" ] || [ ! -d ${LOCATIONS_ROOT} ]; then
 	echo "Installations root dir LOCATIONS_ROOT not set" | colorize RED
