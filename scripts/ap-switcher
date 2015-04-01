@@ -21,7 +21,7 @@ function start
     echo "running wpa_supplicant"
     wpa_supplicant -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
-    sleep 1
+    sleep 5
     echo "running dhclient $IFWIFI"
     dhclient $IFWIFI
 }
