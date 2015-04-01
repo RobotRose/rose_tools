@@ -68,9 +68,9 @@ export LAUNCH_DIR="${ROSE_CONFIG}/launch_files/${ROBOT_LAUNCH}"
 export PARAM_DIR="${ROSE_CONFIG}/configurations/${ROBOT_CONFIG}"
 
 # Source the location
-export LOCATION_DIR="${ROSE_CONFIG}/maps/${ROBOT_LOCATION}"
-export LOCALIZATION_MAP="${LOCATION_DIR}/localization"
-export NAVIGATION_MAP="${LOCATION_DIR}/navigation"
+export LOCATIONS_ROOT="${ROSE_CONFIG}/locations"
+export LOCATION_DIR="${ROSE_CONFIG}/locations/${ROBOT_LOCATION}"
+source "${LOCATION_DIR}/location.sh"
 
 echo -en "Deployment " | colorize BLUE
 echo -en "'$(readlink -f ${DEPLOYMENT_FILE})' " | colorize YELLOW
