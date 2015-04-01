@@ -11,8 +11,9 @@
 ### END INIT INFO
 
 IFWIFI=wlan0
-WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_network-switcher.conf"
-WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_network-switcher.log"
+NAME="ap-switcher"
+WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_${NAME}.conf"
+WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_${NAME}.log"
 
 function start
 {
@@ -20,7 +21,7 @@ function start
     echo "running wpa_supplicant"
     wpa_supplicant -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
-    sleep 2
+    sleep 1
     echo "running dhclient $IFWIFI"
     dhclient $IFWIFI
 }
