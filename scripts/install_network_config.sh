@@ -45,7 +45,7 @@ sudo -E bash -c "gpg -o ${WPA_SUPPLICANT_CONF} -d ${NETWORK_FILE}"
 GPG_SUCCESS=$?
 
 # Insert wpa_supplicant global base configuration at beginning of the file
-sudo -E bash -c "echo -e \"$(cat ${WPA_SUPPLICANT_CONF_BASE})\n$(cat ${WPA_SUPPLICANT_CONF})\" > ${WPA_SUPPLICANT_CONF}"
+sudo -E bash -c "echo -e '$(cat ${WPA_SUPPLICANT_CONF_BASE})\n$(cat ${WPA_SUPPLICANT_CONF})' > ${WPA_SUPPLICANT_CONF}"
 SED_SUCCESS=$?
 
 # Check if successful
