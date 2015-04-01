@@ -21,7 +21,10 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 CONFIG=$(echo -en "$RAW" | grep -v "#")
-RAW=""
+
+# Add default bgscan parameter
+BGSCAN="$(cat ${ROSE_TOOLS}/scripts/default_wpa_supplicant_bgscan)"
+CONFIG="${CONFIG/\}/\t${BGSCAN}\n\}}"
 
 echo "Configuration created:" | colorize GREEN
 echo -e "${CONFIG}"
@@ -49,7 +52,7 @@ if [ -f ${NETWORK_FILE} ]; then
 	        ;;
 	esac
 	cp -f "${NETWORK_FILE}" "${NETWORK_FILE}.bak"
-	rm "${NETWORK_FILE}"
+	rm "${NETWORK_FILE}" 
 fi
 
 echo -en "${CONFIG}" | gpg --batch -c -o ${NETWORK_FILE}
