@@ -1,0 +1,53 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          network-switcher
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start wpa_supplicant and dhclient services at boot time.
+# Description:       Start wpa_supplicant and dhclient services at boot time.
+### END INIT INFO
+
+IFWIFI=wlan0
+WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_network-switcher.conf"
+WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_network-switcher.log"
+
+function start
+{
+    stop
+    echo "running wpa_supplicant"
+    wpa_supplicant -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
+    # wait for things to settle down
+    sleep 2
+    echo "running dhclient $IFWIFI"
+    dhclient $IFWIFI
+}
+
+function stop
+{
+    echo "shutting down dhclient"
+    killall -q dhclient
+    echo "shutting down wpa_supplicant"
+    wpa_cli terminate  > /dev/null 2>&1
+}
+
+function restart
+{
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    *)
+        echo "$0 <start|stop|restart>"
+esac
