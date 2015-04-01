@@ -26,7 +26,7 @@ function start
     echo "shutting down wpa_supplicant"
     wpa_cli terminate  > /dev/null 2>&1
     echo "running wpa_supplicant"
-    wpa_supplicant -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
+    wpa_supplicant -d -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
     sleep 3
     echo "running dhclient $IFWIFI"
