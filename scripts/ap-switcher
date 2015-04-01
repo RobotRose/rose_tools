@@ -17,25 +17,35 @@ WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_${NAME}.log"
 
 function start
 {
-    stop
+    echo "stopping network-manager"
+    service network-manager stop 
+    echo "killing NetworkManager"
+    killall -q NetworkManager
+    echo "killing dhclient"
+    killall -q dhclient
+    echo "shutting down wpa_supplicant"
+    wpa_cli terminate  > /dev/null 2>&1
     echo "running wpa_supplicant"
     wpa_supplicant -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
-    sleep 1
+    sleep 3
     echo "running dhclient $IFWIFI"
     dhclient $IFWIFI
 }
 
 function stop
 {
-    echo "shutting down dhclient"
+    echo "killing dhclient"
     killall -q dhclient
     echo "shutting down wpa_supplicant"
     wpa_cli terminate  > /dev/null 2>&1
+    echo "starting network-manager"
+    service network-manager start
 }
 
 function restart
 {
+    stop
     start
 }
 
