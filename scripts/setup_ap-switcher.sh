@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This sets up the ap-switcher script in rc.d such that wpa_supplicant and dhclient will be started at boot.
+# This needs to be re-run when moving the rose_tools package.
+
 FILENAME="ap-switcher"
 NETWORK_SWITCHER_FILE="${ROSE_TOOLS}/scripts/${FILENAME}"
 NETWORK_SWITCHER_LINK="/etc/init.d/${FILENAME}"
