@@ -47,7 +47,9 @@ echo "done." | colorize GREEN
 source ${ROSE_TOOLS}/scripts/pc_id.sh "" ""
 echo -en "Using PC_ID: " | colorize BLUE
 echo "${PC_ID}" | colorize YELLOW
-source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/${PC_ID}.sh"
+
+export INSTALLATION_DIR="${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}"
+source "${INSTALLATION_DIR}/${PC_ID}.sh"
 
 # Determine ROS_IP from ROS_INTERFACE
 source ${ROSE_TOOLS}/scripts/determine_ros_ip.sh "${ROS_INTERFACE}"
