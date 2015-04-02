@@ -151,7 +151,7 @@ if __name__ == '__main__':
         else:
             time.sleep(0.5)     # Print refresh rate
 
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
             print "Could not fetch current access point, retrying in 3s..."
             time.sleep(3)
