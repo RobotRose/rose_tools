@@ -10,7 +10,7 @@ Switches provided wireless interface to the best available access point if:
 
 
 Usage:
-  auto_accesspoint_switching.py --interface=<interface> --low=<low_percentage> --impr=<improvement_percentage> [--delay=<minimal_delay>] [--whitelistfile=<white_list_file>]
+  auto_accesspoint_switching.py --interface=<interface> --low=<low_percentage> --impr=<improvement_percentage> [--rate=<scan_rate] [--delay=<minimal_delay>] [--whitelistfile=<white_list_file>]
   auto_accesspoint_switching.py -h | --help
   auto_accesspoint_switching.py --version
 
@@ -22,6 +22,7 @@ Options:
   --low=<low_percentage>  As soon as signal strength is below this percentage [0-100%], of the average signal strength, switching will be preferred.
   --impr=<improvement_percentage>  The minimal improvement to gain from switching [0-100%].
   --delay=<minimal_delay>  Minimal switching delay in seconds [default: 10.0].
+  --rate=<scan_rate>  Scan delay in seconds [default: 5.0].
 """
 
 from docopt import docopt
@@ -117,6 +118,18 @@ if __name__ == '__main__':
     else:
         arguments["--impr"] = float(arguments["--impr"])
 
+    if (float(arguments["--rate"]) <= 0):
+        cprint("parameter 'rate' should be a numeric value larger than zero", 'red')
+        exit(1)
+    else:
+        arguments["--rate"] = float(arguments["--rate"])
+
+    if (float(arguments["--delay"]) <= 0):
+        cprint("parameter 'delay' should be a numeric value larger than zero", 'red')
+        exit(1)
+    else:
+        arguments["--delay"] = float(arguments["--delay"])
+
     # switch_to_ap("38:2C:4A:66:E9:40")
     switched_time = time.time()
     scanned_time = time.time()
@@ -127,10 +140,13 @@ if __name__ == '__main__':
     aps = get_aps(get_latest_raw_scan())
     time.sleep(1)
 
+    current_access_point = None
+
     while 1:
+        os.system('cls' if os.name == 'nt' else 'clear')
         elapsed_time = time.time() - scanned_time
-        print "Elapsed time since last scan: {0}".format(elapsed_time)
-        if elapsed_time >= float(2.0):
+        print "Elapsed time since last scan: {0}".format(elapsed_time, arguments["--rate"])
+        if elapsed_time >= arguments["--rate"]:
             print "Scanning..."
             force_scan()
             scanned_time = time.time()
@@ -164,9 +180,7 @@ if __name__ == '__main__':
         # print sorted_ap_list
         current_bssid = current_access_point["BSSID"]
         current_signal_level = current_access_point["dBm"]
-        
-        
-        os.system('cls' if os.name == 'nt' else 'clear')
+
         candidate_aps = []
         for ap in sorted_ap_list:
             bssid   = ap[0]
@@ -193,19 +207,15 @@ if __name__ == '__main__':
 
 
         elapsed_time = time.time() - switched_time
-        print "Elapsed time since last switch: {0}".format(elapsed_time)
+        print "Elapsed time since last switch: {0:.2f}s/{1:.2f}s".format(elapsed_time, arguments["--delay"])
 
-        print "Sorted candidates:"
-        pprint.pprint(candidate_aps)
-
-
-        if len(candidate_aps) > 0 and elapsed_time >= float(arguments["--delay"]):
+        if len(candidate_aps) > 0 and elapsed_time >= arguments["--delay"]:
              print "Switching to access point {0}".format(candidate_aps[0])
              switch_to_ap(candidate_aps[0][0])
              switched_time = time.time()
 
-        elif len(candidate_aps) > 0 and elapsed_time < float(arguments["--delay"]):
-             print "Not switching to access point {0}, because of minimal delay between switching: {1}/{2}".format(candidate_aps[0][0], elapsed_time, arguments["--delay"])
+        elif len(candidate_aps) > 0 and elapsed_time < arguments["--delay"]:
+             print "Not switching to access point {0}, because of minimal delay between switching: {1:.2f}s/{2:.2f}s".format(candidate_aps[0][0], elapsed_time, arguments["--delay"])
 
 
 
