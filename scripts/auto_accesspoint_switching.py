@@ -202,7 +202,7 @@ if __name__ == '__main__':
         if len(candidate_aps) > 0 and elapsed_time >= float(arguments["--delay"]):
              print "Switching to access point {0}".format(candidate_aps[0])
              switch_to_ap(candidate_aps[0][0])
-             switch_time = time.time()
+             switched_time = time.time()
 
         elif len(candidate_aps) > 0 and elapsed_time < float(arguments["--delay"]):
              print "Not switching to access point {0}, because of minimal delay between switching: {1}/{2}".format(candidate_aps[0][0], elapsed_time, arguments["--delay"])
