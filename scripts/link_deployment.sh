@@ -2,6 +2,12 @@
 
 # Create link using currently source ROSE_TOOLS and ROSE_CONFIG paths, and ROBOT_INSTALLATION variable
 
+# Check if we are sudo user
+if [ "$(id -u)" == "0" ]; then
+    echo -e "Sorry, you should NOT run this script as root." | colorize RED
+    exit 1
+fi
+
 # Create link to deployment file in /usr/bin/
 DEPLOYMENT_FILE="${ROSE_CONFIG}/deployment/${ROBOT_INSTALLATION}/deployment.sh"
 DEPLOYMENT_FILE_LINKNAME="/usr/bin/deployment_file.sh"
@@ -57,3 +63,18 @@ if [ $? -eq 1 ]; then
     return 1
 fi
 echo "Done linking environment script." | colorize GREEN
+
+
+# Create link to auto_accesspoint_switching.py script in /usr/bin/
+AP_SWITCHING_SCRIPT="${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py"
+AP_SWITCHING_SCRIPT_LINKNAME="/usr/bin/auto_accesspoint_switching.py"
+
+echo "Linking auto_accesspoint_switching.py script: '${AP_SWITCHING_SCRIPT_LINKNAME}' to '${AP_SWITCHING_SCRIPT}'... " | colorize BLUE
+
+sudo ln -s -f $AP_SWITCHING_SCRIPT $AP_SWITCHING_SCRIPT_LINKNAME
+if [ $? -eq 1 ]; then    
+    echo "Failed linking." | colorize RED
+    echo "Could not symlink '${AP_SWITCHING_SCRIPT_LINKNAME}' to '${AP_SWITCHING_SCRIPT}'."
+    return 1
+fi
+echo "Done linking auto_accesspoint_switching.py script." | colorize GREEN

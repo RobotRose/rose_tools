@@ -11,6 +11,7 @@
 ### END INIT INFO
 
 NAME=`basename $0`
+USER="okke"         # Hardcoded :(
 PID_FILE="/var/run/${NAME}.pid"
 BOOT_LOG_FILE="/var/log/boot-${NAME}.log"
 RUN_LOG_FILE="/var/log/run-${NAME}.log"
@@ -55,16 +56,14 @@ function start_script
     if is_running; then
         echo "Already started"
     else
-        echo "Starting ${NAME}"
-        echo "Running:  ${START_SCREEN_CMD}"
-        ${START_SCREEN_CMD}
+        echo "Creating screen session ${SCREEN_NAME}..."
+        sudo screen -t ${USER}/${SCREEN_NAME} -S ${USER}/${SCREEN_NAME} -d -m bash
+        sleep 3
 
-        CMD_IN_SCREEN="sudo -E bash -c 'sudo screen -S ${SCREEN_NAME} -p 0 -X stuff '${CMD}\015'' &"
-        echo "Running: ${CMD_IN_SCREEN}"
+        echo "Starting ${NAME}..."
+        sudo screen -S ${USER}/${SCREEN_NAME} -p 0 -X stuff "$(echo -en "${CMD} & \n echo \$! > ${PID_FILE}\n")" &
 
-        $(${CMD_IN_SCREEN})
-        ps -ef | grep ${SCRIPT_NAME} | awk '{print $2}' > ${PID_FILE}
-        # echo $! > "${PID_FILE}"
+        sleep 3
         echo "PID = $(get_pid)"
         echo "Started ${NAME}"
         if ! is_running; then
@@ -77,14 +76,14 @@ function start_script
 function stop_script
 {
     echo "Shutting down screens..."
-    SESSIONS=$(sudo screen -ls | grep -o "[0-9]*\.${SCREEN_NAME}")
+    SESSIONS=$(screen -ls | grep -o \"[0-9]*\.${USER}/${SCREEN_NAME}\")
     while read -r session; do
         if [ "${session}" == "" ]; then
             continue
         fi
 
         echo " Stopping session: ${session}"
-        sudo screen -S "${session}" -X quit
+        screen -S ${USER}/${session} -X quit
     done <<< "${SESSIONS}"
         
     if is_running; then
@@ -130,19 +129,13 @@ function is_running
 
 echo "Running $0 ($(date))" >> "${BOOT_LOG_FILE}" 2>&1
 
-if [ -f /usr/bin/setup_environment.sh ]; then
-    source /usr/bin/setup_environment.sh >> "${BOOT_LOG_FILE}" 2>&1
-else
-    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." >> "${BOOT_LOG_FILE}" 2>&1
-    exit 1
-fi
-
 SCREEN_NAME="${NAME}"
-START_SCREEN_CMD="sudo screen -t ${SCREEN_NAME} -S ${SCREEN_NAME} -d -m bash"
 SCRIPT_NAME="auto_accesspoint_switching.py"
-CMD="stdbuf -o0 '${ROSE_TOOLS}/scripts/${SCRIPT_NAME} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}'"
+SCRIPT="/usr/bin/${SCRIPT_NAME}"
+CMD="stdbuf -o0 '${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}'"
 
-echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "${BOOT_LOG_FILE}" 2>&1
+echo "SCRIPT = ${SCRIPT}" >> "${BOOT_LOG_FILE}" 2>&1
+echo "USER  = ${USER}" >> "${BOOT_LOG_FILE}" 2>&1
 echo "CMD  = ${CMD}" >> "${BOOT_LOG_FILE}" 2>&1
 
 case "$1" in
