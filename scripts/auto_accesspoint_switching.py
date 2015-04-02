@@ -141,12 +141,13 @@ if __name__ == '__main__':
     time.sleep(1)
 
     current_access_point = None
+    switched = False
 
     while 1:
         
         elapsed_time = time.time() - scanned_time
         print "Elapsed time since last scan: {0:.2f}s/{1:.2f}s".format(elapsed_time, arguments["--rate"])
-        if elapsed_time >= arguments["--rate"]:
+        if elapsed_time >= arguments["--rate"] or switched:
             print "Scanning..."
             force_scan()
             scanned_time = time.time()
@@ -157,7 +158,7 @@ if __name__ == '__main__':
         else:
             time.sleep(0.5)     # Print refresh rate
 
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
             print "Could not fetch current access point, retrying in 3s..."
             time.sleep(3)
@@ -212,10 +213,12 @@ if __name__ == '__main__':
         elapsed_time = time.time() - switched_time
         print "Elapsed time since last switch: {0:.2f}s/{1:.2f}s".format(elapsed_time, arguments["--delay"])
 
+        switched = False
         if len(candidate_aps) > 0 and elapsed_time >= arguments["--delay"]:
-             print "Switching to access point {0}".format(candidate_aps[0])
+             print "Switching to access point {0}".format(candidate_aps[0][0])
              switch_to_ap(candidate_aps[0][0])
              switched_time = time.time()
+             switched = True
 
         elif len(candidate_aps) > 0 and elapsed_time < arguments["--delay"]:
              print "Not switching to access point {0}, because of minimal delay between switching: {1:.2f}s/{2:.2f}s".format(candidate_aps[0][0], elapsed_time, arguments["--delay"])
