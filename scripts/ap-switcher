@@ -56,8 +56,9 @@ function start_script
         echo "Already started"
     else
         echo "Starting ${NAME}"
+        ${SCREEN_CMD}
 
-        sudo -E bash -c "${CMD}" &
+        sudo -E bash -c "screen -S ${SCREEN_NAME} -p 0 -X stuff \"${CMD}\015\"" &
         echo $! > "${PID_FILE}"
         echo "PID = $(get_pid)"
         echo "Started ${NAME}"
@@ -120,7 +121,9 @@ else
 fi
 
 USER="rose"
-CMD="stdbuf -o0 \"${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} > ${RUN_LOG_FILE} 2>&1\""
+SCREEN_NAME="${NAME}"
+SCREEN_CMD="screen -t ${SCREEN_NAME} -S ${SCREEN_NAME} -d -m bash"
+CMD="stdbuf -o0 \"${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}\""
 
 echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "${BOOT_LOG_FILE}" 2>&1
 echo "USER = $USER" >> "${BOOT_LOG_FILE}" 2>&1
