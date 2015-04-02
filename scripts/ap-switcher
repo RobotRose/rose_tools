@@ -56,12 +56,13 @@ function start_script
         echo "Already started"
     else
         echo "Starting ${NAME}"
-        echo "Running:  ${SCREEN_CMD}"
-        ${SCREEN_CMD}
+        echo "Running:  ${START_SCREEN_CMD}"
+        ${START_SCREEN_CMD}
 
-        echo "Running: sudo -E bash -c \"screen -S ${SCREEN_NAME} -p 0 -X stuff \"${CMD}\015\"\" &"
+        CMD_IN_SCREEN="sudo -E bash -c 'sudo screen -S ${SCREEN_NAME} -p 0 -X stuff '${CMD}\015'' &"
+        echo "Running: ${CMD_IN_SCREEN}"
 
-        sudo -E bash -c "screen -S ${SCREEN_NAME} -p 0 -X stuff \"${CMD}\015\"" &
+        $(${CMD_IN_SCREEN})
         ps -ef | grep ${SCRIPT_NAME} | awk '{print $2}' > ${PID_FILE}
         # echo $! > "${PID_FILE}"
         echo "PID = $(get_pid)"
@@ -76,7 +77,15 @@ function start_script
 function stop_script
 {
     echo "Shutting down screens..."
-    sudo screen -S "*.${SCREEN_NAME}" -X quit
+    SESSIONS=$(sudo screen -ls | grep -o "[0-9]*\.${SCREEN_NAME}")
+    while read -r session; do
+        if [ "${session}" == "" ]; then
+            continue
+        fi
+
+        echo " Stopping session: ${session}"
+        sudo screen -S "${session}" -X quit
+    done <<< "${SESSIONS}"
         
     if is_running; then
         echo -n "Stopping ${NAME}.." 
@@ -103,7 +112,7 @@ function stop_script
             fi
         fi
     else
-        echo "Not running" 
+        echo "Not running, no need to shutdown." 
     fi
 }
 
@@ -129,9 +138,9 @@ else
 fi
 
 SCREEN_NAME="${NAME}"
-SCREEN_CMD="screen -t ${SCREEN_NAME} -S ${SCREEN_NAME} -d -m bash"
+START_SCREEN_CMD="sudo screen -t ${SCREEN_NAME} -S ${SCREEN_NAME} -d -m bash"
 SCRIPT_NAME="auto_accesspoint_switching.py"
-CMD="stdbuf -o0 \"${ROSE_TOOLS}/scripts/${SCRIPT_NAME} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}\""
+CMD="stdbuf -o0 '${ROSE_TOOLS}/scripts/${SCRIPT_NAME} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}'"
 
 echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "${BOOT_LOG_FILE}" 2>&1
 echo "CMD  = ${CMD}" >> "${BOOT_LOG_FILE}" 2>&1
