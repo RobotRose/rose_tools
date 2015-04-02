@@ -6,16 +6,23 @@
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Start wpa_supplicant and dhclient services at boot time.
-# Description:       Start wpa_supplicant and dhclient services at boot time.
+# Short-Description: Start ap-switcher
+# Description:       Start wpa_supplicant and dhclient services at boot timem, then runs auto_accesspoint_switching.py
 ### END INIT INFO
 
+NAME=`basename $0`
+PID_FILE="/var/run/${NAME}.pid"
+stdout_log="/var/log/${NAME}.log"
+stderr_log="/var/log/${NAME}.err"
+
+USER="rose"
+CMD="${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py"
+
 IFWIFI=wlan0
-NAME="ap-switcher"
 WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_${NAME}.conf"
 WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_${NAME}.log"
 
-function start
+function start_wpa_supplicant
 {
     echo "stopping network-manager"
     service network-manager stop 
@@ -24,7 +31,7 @@ function start
     echo "killing dhclient"
     killall -q dhclient
     echo "shutting down wpa_supplicant"
-    wpa_cli terminate  > /dev/null 2>&1
+    wpa_cli terminate
     echo "running wpa_supplicant"
     wpa_supplicant -d -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
@@ -33,32 +40,120 @@ function start
     dhclient $IFWIFI
 }
 
-function stop
+function stop_wpa_supplicant
 {
     echo "killing dhclient"
     killall -q dhclient
     echo "shutting down wpa_supplicant"
-    wpa_cli terminate  > /dev/null 2>&1
+    wpa_cli terminate 
     echo "starting network-manager"
     service network-manager start
 }
 
-function restart
+function start_script
 {
-    stop
-    start
+    if is_running; then
+        echo "Already started"
+    else
+        echo "Starting ${NAME}"
+
+        sudo -u "$USER" ${CMD} &
+        echo $! > "$PID_FILE"
+        echo "Started ${NAME}"
+        if ! is_running; then
+            echo "Unable to start, see $stdout_log and $stderr_log" 
+            exit 1
+        fi
+    fi
 }
+
+function stop_script
+{
+    if is_running; then
+        echo -n "Stopping ${NAME}.." 
+        kill `get_pid`
+        for i in {1..10}
+        do
+            if ! is_running; then
+                break
+            fi
+            
+            echo -n "." 
+            sleep 1
+        done
+        echo
+        
+        if is_running; then
+            echo "Not stopped; may still be shutting down or shutdown may have failed" 
+            exit 1
+        else
+            echo "Stopped"
+            if [ -f "$PID_FILE" ]; then
+                rm "$PID_FILE"
+            fi
+        fi
+    else
+        echo "Not running" 
+    fi
+}
+
+function get_pid
+{
+    cat "$PID_FILE"    
+}
+
+function is_running
+{
+    [ -f "$PID_FILE" ] && ps `get_pid` > /dev/null 2>&1
+}
+
+# MAIN
+
+date > "$stdout_log" 
+date > "$stderr_log"
+
+if [ -f /usr/bin/setup_environment.sh ]; then
+    source /usr/bin/setup_environment.sh >> "$stdout_log" 2>> "$stderr_log"
+else
+    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." >> "$stdout_log" 2>> "$stderr_log"
+    exit 1
+fi
+
+echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "$stdout_log"
+echo "USER = $USER" >> "$stdout_log"
+echo "CMD  = ${CMD}" >> "$stdout_log"
 
 case "$1" in
     start)
-        start
-        ;;
+        start_wpa_supplicant >> "$stdout_log" 2>> "$stderr_log"
+        start_script >> "$stdout_log" 2>> "$stderr_log"
+    ;;
     stop)
-        stop
+
+        stop_wpa_supplicant >> "$stdout_log" 2>> "$stderr_log"
+        stop_script >> "$stdout_log" 2>> "$stderr_log"
+        
         ;;
     restart)
-        restart
+        $0 stop
+        if is_running; then
+            echo "Unable to stop, will not attempt to start"  >> "$stdout_log" 2>> "$stderr_log"
+            exit 1
+        fi
+        $0 start
+        ;;
+    status)
+        if is_running; then
+            echo "Running"  >> "$stdout_log" 2>> "$stderr_log"
+        else
+            echo "Stopped"  >> "$stdout_log" 2>> "$stderr_log"
+            exit 1
+        fi
         ;;
     *)
-        echo "$0 <start|stop|restart>"
+        echo "Usage: $0 {start|stop|restart|status}"  >> "$stdout_log" 2>> "$stderr_log"
+        exit 1
+        ;;
 esac
+
+exit 0
