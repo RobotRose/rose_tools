@@ -120,7 +120,7 @@ else
 fi
 
 USER="rose"
-CMD="${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} > ${RUN_LOG_FILE} 2>&1"
+CMD="stdbuf -oL \"${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} > ${RUN_LOG_FILE} 2>&1\""
 
 echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "${BOOT_LOG_FILE}" 2>&1
 echo "USER = $USER" >> "${BOOT_LOG_FILE}" 2>&1
