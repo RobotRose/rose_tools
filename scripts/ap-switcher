@@ -75,6 +75,9 @@ function start_script
 
 function stop_script
 {
+    echo "Shutting down screens..."
+    sudo screen -S "*.${SCREEN_NAME}" -X quit
+        
     if is_running; then
         echo -n "Stopping ${NAME}.." 
         kill `get_pid`
@@ -89,8 +92,6 @@ function stop_script
         done
         echo
 
-        echo "Shutting down screens..."
-        for session in $(sudo screen -ls | grep -o '[0-9]*\.${SCREEN_NAME}'); do echo " Stopping screen session: '${session}'."; sudo screen -S "${session}" -X quit; done
         
         if is_running; then
             echo "Not stopped; may still be shutting down or shutdown may have failed" 
@@ -127,14 +128,12 @@ else
     exit 1
 fi
 
-USER="rose"
 SCREEN_NAME="${NAME}"
 SCREEN_CMD="screen -t ${SCREEN_NAME} -S ${SCREEN_NAME} -d -m bash"
 SCRIPT_NAME="auto_accesspoint_switching.py"
 CMD="stdbuf -o0 \"${ROSE_TOOLS}/scripts/${SCRIPT_NAME} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}\""
 
 echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "${BOOT_LOG_FILE}" 2>&1
-echo "USER = $USER" >> "${BOOT_LOG_FILE}" 2>&1
 echo "CMD  = ${CMD}" >> "${BOOT_LOG_FILE}" 2>&1
 
 case "$1" in
