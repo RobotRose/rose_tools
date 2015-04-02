@@ -121,19 +121,27 @@ if __name__ == '__main__':
     switched_time = time.time()
     scanned_time = time.time()
 
+    #Startup
+    force_scan()
+    time.sleep(1)
+    aps = get_aps(get_latest_raw_scan())
+    time.sleep(1)
+
     while 1:
         elapsed_time = time.time() - scanned_time
         print "Elapsed time since last scan: {0}".format(elapsed_time)
-        if elapsed_time >= float(10.0):
+        if elapsed_time >= float(2.0):
             print "Scanning..."
             force_scan()
             scanned_time = time.time()
+            time.sleep(0.1)
 
-        aps = get_aps(get_latest_raw_scan())
-        current_access_point = get_current_ap(aps)
+            aps = get_aps(get_latest_raw_scan())
+            current_access_point = get_current_ap(aps)
+
         if current_access_point == None:
-            print "Could not fetch current access point, retrying in 10s..."
-            time.sleep(10)
+            print "Could not fetch current access point, retrying in 3s..."
+            time.sleep(3)
             continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
@@ -195,6 +203,7 @@ if __name__ == '__main__':
              print "Switching to access point {0}".format(candidate_aps[0])
              switch_to_ap(candidate_aps[0][0])
              switch_time = time.time()
+             time.sleep(2)
 
         elif len(candidate_aps) > 0 and elapsed_time < float(arguments["--delay"]):
              print "Not switching to access point {0}, because of minimal delay between switching: {1}/{2}".format(candidate_aps[0][0], elapsed_time, arguments["--delay"])
