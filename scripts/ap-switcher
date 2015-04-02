@@ -59,7 +59,8 @@ function start_script
         ${SCREEN_CMD}
 
         sudo -E bash -c "screen -S ${SCREEN_NAME} -p 0 -X stuff \"${CMD}\015\"" &
-        echo $! > "${PID_FILE}"
+        ps -ef | grep ${SCRIPT_NAME} | awk '{print $2}' > ${PID_FILE}
+        # echo $! > "${PID_FILE}"
         echo "PID = $(get_pid)"
         echo "Started ${NAME}"
         if ! is_running; then
@@ -84,6 +85,9 @@ function stop_script
             sleep 1
         done
         echo
+
+        echo "Shutting done screens..."
+        for session in $(screen -ls | grep -o '[0-9]*\.${SCREEN_NAME}'); do screen -S "${session}" -X quit; done
         
         if is_running; then
             echo "Not stopped; may still be shutting down or shutdown may have failed" 
@@ -123,7 +127,8 @@ fi
 USER="rose"
 SCREEN_NAME="${NAME}"
 SCREEN_CMD="screen -t ${SCREEN_NAME} -S ${SCREEN_NAME} -d -m bash"
-CMD="stdbuf -o0 \"${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}\""
+SCRIPT_NAME="auto_accesspoint_switching.py"
+CMD="stdbuf -o0 \"${ROSE_TOOLS}/scripts/${SCRIPT_NAME} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}\""
 
 echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "${BOOT_LOG_FILE}" 2>&1
 echo "USER = $USER" >> "${BOOT_LOG_FILE}" 2>&1
