@@ -56,7 +56,10 @@ function start_script
         echo "Already started"
     else
         echo "Starting ${NAME}"
+        echo "Running:  ${SCREEN_CMD}"
         ${SCREEN_CMD}
+
+        echo "Running: sudo -E bash -c \"screen -S ${SCREEN_NAME} -p 0 -X stuff \"${CMD}\015\"\" &"
 
         sudo -E bash -c "screen -S ${SCREEN_NAME} -p 0 -X stuff \"${CMD}\015\"" &
         ps -ef | grep ${SCRIPT_NAME} | awk '{print $2}' > ${PID_FILE}
@@ -86,8 +89,8 @@ function stop_script
         done
         echo
 
-        echo "Shutting done screens..."
-        for session in $(screen -ls | grep -o '[0-9]*\.${SCREEN_NAME}'); do screen -S "${session}" -X quit; done
+        echo "Shutting down screens..."
+        for session in $(sudo screen -ls | grep -o '[0-9]*\.${SCREEN_NAME}'); do echo " Stopping screen session: '${session}'."; sudo screen -S "${session}" -X quit; done
         
         if is_running; then
             echo "Not stopped; may still be shutting down or shutdown may have failed" 
