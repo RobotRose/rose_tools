@@ -193,17 +193,17 @@ if __name__ == '__main__':
             flags   = ap[3]
             essid   = ap[4]
 
-            precentage_of_average = 100-(dbm/average) * 100.0
-            percentage_diff_with_current = (current_signal_level/dbm) * 100.0 - 100
+            impr_with_avg       = 100-(dbm/average) * 100.0
+            impr_with_current   = 100-(dbm/current_signal_level) * 100.0
             
             if bssid == current_bssid:
-                cprint("*\t{0} | {1:3.0f} dBm | {2: 3.2f}% | {3: 3.2f}% | {4}".format(bssid, dbm, precentage_of_average, percentage_diff_with_current, essid), 'blue')
+                cprint("*\t{0} | {1:3.0f} dBm | {2: 3.2f}% | {3: 3.2f}% | {4}".format(bssid, dbm, impr_with_avg, impr_with_current, essid), 'blue')
             else:
-                if percentage_diff_with_current >= arguments["--impr"]:
+                if  impr_with_current >= arguments["--impr"]:
                     candidate_aps += [[bssid, dbm, essid]]
-                    cprint("\t{0} | {1:3.0f} dBm | {2: 3.2f}% | {3: 3.2f}% | {4}".format(bssid, dbm, precentage_of_average, percentage_diff_with_current, essid), 'green')
+                    cprint("\t{0} | {1:3.0f} dBm | {2: 3.2f}% | {3: 3.2f}% | {4}".format(bssid, dbm, impr_with_avg, impr_with_current, essid), 'green')
                 else:
-                    cprint("\t{0} | {1:3.0f} dBm | {2: 3.2f}% | {3: 3.2f}% | {4}".format(bssid, dbm, precentage_of_average, percentage_diff_with_current, essid), 'red')
+                    cprint("\t{0} | {1:3.0f} dBm | {2: 3.2f}% | {3: 3.2f}% | {4}".format(bssid, dbm, impr_with_avg, impr_with_current, essid), 'red')
                 
         
         print "\t-------------------------------"
