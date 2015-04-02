@@ -62,7 +62,7 @@ def get_current_ap(aps):
     if len(aps_with_correct_bssid) == 0:
         return None
 
-    return aps[0]
+    return aps_with_correct_bssid[0]
     
 def force_scan():
     try:  wpa_cli("scan", arguments["--interface"])
