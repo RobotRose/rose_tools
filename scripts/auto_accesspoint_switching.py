@@ -143,9 +143,9 @@ if __name__ == '__main__':
     current_access_point = None
 
     while 1:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        
         elapsed_time = time.time() - scanned_time
-        print "Elapsed time since last scan: {0}".format(elapsed_time, arguments["--rate"])
+        print "Elapsed time since last scan: {0:.2f}s/{1:.2f}s".format(elapsed_time, arguments["--rate"])
         if elapsed_time >= arguments["--rate"]:
             print "Scanning..."
             force_scan()
@@ -154,7 +154,10 @@ if __name__ == '__main__':
 
             aps = get_aps(get_latest_raw_scan())
             current_access_point = get_current_ap(aps)
+        else:
+            time.sleep(0.5)     # Print refresh rate
 
+        os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
             print "Could not fetch current access point, retrying in 3s..."
             time.sleep(3)
