@@ -10,7 +10,7 @@ Switches provided wireless interface to the best available access point if:
 
 
 Usage:
-  auto_accesspoint_switching.py --interface=<interface> --low=<low_percentage> --impr=<improvement_percentage> [--rate=<scan_rate] [--delay=<minimal_delay>] [--whitelistfile=<white_list_file>]
+  auto_accesspoint_switching.py --interface=<interface> --impr=<improvement_percentage> [--rate=<scan_rate] [--delay=<minimal_delay>] [--whitelistfile=<white_list_file>]
   auto_accesspoint_switching.py -h | --help
   auto_accesspoint_switching.py --version
 
@@ -19,7 +19,6 @@ Options:
   --version     Show version.
   --interface=<interface>  Which interface to use.
   --whitelistfile=<white_list_file>  Full path indicating the white list file. Default white listed AP ID is ROSE_WIFI.
-  --low=<low_percentage>  As soon as signal strength is below this percentage [0-100%], of the average signal strength, switching will be preferred.
   --impr=<improvement_percentage>  The minimal improvement to gain from switching [0-100%].
   --delay=<minimal_delay>  Minimal switching delay in seconds [default: 10.0].
   --rate=<scan_rate>  Scan delay in seconds [default: 5.0].
@@ -105,12 +104,6 @@ def switch_to_ap(access_point_bssid):
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='WiFi switching')
     print arguments
-
-    if not (0 <= float(arguments["--low"]) <= 100):
-        cprint("parameter 'low' should be a numeric value in the range [0-100]", 'red')
-        exit(1)
-    else:
-        arguments["--low"] = float(arguments["--low"])
 
     if not (0 <= float(arguments["--impr"]) <= 100):
         cprint("parameter 'impr' should be a numeric value in the range [0-100]", 'red')

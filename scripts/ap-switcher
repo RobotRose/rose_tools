@@ -15,6 +15,9 @@ PID_FILE="/var/run/${NAME}.pid"
 LOG_FILE="/var/log/${NAME}.log"
 
 IFWIFI=wlan0
+REQ_DBM_IMPR=20.0
+RATE=3.0
+DELAY=10.0
 WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_${NAME}.conf"
 WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_${NAME}.log"
 
@@ -116,7 +119,7 @@ else
 fi
 
 USER="rose"
-CMD="${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py"
+CMD="${ROSE_TOOLS}/scripts/auto_accesspoint_switching.py --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}"
 
 echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "${LOG_FILE}" 2>&1
 echo "USER = $USER" >> "${LOG_FILE}" 2>&1
