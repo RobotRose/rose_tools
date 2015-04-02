@@ -23,6 +23,21 @@ DELAY=10.0
 WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_${NAME}.conf"
 WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_${NAME}.log"
 
+function kill_screens
+{
+    echo "Shutting down screens..."
+    SESSIONS=$(screen -ls | grep -o "[0-9]*\.${SCREEN_NAME}")
+    while read -r session; do
+        if [ "${session}" == "" ]; then
+            continue
+        fi
+    
+        echo " Stopping session: ${session}"
+        screen -S ${session} -X quit
+    done <<< "${SESSIONS}"
+
+}
+
 function start_wpa_supplicant
 {
     echo "stopping network-manager"
@@ -31,12 +46,14 @@ function start_wpa_supplicant
     killall -q NetworkManager
     echo "killing dhclient"
     killall -q dhclient
+    sleep 1
     echo "shutting down wpa_supplicant"
     wpa_cli terminate
+    sleep 1
     echo "running wpa_supplicant"
     wpa_supplicant -d -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
-    sleep 3
+    sleep 1
     echo "running dhclient $IFWIFI"
     dhclient $IFWIFI
 }
@@ -45,51 +62,45 @@ function stop_wpa_supplicant
 {
     echo "killing dhclient"
     killall -q dhclient
+    sleep 1
     echo "shutting down wpa_supplicant"
     wpa_cli terminate 
+    # wait for things to settle down
+    sleep 1
     echo "starting network-manager"
     service network-manager start
+    sleep 1
 }
 
 function start_script
 {
     if is_running; then
-        echo "Already started"
+        echo "Already started" >> "${BOOT_LOG_FILE}" 2>&1
     else
-        echo "Creating screen session ${SCREEN_NAME}..."
-        sudo screen -t ${USER}/${SCREEN_NAME} -S ${USER}/${SCREEN_NAME} -d -m bash
-        sleep 3
+        kill_screens
 
-        echo "Starting ${NAME}..."
-        sudo screen -S ${USER}/${SCREEN_NAME} -p 0 -X stuff "$(echo -en "${CMD} & \n echo \$! > ${PID_FILE}\n")" &
-
-        sleep 3
-        echo "PID = $(get_pid)"
-        echo "Started ${NAME}"
+        echo "Starting ${NAME}..." >> "${BOOT_LOG_FILE}" 2>&1
+        echo "Running: '${CMD}'" >> "${BOOT_LOG_FILE}" 2>&1
+        screen -t ${NAME} -S ${NAME} -d -m bash  >> "${BOOT_LOG_FILE}" 2>&1
+        INTO_SCREEN_CMD=$(echo -en "${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} & \n \n")
+        screen -S ${NAME} -p 0 -X stuff "${INTO_SCREEN_CMD}" &  >> "${BOOT_LOG_FILE}" 2>&1
+        echo $! > ${PID_FILE} 
+        echo "PID = $(get_pid)" >> "${BOOT_LOG_FILE}" 2>&1
+        echo "Started ${NAME}" >> "${BOOT_LOG_FILE}" 2>&1
         if ! is_running; then
-            echo "Unable to start, see ${BOOT_LOG_FILE}" 
+            echo "Unable to start, see ${BOOT_LOG_FILE}" >> "${BOOT_LOG_FILE}" 2>&1
             exit 1
         fi
     fi
 }
 
 function stop_script
-{
-    echo "Shutting down screens..."
-    SESSIONS=$(screen -ls | grep -o \"[0-9]*\.${USER}/${SCREEN_NAME}\")
-    while read -r session; do
-        if [ "${session}" == "" ]; then
-            continue
-        fi
-
-        echo " Stopping session: ${session}"
-        screen -S ${USER}/${session} -X quit
-    done <<< "${SESSIONS}"
-        
+{   
+    kill_screens
     if is_running; then
         echo -n "Stopping ${NAME}.." 
-        kill `get_pid`
-        for i in {1..10}
+        kill `get_pid` > /dev/null 2>&1
+        for i in {1..5}
         do
             if ! is_running; then
                 break
@@ -100,8 +111,8 @@ function stop_script
         done
         echo
 
-        
         if is_running; then
+            rm -f ${PID_FILE}
             echo "Not stopped; may still be shutting down or shutdown may have failed" 
             exit 1
         else
@@ -129,10 +140,9 @@ function is_running
 
 echo "Running $0 ($(date))" >> "${BOOT_LOG_FILE}" 2>&1
 
-SCREEN_NAME="${NAME}"
 SCRIPT_NAME="auto_accesspoint_switching.py"
 SCRIPT="/usr/bin/${SCRIPT_NAME}"
-CMD="stdbuf -o0 '${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY}'"
+CMD="${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} > ${RUN_LOG_FILE} &"
 
 echo "SCRIPT = ${SCRIPT}" >> "${BOOT_LOG_FILE}" 2>&1
 echo "USER  = ${USER}" >> "${BOOT_LOG_FILE}" 2>&1
@@ -141,7 +151,7 @@ echo "CMD  = ${CMD}" >> "${BOOT_LOG_FILE}" 2>&1
 case "$1" in
     start)
         start_wpa_supplicant >> "${BOOT_LOG_FILE}" 2>&1
-        start_script >> "${BOOT_LOG_FILE}" 2>&1
+        start_script # Do redirecting inside the function
     ;;
     stop)
 
