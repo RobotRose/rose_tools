@@ -58,9 +58,10 @@ function start_script
 
         sudo -u "$USER" ${CMD} &
         echo $! > "${PID_FILE}"
+        echo "PID = $(get_pid)"
         echo "Started ${NAME}"
         if ! is_running; then
-            echo "Unable to start, see ${LOG_FILE} and $stderr_log" 
+            echo "Unable to start, see ${LOG_FILE}" 
             exit 1
         fi
     fi
@@ -98,12 +99,12 @@ function stop_script
 
 function get_pid
 {
-    cat "$PID_FILE"    
+    cat "${PID_FILE}"    
 }
 
 function is_running
 {
-    [ -f "$PID_FILE" ] && ps `get_pid` > /dev/null 2>&1
+    [ -f "${PID_FILE}" ] && ps `get_pid` > /dev/null 2>&1
 }
 
 # MAIN
