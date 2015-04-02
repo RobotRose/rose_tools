@@ -56,7 +56,7 @@ function start_script
     else
         echo "Starting ${NAME}"
 
-        sudo -u "$USER" ${CMD} &
+        sudo -u "$USER" -E bash -c "${CMD}" &
         echo $! > "${PID_FILE}"
         echo "PID = $(get_pid)"
         echo "Started ${NAME}"
