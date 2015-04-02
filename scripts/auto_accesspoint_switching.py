@@ -185,6 +185,8 @@ if __name__ == '__main__':
         current_bssid = current_access_point["BSSID"]
         current_signal_level = current_access_point["dBm"]
 
+        print "\t-------bssid--------signal-----avg.-----curr.----essid---"
+
         candidate_aps = []
         for ap in sorted_ap_list:
             bssid   = ap[0]
