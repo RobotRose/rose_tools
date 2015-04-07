@@ -173,9 +173,13 @@ if __name__ == '__main__':
 
         os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
-            print "Could not fetch current access point, making sure correct network is selected."
-            select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
-            time.sleep(1)
+            wpa_status = get_wpa_status()
+            if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and len(aps) != 0:
+                print "Scanning but not yet selected an access point, selecting one now..."
+            else:
+                print "Could not fetch current access point, making sure correct network is selected."
+                select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
+                time.sleep(1)
             continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
