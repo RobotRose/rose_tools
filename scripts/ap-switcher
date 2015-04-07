@@ -55,7 +55,7 @@ function start_wpa_supplicant
     echo "running wpa_supplicant"
     wpa_supplicant -d -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
-    sleep 1
+    sleep 3
 }
 
 function stop_wpa_supplicant
@@ -75,25 +75,26 @@ function stop_wpa_supplicant
 function start_script
 {
     if is_running; then
-        echo "Already started" >> "${BOOT_LOG_FILE}" 2>&1
+        echo "Already started" | tee --append "${BOOT_LOG_FILE}" 2>&1
     else
-        kill_screens
+        kill_screens  | tee --append "${BOOT_LOG_FILE}" 2>&1
 
-        echo "Starting ${NAME}..." >> "${BOOT_LOG_FILE}" 2>&1
-        echo "Creating screen session: '${CMD}'" >> "${BOOT_LOG_FILE}" 2>&1
-        screen -t ${NAME} -S ${NAME} -d -m bash  >> "${BOOT_LOG_FILE}" 2>&1
-        INTO_SCREEN_CMD=$(echo -en "${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} & \necho \"\$!\" > ${PID_FILE}\n \n")
-        screen -S ${NAME} -p 0 -X stuff "${INTO_SCREEN_CMD}" &  >> "${BOOT_LOG_FILE}" 2>&1
-        echo "Inserting into screen session: ${INTO_SCREEN_CMD}" >> "${BOOT_LOG_FILE}" 2>&1
-	#echo $! > ${PID_FILE} 
-        echo "PID = $(get_pid)" >> "${BOOT_LOG_FILE}" 2>&1
+        echo "Starting ${NAME}..." | tee --append "${BOOT_LOG_FILE}" 2>&1
+        echo "Creating screen session..." | tee --append "${BOOT_LOG_FILE}" 2>&1
+        screen -t ${NAME} -S ${NAME} -d -m bash  | tee --append "${BOOT_LOG_FILE}" 2>&1
+        INTO_SCREEN_CMD=$(echo -en "${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} & echo \"\$!\" > ${PID_FILE}\n \n")
+        screen -S ${NAME} -p 0 -X stuff "${INTO_SCREEN_CMD}" | tee --append "${BOOT_LOG_FILE}" 2>&1 &  
+        echo -e "Inserting into screen session:\n${INTO_SCREEN_CMD}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+        echo "Waiting for script to be started..."  | tee --append "${BOOT_LOG_FILE}" 2>&1
+        sleep 2
+        echo "PID = $(get_pid)" | tee --append "${BOOT_LOG_FILE}" 2>&1
        
         if ! is_running; then
-            echo "Unable to start, see ${BOOT_LOG_FILE}" >> "${BOOT_LOG_FILE}" 2>&1
+            echo "Unable to start, see ${BOOT_LOG_FILE}" | tee --append "${BOOT_LOG_FILE}" 2>&1
             exit 1
         fi
-	echo "Started ${NAME}" >> "${BOOT_LOG_FILE}" 2>&1
-    	echo "running dhclient $IFWIFI"
+	    echo "Started ${NAME}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+    	echo "running dhclient $IFWIFI" | tee --append "${BOOT_LOG_FILE}" 2>&1
     	dhclient $IFWIFI
     fi
 }
@@ -142,45 +143,45 @@ function is_running
 
 # MAIN
 
-echo "Running $0 ($(date))" >> "${BOOT_LOG_FILE}" 2>&1
+echo "Running $0 ($(date))" | tee --append "${BOOT_LOG_FILE}" 2>&1
 
 SCRIPT_NAME="auto_accesspoint_switching.py"
 SCRIPT="/usr/bin/${SCRIPT_NAME}"
 CMD="${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} > ${RUN_LOG_FILE} &"
 
-echo "SCRIPT = ${SCRIPT}" >> "${BOOT_LOG_FILE}" 2>&1
-echo "USER  = ${USER}" >> "${BOOT_LOG_FILE}" 2>&1
-echo "CMD  = ${CMD}" >> "${BOOT_LOG_FILE}" 2>&1
+echo "SCRIPT = ${SCRIPT}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+echo "USER  = ${USER}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+echo "CMD  = ${CMD}" | tee --append "${BOOT_LOG_FILE}" 2>&1
 
 case "$1" in
     start)
-        start_wpa_supplicant >> "${BOOT_LOG_FILE}" 2>&1
+        start_wpa_supplicant | tee --append "${BOOT_LOG_FILE}" 2>&1
         start_script # Do redirecting inside the function
     ;;
     stop)
 
-        stop_wpa_supplicant >> "${BOOT_LOG_FILE}" 2>&1
-        stop_script >> "${BOOT_LOG_FILE}" 2>&1
+        stop_wpa_supplicant | tee --append "${BOOT_LOG_FILE}" 2>&1
+        stop_script | tee --append "${BOOT_LOG_FILE}" 2>&1
         
         ;;
     restart)
         $0 stop
         if is_running; then
-            echo "Unable to stop, will not attempt to start" >> "${BOOT_LOG_FILE}" 2>&1
+            echo "Unable to stop, will not attempt to start" | tee --append "${BOOT_LOG_FILE}" 2>&1
             exit 1
         fi
         $0 start
         ;;
     status)
         if is_running; then
-            echo "Running" >> "${BOOT_LOG_FILE}" 2>&1
+            echo "Running" | tee --append "${BOOT_LOG_FILE}" 2>&1
         else
-            echo "Stopped" >> "${BOOT_LOG_FILE}" 2>&1
+            echo "Stopped" | tee --append "${BOOT_LOG_FILE}" 2>&1
             exit 1
         fi
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|status}" >> "${BOOT_LOG_FILE}" 2>&1
+        echo "Usage: $0 {start|stop|restart|status}" | tee --append "${BOOT_LOG_FILE}" 2>&1
         exit 1
         ;;
 esac
