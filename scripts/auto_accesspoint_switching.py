@@ -151,20 +151,11 @@ if __name__ == '__main__':
     else:
         arguments["--delay"] = float(arguments["--delay"])
 
-    # switch_to_ap("38:2C:4A:66:E9:40")
     switched_time = time.time()
     scanned_time = time.time()
 
-    #Startup
-    # force_scan()
-    # time.sleep(1)
-    # aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
-    # time.sleep(2)
-    select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
-    time.sleep(1)
-
     current_access_point = None
-    switched = False
+    switched = True     # Initialize to true in order to force scan @ start
 
     while 1:
         
@@ -182,8 +173,9 @@ if __name__ == '__main__':
 
         os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
-            print "Could not fetch current access point, retrying in 3s..."
-            time.sleep(3)
+            print "Could not fetch current access point, making sure correct network is selected."
+            select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
+            time.sleep(1)
             continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
