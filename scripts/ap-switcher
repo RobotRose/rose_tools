@@ -22,7 +22,7 @@ IFWIFI=wlan0
 REQ_DBM_IMPR=20.0
 RATE=3.0
 DELAY=10.0
-WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_${NAME}.conf"
+WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_ap-switcher.conf"
 WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_${NAME}.log"
 
 function kill_screens
