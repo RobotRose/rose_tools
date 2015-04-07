@@ -33,38 +33,65 @@ import sys
 import time
 
 
-def get_current_ap_bssid():
+def get_wpa_status():
     current_ap = {}
     try: raw = wpa_cli("status", arguments["--interface"])
     except ErrorReturnCode:
         print "Could not get wpa_cli status {0}".format(arguments["--interface"])
         return None
 
-    key = raw.split("\n")[1].split("=")[0]
-    if key == "bssid":
-        bssid = raw.split("\n")[1].split("=")[1]
-    else:
-        bssid = None
-    return bssid
+    properties = {}
+    # Remove lines without '=' sign
+    raw_properties = [line.split("=", 1) for line in raw.split("\n") if "=" in line]
+    properties = {prop[0]:prop[1] for prop in raw_properties}
+
+    return properties
 
 def get_current_ap(aps):
     if len(aps) == 0:
         return None
 
-    current_bssid = get_current_ap_bssid()
-    if get_current_ap_bssid == None:
-        return None
+    wpa_status = get_wpa_status()
+    if "wpa_state" in wpa_status:
+        if wpa_status["wpa_state"] == "COMPLETED":
 
-    aps_with_correct_bssid = [ap for ap in aps if ap["BSSID"] == current_bssid]
-    if len(aps_with_correct_bssid) > 1:
-        print "More than one AP found with BSSID {0}, taking first.".format(current_bssid)
+            if not "bssid" in wpa_status:
+                print "Error while getting current bssid."
+                return None
+
+            aps_with_correct_bssid = [ap for ap in aps if ap["BSSID"] ==  wpa_status["bssid"]]
+            if len(aps_with_correct_bssid) > 1:
+                print "More than one AP found with BSSID {0}, taking first.".format(wpa_status["bssid"])
     
-    if len(aps_with_correct_bssid) == 0:
-        return None
+            if len(aps_with_correct_bssid) == 0:
+                print "Scan did not detect current AP with BSSID {0}.".format(wpa_status["bssid"])
+                return None
 
-    return aps_with_correct_bssid[0]
+            return aps_with_correct_bssid[0]
+
+        elif wpa_status["wpa_state"] == "SCANNING":
+            print "Not yet associated with any AP."
+            return None
+
+    print "Error while getting current AP"
+    return None
+
+
+
+def select_network(ssid):
+    print "Selecting network '{0}'".format(ssid)
+    try:  result = wpa_cli("select_network", ssid, " -i {0}".format(arguments["--interface"]))
+    except ErrorReturnCode, ex:
+        print ex
+        print "Could not run wpa_cli select_network {0} -i {1}".format(ssid, arguments["--interface"])
+        return False
+    if result == "OK":
+        return True
+
+    return False
     
 def force_scan():
+    print "Scanning..."
     try:  wpa_cli("scan", arguments["--interface"])
     except ErrorReturnCode:
         print "Could not run wpa_cli scan {0}".format(arguments["--interface"])
@@ -80,14 +107,15 @@ def get_latest_raw_scan():
 
     return raw
 
-def get_aps(rawscan):
+def get_aps(rawscan, ssid):
+    print "Extracting access points with SSID {0}.".format(ssid)
     aps_list = []
     aps = rawscan.split('\n')
     for ap in aps:
         parts = ap.split("\t")
         # bssid / frequency / signal level / flags / ssid
 
-        if "ROSE_WIFI" in parts:
+        if ssid in parts:
             values = {}
             values["BSSID"]     = parts[0].encode("ascii", "ignore")
             values["frequency"] = float(parts[1].encode("ascii", "ignore"))
@@ -128,9 +156,11 @@ if __name__ == '__main__':
     scanned_time = time.time()
 
     #Startup
-    force_scan()
-    time.sleep(1)
-    aps = get_aps(get_latest_raw_scan())
+    # force_scan()
+    # time.sleep(1)
+    # aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
+    # time.sleep(2)
+    select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
     time.sleep(1)
 
     current_access_point = None
@@ -141,12 +171,11 @@ if __name__ == '__main__':
         elapsed_time = time.time() - scanned_time
         print "Elapsed time since last scan: {0:.2f}s/{1:.2f}s".format(elapsed_time, arguments["--rate"])
         if elapsed_time >= arguments["--rate"] or switched:
-            print "Scanning..."
             force_scan()
             scanned_time = time.time()
             time.sleep(0.1)
 
-            aps = get_aps(get_latest_raw_scan())
+            aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
             current_access_point = get_current_ap(aps)
         else:
             time.sleep(0.5)     # Print refresh rate

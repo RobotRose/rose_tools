@@ -56,8 +56,6 @@ function start_wpa_supplicant
     wpa_supplicant -d -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
     sleep 1
-    echo "running dhclient $IFWIFI"
-    dhclient $IFWIFI
 }
 
 function stop_wpa_supplicant
@@ -82,17 +80,21 @@ function start_script
         kill_screens
 
         echo "Starting ${NAME}..." >> "${BOOT_LOG_FILE}" 2>&1
-        echo "Running: '${CMD}'" >> "${BOOT_LOG_FILE}" 2>&1
+        echo "Creating screen session: '${CMD}'" >> "${BOOT_LOG_FILE}" 2>&1
         screen -t ${NAME} -S ${NAME} -d -m bash  >> "${BOOT_LOG_FILE}" 2>&1
-        INTO_SCREEN_CMD=$(echo -en "${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} & \n \n")
+        INTO_SCREEN_CMD=$(echo -en "${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} & \necho \"\$!\" > ${PID_FILE}\n \n")
         screen -S ${NAME} -p 0 -X stuff "${INTO_SCREEN_CMD}" &  >> "${BOOT_LOG_FILE}" 2>&1
-        echo $! > ${PID_FILE} 
+        echo "Inserting into screen session: ${INTO_SCREEN_CMD}" >> "${BOOT_LOG_FILE}" 2>&1
+	#echo $! > ${PID_FILE} 
         echo "PID = $(get_pid)" >> "${BOOT_LOG_FILE}" 2>&1
-        echo "Started ${NAME}" >> "${BOOT_LOG_FILE}" 2>&1
+       
         if ! is_running; then
             echo "Unable to start, see ${BOOT_LOG_FILE}" >> "${BOOT_LOG_FILE}" 2>&1
             exit 1
         fi
+	echo "Started ${NAME}" >> "${BOOT_LOG_FILE}" 2>&1
+    	echo "running dhclient $IFWIFI"
+    	dhclient $IFWIFI
     fi
 }
 
