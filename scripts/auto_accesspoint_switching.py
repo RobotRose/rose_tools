@@ -169,13 +169,13 @@ if __name__ == '__main__':
             aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
             current_access_point = get_current_ap(aps)
         else:
-            time.sleep(0.5)     # Print refresh rate
+            time.sleep(0.2)     # Print refresh rate
 
         os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
             wpa_status = get_wpa_status()
             if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and len(aps) != 0:
-                print "Scanning but not yet selected an access point, selecting one now..."
+                print "Scanning but not yet selected an access point."
             else:
                 print "Could not fetch current access point, making sure correct network is selected."
                 select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
@@ -198,6 +198,12 @@ if __name__ == '__main__':
             ap_list += [[ap["BSSID"], ap["frequency"], ap["dBm"], ap["flags"], ap["ESSID"]]]
 
         sorted_ap_list = sorted(ap_list, key=lambda x: x[2], reverse=True)
+
+        # Simply select strongest AP if we currently have none selected
+        if current_access_point == None:
+            print "Selecting initial AP."
+            switch_to_ap(sorted_ap_list[0][0])
+            continue
 
         # print sorted_ap_list
         current_bssid = current_access_point["BSSID"]
