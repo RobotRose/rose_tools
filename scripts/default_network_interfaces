@@ -1,0 +1,18 @@
+# Rosepc1:
+auto lo
+iface lo inet loopback
+
+#allow-hotplug wlan0
+#iface wlan0 inet dhcp
+
+#allow-hotplug eth0
+#iface eth0 inet static
+#	address 192.168.0.111 
+#	netmask 255.255.255.0
+#	gateway 192.168.0.101
+
+allow-hotplug eth1
+iface eth1 inet static
+	address 192.168.0.101 
+	netmask 255.255.255.0
+	gateway 192.168.0.101
