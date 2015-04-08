@@ -3,6 +3,12 @@
 # This sets up the ap-switcher script in rc.d such that wpa_supplicant and dhclient will be started at boot.
 # This needs to be re-run when moving the rose_tools package.
 
+# Check if we are sudo user
+if [ "$(id -u)" == "0" ]; then
+    echo -e "Sorry, you should NOT run this script as root."
+    return 1
+fi
+
 FILENAME="boot_rose.sh"
 FILE="${ROSE_TOOLS}/scripts/${FILENAME}"
 LINK="/etc/init.d/${FILENAME}"
