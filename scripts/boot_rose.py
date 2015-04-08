@@ -42,6 +42,9 @@ time.sleep(5)
 print "Starting roscore..."
 roscore_proc    = subprocess.Popen("""screen -S roscore -p 0 -X stuff 'roscore\015'""", stdout=subprocess.PIPE, shell=True)
 print roscore_proc.stdout.read()
+print "Sleeping 30s..."
+time.sleep(30)
+
 print "Waiting for rosepc2 to be online..."
 print 
 
@@ -65,7 +68,7 @@ else:
     print roscore_proc.stdout.read()
     print "Sleeping 5s..."
     time.sleep(5)
-
+    
     print "Starting body..."
     body_proc       = subprocess.Popen("""screen -S body -p 0 -X stuff 'roslaunch ${LAUNCH_DIR}/body.launch\015'""", 
                                         stdout=subprocess.PIPE, shell=True)

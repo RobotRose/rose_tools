@@ -78,3 +78,17 @@ if [ $? -eq 1 ]; then
     return 1
 fi
 echo "Done linking auto_accesspoint_switching.py script." | colorize GREEN
+
+# Create link to boot_rose.py script in /usr/bin/
+BOOT_ROSE="${ROSE_TOOLS}/scripts/boot_rose.py"
+BOOT_ROSE_LINKNAME="/usr/bin/boot_rose.py"
+
+echo "Linking boot_rose.py script: '${BOOT_ROSE_LINKNAME}' to '${BOOT_ROSE}'... " | colorize BLUE
+
+sudo ln -s -f $BOOT_ROSE $BOOT_ROSE_LINKNAME
+if [ $? -eq 1 ]; then    
+    echo "Failed linking." | colorize RED
+    echo "Could not symlink '${BOOT_ROSE_LINKNAME}' to '${BOOT_ROSE}'."
+    return 1
+fi
+echo "Done linking boot_rose.py script." | colorize GREEN
