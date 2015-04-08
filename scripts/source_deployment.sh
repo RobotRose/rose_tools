@@ -24,15 +24,21 @@ source ${DEPLOYMENT_FILE}
 
 # Set workspace root location
 export REPOS_ROOT="${HOME}/${REPOS_LOCATION}"
+echo -n "REPOS_ROOT = " | colorize YELLOW
+echo "${REPOS_ROOT}"
 
 # Workspaces
 export WORKSPACES_FILE=${REPOS_ROOT}/.workspaces
 
 # Location of the rose_config package
 export ROSE_CONFIG="${REPOS_ROOT}/deployment/src/rose_config/rose_config"
+echo -n "ROSE_CONFIG = " | colorize YELLOW
+echo "${ROSE_CONFIG}"
 
 # Location of the rose_tools package
 export ROSE_TOOLS="${REPOS_ROOT}/deployment/src/rose_tools"
+echo -n "ROSE_TOOLS = " | colorize YELLOW
+echo "${ROSE_TOOLS}"
 
 # Initialize environment
 echo -n "Adding the rose scripts directory to \$PATH... " | colorize BLUE
