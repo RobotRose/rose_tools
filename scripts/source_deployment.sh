@@ -22,6 +22,9 @@ fi
 # Source deployment file
 source ${DEPLOYMENT_FILE}
 
+echo -n "HOME        = " | colorize YELLOW
+echo "${HOME}"
+
 # Set workspace root location
 export REPOS_ROOT="${HOME}/${REPOS_LOCATION}"
 echo -n "REPOS_ROOT  = " | colorize YELLOW
