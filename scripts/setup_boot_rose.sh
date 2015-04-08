@@ -9,7 +9,7 @@ if [ "$(id -u)" == "0" ]; then
     return 1
 fi
 
-FILENAME="boot_rose.sh"
+FILENAME="boot_rose.py"
 FILE="${ROSE_TOOLS}/scripts/${FILENAME}"
 LINK="/etc/init.d/${FILENAME}"
 
@@ -25,7 +25,7 @@ else
 	echo "Link ${LINK} -> ${FILE} created."
 fi
 
-sudo -E bash -c "update-rc.d -f ${FILENAME} defaults"
+sudo -E bash -c "update-rc.d -f ${FILENAME} defaults 99 05"
 UPDATERC_SUCCESS=$?
 
 if [ $UPDATERC_SUCCESS == 0 ]; then
