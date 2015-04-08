@@ -22,6 +22,9 @@ fi
 # Source deployment file
 source ${DEPLOYMENT_FILE}
 
+echo -n "USER        = " | colorize YELLOW
+echo "$(whoami)"
+
 echo -n "HOME        = " | colorize YELLOW
 echo "${HOME}"
 
