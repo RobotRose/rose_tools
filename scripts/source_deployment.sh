@@ -24,7 +24,7 @@ source ${DEPLOYMENT_FILE}
 
 # Set workspace root location
 export REPOS_ROOT="${HOME}/${REPOS_LOCATION}"
-echo -n "REPOS_ROOT = " | colorize YELLOW
+echo -n "REPOS_ROOT  = " | colorize YELLOW
 echo "${REPOS_ROOT}"
 
 # Workspaces
@@ -37,7 +37,7 @@ echo "${ROSE_CONFIG}"
 
 # Location of the rose_tools package
 export ROSE_TOOLS="${REPOS_ROOT}/deployment/src/rose_tools"
-echo -n "ROSE_TOOLS = " | colorize YELLOW
+echo -n "ROSE_TOOLS  = " | colorize YELLOW
 echo "${ROSE_TOOLS}"
 
 # Initialize environment
