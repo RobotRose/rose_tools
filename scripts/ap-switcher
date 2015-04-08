@@ -101,7 +101,6 @@ function start_script
 
 function stop_script
 {   
-    kill_screens
     if is_running; then
         echo -n "Stopping ${NAME}.." 
         kill `get_pid` > /dev/null 2>&1
@@ -115,6 +114,7 @@ function stop_script
             sleep 1
         done
         echo
+        kill_screens
 
         if is_running; then
             rm -f ${PID_FILE}
