@@ -19,6 +19,8 @@ cmd="${ROSE_TOOLS}/scripts/boot_rose.py"
 
 date > "$stdout_log" 
 date > "$stderr_log"
+whoami > "$stdout_log" 
+whoami > "$stderr_log" 
 
 if [ -f /usr/bin/setup_environment.sh ]; then
     setup_cmd="source /usr/bin/setup_environment.sh"
