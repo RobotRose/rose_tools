@@ -12,10 +12,17 @@ echo "Setting up ${FILENAME}..."
 sudo -E bash -c "ln -fs ${FILE} ${LINK}"
 LINK_SUCCESS=$?
 
-sudo -E bash -c "update-rc.d ${FILENAME} defaults"
+if [ $LINK_SUCCESS != 0 ]
+	echo "Could not create link ${LINK} -> ${FILE}."
+	exit 1
+else
+	echo "Link ${LINK} -> ${FILE} created."
+fi
+
+sudo -E bash -c "update-rc.d -f ${FILENAME} defaults"
 UPDATERC_SUCCESS=$?
 
-if [ $LINK_SUCCESS == 0 ] && [ $UPDATERC_SUCCESS == 0 ]; then
+if [ $UPDATERC_SUCCESS == 0 ]; then
 	echo "Successfully setup ap-switcher." | colorize GREEN
 else
 	echo "Error setting up ap-switcher." | colorize RED
