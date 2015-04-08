@@ -18,7 +18,7 @@ echo "Setting up ${FILENAME}..."
 sudo -E bash -c "ln -fs ${FILE} ${LINK}"
 LINK_SUCCESS=$?
 
-if [ $LINK_SUCCESS != 0 ]
+if [ $LINK_SUCCESS != 0 ]; then
 	echo "Could not create link ${LINK} -> ${FILE}."
 	exit 1
 else
