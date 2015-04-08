@@ -6,7 +6,7 @@
 # Check if we are sudo user
 if [ "$(id -u)" == "0" ]; then
     echo -e "Sorry, you should NOT run this script as root."
-    return 1
+    exit 1
 fi
 
 FILENAME="boot_rose.py"
