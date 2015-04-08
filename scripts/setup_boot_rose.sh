@@ -9,7 +9,7 @@ if [ "$(id -u)" == "0" ]; then
     exit 1
 fi
 
-FILENAME="boot_rose.py"
+FILENAME="boot_rose_initd_script.sh"
 FILE="${ROSE_TOOLS}/scripts/${FILENAME}"
 LINK="/etc/init.d/${FILENAME}"
 
