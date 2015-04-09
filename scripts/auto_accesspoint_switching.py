@@ -48,7 +48,7 @@ def get_wpa_status():
     return properties
 
 def get_current_ap(aps):
-    if len(aps) == 0:
+    if not aps:
         return None
 
     wpa_status = get_wpa_status()
@@ -63,7 +63,7 @@ def get_current_ap(aps):
             if len(aps_with_correct_bssid) > 1:
                 print "More than one AP found with BSSID {0}, taking first.".format(wpa_status["bssid"])
     
-            if len(aps_with_correct_bssid) == 0:
+            if not aps_with_correct_bssid:
                 print "Scan did not detect current AP with BSSID {0}.".format(wpa_status["bssid"])
                 return None
 
@@ -174,7 +174,7 @@ if __name__ == '__main__':
         os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
             wpa_status = get_wpa_status()
-            if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and len(aps) != 0:
+            if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and aps:
                 print "Scanning but not yet selected an access point."
             else:
                 print "Could not fetch current access point, making sure correct network is selected."
@@ -187,7 +187,7 @@ if __name__ == '__main__':
 
         # # Check for len(mac_map is not null)
         average = 0
-        if len(aps) != 0:
+        if aps:
             for ap in aps:
                 average += ap["dBm"]
 
@@ -240,13 +240,13 @@ if __name__ == '__main__':
         print "Elapsed time since last switch: {0:.2f}s/{1:.2f}s".format(elapsed_time, arguments["--delay"])
 
         switched = False
-        if len(candidate_aps) > 0 and elapsed_time >= arguments["--delay"]:
+        if candidate_aps and elapsed_time >= arguments["--delay"]:
              print "Switching to access point {0}".format(candidate_aps[0][0])
              switch_to_ap(candidate_aps[0][0])
              switched_time = time.time()
              switched = True
 
-        elif len(candidate_aps) > 0 and elapsed_time < arguments["--delay"]:
+        elif candidate_aps and elapsed_time < arguments["--delay"]:
              print "Not switching to access point {0}, because of minimal delay between switching: {1:.2f}s/{2:.2f}s".format(candidate_aps[0][0], elapsed_time, arguments["--delay"])
 
 
