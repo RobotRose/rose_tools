@@ -25,13 +25,13 @@ CONFIG=$(echo -en "$RAW" | grep -v "#")
 echo "Configuration created:" | colorize GREEN
 echo -e "${CONFIG}"
 
-echo "For which (existing) installation is this network configuration? " | colorize BLUE
-read INSTALL_ID
+echo "For which (existing) location id is this network configuration? " | colorize BLUE
+read LOCATION_ID
 
-LOCATION_DIR="${LOCATIONS_ROOT}/${INSTALL_ID}"
+LOCATION_DIR="${LOCATIONS_ROOT}/${LOCATION_ID}"
 
-if [ "${INSTALL_ID}" == "" ] || [ ! -d "${LOCATION_DIR}" ]; then
-	echo "Invalid installation provided: ${LOCATION_DIR}" | colorize RED
+if [ "${LOCATION_ID}" == "" ] || [ ! -d "${LOCATION_DIR}" ]; then
+	echo "Invalid location id provided: ${LOCATION_DIR}" | colorize RED
 	exit 1
 fi
 
