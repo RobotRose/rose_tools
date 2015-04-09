@@ -130,7 +130,7 @@ def switch_to_ap(access_point_bssid):
     wpa_cli("roam", access_point_bssid) 
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='WiFi switching')
+    arguments = docopt(__doc__, version='1.0')
     print arguments
 
     if not (0 <= float(arguments["--impr"]) <= 100):
@@ -169,7 +169,7 @@ if __name__ == '__main__':
             aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
             current_access_point = get_current_ap(aps)
         else:
-            time.sleep(0.2)     # Print refresh rate
+            time.sleep(0.2)     # Print refresh rate
 
         os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
