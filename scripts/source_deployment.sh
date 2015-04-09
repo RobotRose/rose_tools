@@ -22,17 +22,29 @@ fi
 # Source deployment file
 source ${DEPLOYMENT_FILE}
 
+echo -n "USER        = " | colorize YELLOW
+echo "$(whoami)"
+
+echo -n "HOME        = " | colorize YELLOW
+echo "${HOME}"
+
 # Set workspace root location
 export REPOS_ROOT="${HOME}/${REPOS_LOCATION}"
+echo -n "REPOS_ROOT  = " | colorize YELLOW
+echo "${REPOS_ROOT}"
 
 # Workspaces
 export WORKSPACES_FILE=${REPOS_ROOT}/.workspaces
 
 # Location of the rose_config package
 export ROSE_CONFIG="${REPOS_ROOT}/deployment/src/rose_config/rose_config"
+echo -n "ROSE_CONFIG = " | colorize YELLOW
+echo "${ROSE_CONFIG}"
 
 # Location of the rose_tools package
 export ROSE_TOOLS="${REPOS_ROOT}/deployment/src/rose_tools"
+echo -n "ROSE_TOOLS  = " | colorize YELLOW
+echo "${ROSE_TOOLS}"
 
 # Initialize environment
 echo -n "Adding the rose scripts directory to \$PATH... " | colorize BLUE
@@ -47,7 +59,10 @@ echo "done." | colorize GREEN
 source ${ROSE_TOOLS}/scripts/pc_id.sh "" ""
 echo -en "Using PC_ID: " | colorize BLUE
 echo "${PC_ID}" | colorize YELLOW
-source "${ROSE_CONFIG}/installations/${ROBOT_INSTALLATION}/${PC_ID}.sh"
+
+export INSTALLATIONS_ROOT="${ROSE_CONFIG}/installations"
+export INSTALLATION_DIR="${INSTALLATIONS_ROOT}/${ROBOT_INSTALLATION}"
+source "${INSTALLATION_DIR}/${PC_ID}.sh"
 
 # Determine ROS_IP from ROS_INTERFACE
 source ${ROSE_TOOLS}/scripts/determine_ros_ip.sh "${ROS_INTERFACE}"
@@ -65,9 +80,9 @@ export LAUNCH_DIR="${ROSE_CONFIG}/launch_files/${ROBOT_LAUNCH}"
 export PARAM_DIR="${ROSE_CONFIG}/configurations/${ROBOT_CONFIG}"
 
 # Source the location
-export LOCATION_DIR="${ROSE_CONFIG}/maps/${ROBOT_LOCATION}"
-export LOCALIZATION_MAP="${LOCATION_DIR}/localization"
-export NAVIGATION_MAP="${LOCATION_DIR}/navigation"
+export LOCATIONS_ROOT="${ROSE_CONFIG}/locations"
+export LOCATION_DIR="${ROSE_CONFIG}/locations/${ROBOT_LOCATION}"
+source "${LOCATION_DIR}/location.sh"
 
 echo -en "Deployment " | colorize BLUE
 echo -en "'$(readlink -f ${DEPLOYMENT_FILE})' " | colorize YELLOW

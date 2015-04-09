@@ -1,0 +1,189 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          network-switcher
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start ap-switcher
+# Description:       Start wpa_supplicant and dhclient services at boot timem, then runs auto_accesspoint_switching.py
+### END INIT INFO
+
+NAME=`basename $0`
+USER="rose"         # Hardcoded :(
+PID_FILE="/var/run/${NAME}.pid"
+BOOT_LOG_FILE="/var/log/boot-${NAME}.log"
+RUN_LOG_FILE="/var/log/run-${NAME}.log"
+
+echo "ap-switcher $(date)" > "/var/log/syslog"
+
+IFWIFI=wlan0
+REQ_DBM_IMPR=20.0
+RATE=2.0
+DELAY=15.0
+WPA_SUPPLICANT_CONF="/etc/wpa_supplicant/wpa_supplicant_ap-switcher.conf"
+WPA_SUPPLICANT_LOG="/var/log/wpa_supplicant_${NAME}.log"
+
+function kill_screens
+{
+    echo "Shutting down screens..."
+    SESSIONS=$(screen -ls | grep -o "[0-9]*\.${SCREEN_NAME}")
+    while read -r session; do
+        if [ "${session}" == "" ]; then
+            continue
+        fi
+    
+        echo " Stopping session: ${session}"
+        screen -S ${session} -X quit
+    done <<< "${SESSIONS}"
+
+}
+
+function start_wpa_supplicant
+{
+    echo "stopping network-manager"
+    service network-manager stop 
+    echo "killing NetworkManager"
+    killall -q NetworkManager
+    echo "killing dhclient"
+    killall -q dhclient
+    sleep 1
+    echo "shutting down wpa_supplicant"
+    wpa_cli terminate
+    sleep 1
+    echo "running wpa_supplicant"
+    wpa_supplicant -d -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
+    # wait for things to settle down
+    sleep 3
+}
+
+function stop_wpa_supplicant
+{
+    echo "killing dhclient"
+    killall -q dhclient
+    sleep 1
+    echo "shutting down wpa_supplicant"
+    wpa_cli terminate 
+    # wait for things to settle down
+    sleep 1
+    echo "starting network-manager"
+    service network-manager start
+    sleep 1
+}
+
+function start_script
+{
+    if is_running; then
+        echo "Already started" | tee --append "${BOOT_LOG_FILE}" 2>&1
+    else
+        kill_screens  | tee --append "${BOOT_LOG_FILE}" 2>&1
+
+        echo "Starting ${NAME}..." | tee --append "${BOOT_LOG_FILE}" 2>&1
+        echo "Creating screen session..." | tee --append "${BOOT_LOG_FILE}" 2>&1
+        screen -t ${NAME} -S ${NAME} -d -m bash  | tee --append "${BOOT_LOG_FILE}" 2>&1
+        INTO_SCREEN_CMD=$(echo -en "${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} & echo \"\$!\" > ${PID_FILE}\n \n")
+        screen -S ${NAME} -p 0 -X stuff "${INTO_SCREEN_CMD}" | tee --append "${BOOT_LOG_FILE}" 2>&1 &  
+        echo -e "Inserting into screen session:\n${INTO_SCREEN_CMD}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+        echo "Waiting for script to be started..."  | tee --append "${BOOT_LOG_FILE}" 2>&1
+        sleep 2
+        echo "PID = $(get_pid)" | tee --append "${BOOT_LOG_FILE}" 2>&1
+       
+        if ! is_running; then
+            echo "Unable to start, see ${BOOT_LOG_FILE}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+            exit 1
+        fi
+	    echo "Started ${NAME}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+    	echo "running dhclient $IFWIFI" | tee --append "${BOOT_LOG_FILE}" 2>&1
+    	dhclient $IFWIFI
+    fi
+}
+
+function stop_script
+{   
+    if is_running; then
+        echo -n "Stopping ${NAME}.." 
+        kill `get_pid` > /dev/null 2>&1
+        for i in {1..5}
+        do
+            if ! is_running; then
+                break
+            fi
+            
+            echo -n "." 
+            sleep 1
+        done
+        echo
+        kill_screens
+
+        if is_running; then
+            rm -f ${PID_FILE}
+            echo "Not stopped; may still be shutting down or shutdown may have failed" 
+            exit 1
+        else
+            echo "Stopped"
+            if [ -f "$PID_FILE" ]; then
+                rm "$PID_FILE"
+            fi
+        fi
+    else
+        echo "Not running, no need to shutdown." 
+    fi
+}
+
+function get_pid
+{
+    cat "${PID_FILE}"    
+}
+
+function is_running
+{
+    [ -f "${PID_FILE}" ] && ps `get_pid` > /dev/null 2>&1
+}
+
+# MAIN
+
+echo "Running $0 ($(date))" | tee --append "${BOOT_LOG_FILE}" 2>&1
+
+SCRIPT_NAME="auto_accesspoint_switching.py"
+SCRIPT="/usr/bin/${SCRIPT_NAME}"
+CMD="${SCRIPT} --interface ${IFWIFI} --impr ${REQ_DBM_IMPR} --rate ${RATE} --delay ${DELAY} > ${RUN_LOG_FILE} &"
+
+echo "SCRIPT = ${SCRIPT}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+echo "USER  = ${USER}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+echo "CMD  = ${CMD}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+
+case "$1" in
+    start)
+        start_wpa_supplicant | tee --append "${BOOT_LOG_FILE}" 2>&1
+        start_script # Do redirecting inside the function
+    ;;
+    stop)
+
+        stop_wpa_supplicant | tee --append "${BOOT_LOG_FILE}" 2>&1
+        stop_script | tee --append "${BOOT_LOG_FILE}" 2>&1
+        
+        ;;
+    restart)
+        $0 stop
+        if is_running; then
+            echo "Unable to stop, will not attempt to start" | tee --append "${BOOT_LOG_FILE}" 2>&1
+            exit 1
+        fi
+        $0 start
+        ;;
+    status)
+        if is_running; then
+            echo "Running" | tee --append "${BOOT_LOG_FILE}" 2>&1
+        else
+            echo "Stopped" | tee --append "${BOOT_LOG_FILE}" 2>&1
+            exit 1
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}" | tee --append "${BOOT_LOG_FILE}" 2>&1
+        exit 1
+        ;;
+esac
+
+exit 0

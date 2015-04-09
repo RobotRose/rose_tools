@@ -13,19 +13,14 @@ name=`basename $0`
 pid_file="/var/run/$name.pid"
 stdout_log="/var/log/$name.log"
 stderr_log="/var/log/$name.err"
+user="rose"
 
 date > "$stdout_log" 
 date > "$stderr_log"
+whoami >> "$stdout_log" 
+whoami >> "$stderr_log" 
 
-if [ -f /usr/bin/setup_environment.sh ]; then
-    source /usr/bin/setup_environment.sh >> "$stdout_log" 2>> "$stderr_log"
-else
-    echo "Could not find and run environment script /usr/bin/setup_environment.sh: $(readlink /usr/bin/setup_environment.sh)." >> "$stdout_log" 2>> "$stderr_log"
-fi
-
-user="rose"
-cmd="${ROSE_TOOLS}/scripts/boot_rose.py"
-echo "scripts folder = ${ROSE_TOOLS}/scripts" >> "$stdout_log"
+cmd="/usr/bin/boot_rose.py"
 echo "user = $user" >> "$stdout_log"
 echo "cmd  = $cmd" >> "$stdout_log"
 
@@ -44,7 +39,7 @@ case "$1" in
     else
         echo "Starting $name" | tee --append $stdout_log
 
-        sudo -u "$user" $cmd >> "$stdout_log" 2>> "$stderr_log" &
+        sudo -H -u "$user" -E bash -c "$cmd" >> "$stdout_log" 2>> "$stderr_log" &
         echo $! > "$pid_file"
         echo "Started $name" | tee --append $stdout_log
         if ! is_running; then
