@@ -117,11 +117,11 @@ def get_aps(rawscan, ssid):
 
         if ssid in parts:
             values = {}
-            values["BSSID"]     = parts[0].encode("ascii", "ignore")
-            values["frequency"] = float(parts[1].encode("ascii", "ignore"))
-            values["dBm"]       = float(parts[2].encode("ascii", "ignore"))
-            values["flags"]     = parts[3].encode("ascii", "ignore")
-            values["ESSID"]     = parts[4].encode("ascii", "ignore")
+            values["BSSID"]     = str(parts[0])
+            values["frequency"] = float(str(parts[1]))
+            values["dBm"]       = float(str(parts[2]))
+            values["flags"]     = str(parts[3])
+            values["ESSID"]     = str(parts[4])
             aps_list += [values]
     
     return aps_list
