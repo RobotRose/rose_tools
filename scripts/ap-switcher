@@ -40,7 +40,7 @@ function kill_screens
 
 }
 
-function start_wpa_supplicant
+function start_ap-switcher
 {
     echo "stopping network-manager"
     service network-manager stop 
@@ -49,6 +49,9 @@ function start_wpa_supplicant
     echo "killing dhclient"
     killall -q dhclient
     sleep 1
+    echo "killing dnsmasq"
+    killall -q dnsmasq
+    sleep 1
     echo "shutting down wpa_supplicant"
     wpa_cli terminate
     sleep 1
@@ -56,12 +59,16 @@ function start_wpa_supplicant
     wpa_supplicant -d -B -D nl80211 -i $IFWIFI  -c ${WPA_SUPPLICANT_CONF} -f ${WPA_SUPPLICANT_LOG}
     # wait for things to settle down
     sleep 3
+    echo "running dnsmasq"
+    dnsmasq
 }
 
-function stop_wpa_supplicant
+function stop_ap-switcher
 {
     echo "killing dhclient"
     killall -q dhclient
+    echo "killing dnsmasq"
+    killall -q dnsmasq
     sleep 1
     echo "shutting down wpa_supplicant"
     wpa_cli terminate 
@@ -155,12 +162,12 @@ echo "CMD  = ${CMD}" | tee --append "${BOOT_LOG_FILE}" 2>&1
 
 case "$1" in
     start)
-        start_wpa_supplicant | tee --append "${BOOT_LOG_FILE}" 2>&1
+        start_ap-switcher | tee --append "${BOOT_LOG_FILE}" 2>&1
         start_script # Do redirecting inside the function
     ;;
     stop)
 
-        stop_wpa_supplicant | tee --append "${BOOT_LOG_FILE}" 2>&1
+        stop_ap-switcher | tee --append "${BOOT_LOG_FILE}" 2>&1
         stop_script | tee --append "${BOOT_LOG_FILE}" 2>&1
         
         ;;
