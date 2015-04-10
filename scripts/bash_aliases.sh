@@ -35,6 +35,10 @@ function cd () {
 	fi
 }
 
+function poesje {
+	git push
+}
+
 function gitff {
 	git fetch && git pull --ff --ff-only origin $(git rev-parse --abbrev-ref HEAD)
 }
