@@ -9,7 +9,7 @@ if [ "$(id -u)" == "0" ]; then
 fi
 
 # Create link to deployment file in /usr/bin/
-DEPLOYMENT_FILE="${ROSE_CONFIG}/deployment/${ROBOT_INSTALLATION}/deployment.sh"
+DEPLOYMENT_FILE="${ROSE_CONFIG}/deployment/${ROBOT_DEPLOYMENT}/deployment.sh"
 DEPLOYMENT_FILE_LINKNAME="/usr/bin/deployment_file.sh"
 
 echo "Linking deployment file: '${DEPLOYMENT_FILE_LINKNAME}' to '${DEPLOYMENT_FILE}'... " | colorize BLUE
