@@ -35,6 +35,9 @@ print "Started platform screen session."
 os.system("""screen -t body -S body -d -m bash""")
 print "Started body screen session."
 
+os.system("""screen -t ed -S ed -d -m bash""")
+print "Started ed screen session."
+
 print "Sleeping 5s..."
 time.sleep(5)
 
@@ -63,15 +66,17 @@ if timeout_cnt >= timeout:
     print "Could not ping rosepc2, aborting auto boot procedure."
 else:
     print "Starting platform..."
-    platform_proc   = subprocess.Popen("""screen -S platform -p 0 -X stuff 'roslaunch  ${LAUNCH_DIR}/platform.launch\015'""", 
-                                        stdout=subprocess.PIPE, shell=True)
-    print roscore_proc.stdout.read()
+    platform_proc   = subprocess.Popen("""screen -S platform -p 0 -X stuff 'roslaunch  ${LAUNCH_DIR}/platform.launch\015'""", stdout=subprocess.PIPE, shell=True)
+    print platform_proc.stdout.read()
     print "Sleeping 5s..."
     time.sleep(5)
     
     print "Starting body..."
-    body_proc       = subprocess.Popen("""screen -S body -p 0 -X stuff 'roslaunch ${LAUNCH_DIR}/body.launch\015'""", 
-                                        stdout=subprocess.PIPE, shell=True)
-    print roscore_proc.stdout.read()
+    body_proc       = subprocess.Popen("""screen -S body -p 0 -X stuff 'roslaunch ${LAUNCH_DIR}/body.launch\015'""", stdout=subprocess.PIPE, shell=True)
+    print body_proc.stdout.read()
+
+    print "Starting ed..."
+    ed_proc       = subprocess.Popen("""screen -S ed -p 0 -X stuff 'roslaunch rose_ed_config ed.launch\015'""", stdout=subprocess.PIPE, shell=True)
+    print ed_proc.stdout.read()
 
     print "All started. You can reattach to the screens with '$ screen -r roscore', '$ screen -r body', '$ screen -r platform'"
