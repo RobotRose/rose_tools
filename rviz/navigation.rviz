@@ -9,11 +9,15 @@ Panels:
         - /LaserScan1/Autocompute Value Bounds1
         - /Map_navigation1/Status1
         - /Footprint_path1/Status1
+        - /FCC_marker1
         - /FCC_marker1/Status1
         - /FCC_marker1/Namespaces1
+        - /current_footprint1
         - /target_footprint1/Status1
-      Splitter Ratio: 0.5
-    Tree Height: 745
+        - /FCC_polys1
+        - /FCC_polys1/Status1
+      Splitter Ratio: 0.501129
+    Tree Height: 697
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -107,18 +111,6 @@ Visualization Manager:
           Value: true
         FR_wheel_mount_vertplate:
           Value: true
-        ar_marker_0:
-          Value: true
-        ar_marker_1:
-          Value: true
-        ar_marker_17:
-          Value: true
-        ar_marker_2:
-          Value: true
-        ar_marker_3:
-          Value: true
-        ar_marker_4:
-          Value: true
         base_link:
           Value: true
         camera_center_link:
@@ -135,10 +127,6 @@ Visualization Manager:
           Value: true
         laser:
           Value: true
-        left_arm_grippermarker_observed:
-          Value: true
-        left_arm_observed_gripper_tip:
-          Value: true
         lift_left:
           Value: true
         lift_link:
@@ -151,41 +139,7 @@ Visualization Manager:
           Value: true
         map:
           Value: true
-        mico_large_ring_cover_1:
-          Value: true
-        mico_large_ring_cover_2:
-          Value: true
-        mico_large_ring_cover_3:
-          Value: true
-        mico_link_1:
-          Value: true
-        mico_link_2:
-          Value: true
-        mico_link_3:
-          Value: true
-        mico_link_4:
-          Value: true
-        mico_link_5:
-          Value: true
-        mico_link_base:
-          Value: true
-        mico_link_finger_1:
-          Value: true
-        mico_link_finger_2:
-          Value: true
-        mico_link_finger_tip_1:
-          Value: true
-        mico_link_finger_tip_2:
-          Value: true
-        mico_link_hand:
-          Value: true
         mico_root:
-          Value: true
-        mico_small_ring_cover_1:
-          Value: true
-        mico_small_ring_cover_2:
-          Value: true
-        mico_small_ring_cover_3:
           Value: true
         neck_pan:
           Value: true
@@ -247,31 +201,7 @@ Visualization Manager:
                   lift_top_bar:
                     {}
                   mico_root:
-                    mico_link_base:
-                      mico_large_ring_cover_1:
-                        {}
-                      mico_link_1:
-                        mico_large_ring_cover_2:
-                          {}
-                        mico_link_2:
-                          mico_large_ring_cover_3:
-                            {}
-                          mico_link_3:
-                            mico_link_4:
-                              mico_link_5:
-                                mico_link_hand:
-                                  mico_link_finger_1:
-                                    mico_link_finger_tip_1:
-                                      {}
-                                  mico_link_finger_2:
-                                    mico_link_finger_tip_2:
-                                      {}
-                                mico_small_ring_cover_3:
-                                  {}
-                              mico_small_ring_cover_2:
-                                {}
-                            mico_small_ring_cover_1:
-                              {}
+                    {}
                   neck_pan:
                     neck_tilt:
                       camera_center_link:
@@ -281,20 +211,7 @@ Visualization Manager:
                               {}
                           camera_rgb_frame:
                             camera_rgb_optical_frame:
-                              ar_marker_0:
-                                {}
-                              ar_marker_1:
-                                {}
-                              ar_marker_17:
-                                {}
-                              ar_marker_2:
-                                left_arm_grippermarker_observed:
-                                  left_arm_observed_gripper_tip:
-                                    {}
-                              ar_marker_3:
-                                {}
-                              ar_marker_4:
-                                {}
+                              {}
                   shoulders:
                     {}
                   tray:
@@ -458,10 +375,10 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /move_base/debug_marker
+      Marker Topic: /footprint_collision_checker_debug
       Name: FCC_marker
       Namespaces:
-        arc_local_planner_points: true
+        points: true
       Queue Size: 100
       Value: true
     - Arrow Length: 0.1
@@ -546,6 +463,13 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 25; 255; 0
+      Enabled: true
+      Name: FCC_polys
+      Topic: /debug/polygons/footprint
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -569,28 +493,31 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -0.0250008
-      Class: rviz/TopDownOrtho
+      Class: rviz/Orbit
+      Distance: 2.76203
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
+      Focal Point:
+        X: -19.0691
+        Y: -7.54679
+        Z: 0.550502
       Name: Current View
       Near Clip Distance: 0.01
-      Scale: 536.643
+      Pitch: 0.824797
       Target Frame: <Fixed Frame>
-      Value: TopDownOrtho (rviz)
-      X: -19.4249
-      Y: -8.92155
+      Value: Orbit (rviz)
+      Yaw: 2.35318
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1051
+  Height: 1003
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001cd00000378fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000004100000378000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f00000378fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000004100000378000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000077e0000003efc0100000002fb0000000800540069006d006501000000000000077e000002f600fffffffb0000000800540069006d00650100000000000004500000000000000000000004960000037800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001cd00000348fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000004100000348000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f00000348fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000004100000348000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007800000003efc0100000002fb0000000800540069006d0065010000000000000780000002f600fffffffb0000000800540069006d00650100000000000004500000000000000000000004980000034800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -599,6 +526,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1918
-  X: 1920
-  Y: 0
+  Width: 1920
+  X: -1
+  Y: 24
