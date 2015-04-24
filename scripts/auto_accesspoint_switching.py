@@ -44,7 +44,7 @@ def get_network_ssid(id):
         print "Could not get network SSID {0}".format(arguments["--interface"])
         return None
 
-    SSID = raw.translate(None, '\"')
+    SSID = raw.strip('\"')
     if SSID == "FAIL":
         return None
 
