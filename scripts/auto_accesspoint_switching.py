@@ -38,7 +38,7 @@ import time
 #! @todo OH [IMPR]: Make possible to provide this via the whitelis parameter.
 def get_network_ssid(id):
     try: 
-        raw = wpa_cli(" get_network {0} ssid -i {1}".format(id, arguments["--interface"]))
+        raw = wpa_cli("-i", arguments["--interface"], "get_network", id, "ssid")
         print "Raw get_network result: {0}".format(raw)
     except ErrorReturnCode:
         print "Could not get network SSID {0}".format(arguments["--interface"])
