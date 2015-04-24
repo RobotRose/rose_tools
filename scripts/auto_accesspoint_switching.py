@@ -169,7 +169,7 @@ if __name__ == '__main__':
             aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
             current_access_point = get_current_ap(aps)
         else:
-            time.sleep(0.2)     # Print refresh rate
+            time.sleep(0.2)     # Print refresh rate
 
         os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
@@ -178,8 +178,8 @@ if __name__ == '__main__':
                 print "Scanning but not yet selected an access point."
             else:
                 print "Could not fetch current access point, making sure correct network is selected."
+                time.sleep(arguments["--rate"])
                 select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
-                time.sleep(1)
                 continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
