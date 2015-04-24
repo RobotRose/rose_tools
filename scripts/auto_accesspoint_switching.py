@@ -32,7 +32,7 @@ import pprint
 import sys
 import time
 
-current_ap_buffer = None
+
 
 def get_wpa_status():
     current_ap = {}
@@ -159,6 +159,7 @@ if __name__ == '__main__':
     else:
         arguments["--delay"] = float(arguments["--delay"])
 
+    current_ap_buffer = None
     switched_time = time.time()
     scanned_time = time.time()
 
