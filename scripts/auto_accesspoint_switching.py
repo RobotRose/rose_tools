@@ -32,10 +32,13 @@ import pprint
 import sys
 import time
 
+current_ap_buffer = None
 
 def get_wpa_status():
     current_ap = {}
-    try: raw = wpa_cli("status", arguments["--interface"])
+    try: 
+        raw = wpa_cli("status", arguments["--interface"])
+        print "Raw get_wpa_status result: {0}".format(raw)
     except ErrorReturnCode:
         print "Could not get wpa_cli status {0}".format(arguments["--interface"])
         return None
@@ -49,15 +52,16 @@ def get_wpa_status():
 
 def get_current_ap(aps):
     if not aps:
-        return None
+        print "No aps, cannort get current ap, use buffered ap!"
+        return current_ap_buffer
 
     wpa_status = get_wpa_status()
     if "wpa_state" in wpa_status:
         if wpa_status["wpa_state"] == "COMPLETED":
 
             if not "bssid" in wpa_status:
-                print "Error while getting current bssid."
-                return None
+                print "Error while getting current bssid, returning buffered current ap."
+                return current_ap_buffer
 
             aps_with_correct_bssid = [ap for ap in aps if ap["BSSID"] ==  wpa_status["bssid"]]
             if len(aps_with_correct_bssid) > 1:
@@ -65,22 +69,24 @@ def get_current_ap(aps):
     
             if not aps_with_correct_bssid:
                 print "Scan did not detect current AP with BSSID {0}.".format(wpa_status["bssid"])
-                return None
+                return current_ap_buffer
 
-            return aps_with_correct_bssid[0]
+            current_ap_buffer = aps_with_correct_bssid[0]
+            return current_ap_buffer
 
         elif wpa_status["wpa_state"] == "SCANNING":
-            print "Not yet associated with any AP."
-            return None
+            print "Not yet associated with any AP, returning buffered current ap."
+            return current_ap_buffer
 
-    print "Error while getting current AP"
-    return None
-
+    print "Error while getting current AP, returning buffered current ap."
+    return current_ap_buffer
 
 
 def select_network(ssid):
     print "Selecting network '{0}'".format(ssid)
-    try:  result = wpa_cli("select_network", ssid, " -i {0}".format(arguments["--interface"]))
+    try:  
+        result = wpa_cli("select_network", ssid, " -i {0}".format(arguments["--interface"]))
+        print "Selecting network result '{0}'".format(result)
     except ErrorReturnCode, ex:
         print ex
         print "Could not run wpa_cli select_network {0} -i {1}".format(ssid, arguments["--interface"])
@@ -100,7 +106,9 @@ def get_latest_raw_scan():
     # Limit the rate
     time.sleep(0.1)
     
-    try: raw = wpa_cli("scan_results", arguments["--interface"])
+    try: 
+        raw = wpa_cli("scan_results", arguments["--interface"])
+        print "Raw scan results: {0}".format(raw)
     except ErrorReturnCode:
         print "Could not run wpa_cli scan_results {0}".format(arguments["--interface"])
         return ""
@@ -171,7 +179,7 @@ if __name__ == '__main__':
         else:
             time.sleep(0.2)     # Print refresh rate
 
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
             wpa_status = get_wpa_status()
             if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and aps:
