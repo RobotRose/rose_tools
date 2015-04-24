@@ -51,6 +51,7 @@ def get_wpa_status():
     return properties
 
 def get_current_ap(aps):
+    global current_ap_buffer
     if not aps:
         print "No aps, cannort get current ap, use buffered ap!"
         return current_ap_buffer
@@ -159,6 +160,7 @@ if __name__ == '__main__':
     else:
         arguments["--delay"] = float(arguments["--delay"])
 
+    global current_ap_buffer
     current_ap_buffer = None
     switched_time = time.time()
     scanned_time = time.time()
