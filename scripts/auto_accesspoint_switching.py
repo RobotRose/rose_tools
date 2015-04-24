@@ -33,6 +33,20 @@ import sys
 import time
 
 
+#! @todo OH [IMPR]: Add AP mac blacklist.
+
+#! @todo OH [IMPR]: Make possible to provide this via the whitelis parameter.
+def get_network_ssid(id):
+    try: 
+        raw = wpa_cli("-i ", arguments["--interface"], "get_network {0} ssid".format(id))
+        print "Raw get_network result: {0}".format(raw)
+    except ErrorReturnCode:
+        print "Could not get network SSID status {0}".format(arguments["--interface"])
+        return None
+
+        SSID = raw.translate(None, '\"')
+        print "Network id: {0}".format(SSID)
+    return SSID
 
 def get_wpa_status():
     current_ap = {}
@@ -162,6 +176,11 @@ if __name__ == '__main__':
 
     global current_ap_buffer
     current_ap_buffer = None
+
+    SSID = get_network_ssid(0)  
+    if(SSID == None)
+        sys.exit("Could not select network and retreive SSID, did you install the network configuration?")
+
     switched_time = time.time()
     scanned_time = time.time()
 
@@ -177,7 +196,7 @@ if __name__ == '__main__':
             scanned_time = time.time()
             time.sleep(0.2)
 
-            aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
+            aps = get_aps(get_latest_raw_scan(), SSID)
             current_access_point = get_current_ap(aps)
         else:
             time.sleep(0.2)     # Print refresh rate
@@ -192,7 +211,7 @@ if __name__ == '__main__':
             else:
                 print "Re-selecting network."
                 time.sleep(arguments["--rate"])
-                select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
+                select_network(SSID) # @todo OH [CONF]: HardCoded ROSE_WIFI
                 continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
