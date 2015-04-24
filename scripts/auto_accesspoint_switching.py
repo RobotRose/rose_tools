@@ -175,7 +175,7 @@ if __name__ == '__main__':
         if elapsed_time >= arguments["--rate"] or switched:
             force_scan()
             scanned_time = time.time()
-            time.sleep(0.1)
+            time.sleep(0.2)
 
             aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
             current_access_point = get_current_ap(aps)
@@ -187,8 +187,10 @@ if __name__ == '__main__':
             wpa_status = get_wpa_status()
             if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and aps:
                 print "Scanning but not yet selected an access point."
+            elif "wpa_state" in wpa_status and wpa_status["wpa_state"] == "AUTHENTICATING" and aps:
+                print "Authenticating with new AP."
             else:
-                print "Could not fetch current access point, making sure correct network is selected."
+                print "Re-selecting network."
                 time.sleep(arguments["--rate"])
                 select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
                 continue
