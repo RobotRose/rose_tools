@@ -38,13 +38,16 @@ import time
 #! @todo OH [IMPR]: Make possible to provide this via the whitelis parameter.
 def get_network_ssid(id):
     try: 
-        raw = wpa_cli("get_network {0} ssid -i {1}".format(id, arguments["--interface"]))
+        raw = wpa_cli(" get_network {0} ssid -i {1}".format(id, arguments["--interface"]))
         print "Raw get_network result: {0}".format(raw)
     except ErrorReturnCode:
         print "Could not get network SSID {0}".format(arguments["--interface"])
         return None
 
         SSID = raw.translate(None, '\"')
+        if SSID == "FAIL":
+            return None
+
         print "Network id: {0}".format(SSID)
     return SSID
 
@@ -180,6 +183,8 @@ if __name__ == '__main__':
     SSID = get_network_ssid(0)  
     if SSID == None:
         sys.exit("Could not select network and retreive SSID, did you install the network configuration?")
+
+    print "Network SSID: {0}".format(SSID)
 
     switched_time = time.time()
     scanned_time = time.time()
