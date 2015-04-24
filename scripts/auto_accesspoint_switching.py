@@ -178,7 +178,7 @@ if __name__ == '__main__':
     current_ap_buffer = None
 
     SSID = get_network_ssid(0)  
-    if(SSID == None)
+    if SSID == None:
         sys.exit("Could not select network and retreive SSID, did you install the network configuration?")
 
     switched_time = time.time()
