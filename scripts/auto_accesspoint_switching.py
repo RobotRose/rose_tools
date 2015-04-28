@@ -213,11 +213,12 @@ if __name__ == '__main__':
                 print "Scanning but not yet selected an access point."
             elif "wpa_state" in wpa_status and wpa_status["wpa_state"] == "AUTHENTICATING" and aps:
                 print "Authenticating with new AP."
-            else:
-                print "Re-selecting network."
-                time.sleep(arguments["--rate"])
-                select_network(SSID) # @todo OH [CONF]: HardCoded ROSE_WIFI
                 continue
+            
+            print "Re-selecting network..."
+            time.sleep(arguments["--rate"])
+            select_network(SSID) # @todo OH [CONF]: HardCoded ROSE_WIFI
+            continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
         # pprint.pprint(aps)
