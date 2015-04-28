@@ -196,7 +196,8 @@ if __name__ == '__main__':
     print "Network SSID: {0}".format(SSID)
 
     switched_time = time.time()
-    global scanned_time = time.time()
+    global scanned_time 
+    scanned_time = time.time()
 
     current_access_point = None
     switched = True     # Initialize to true in order to force scan @ start
