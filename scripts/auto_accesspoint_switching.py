@@ -68,10 +68,9 @@ def get_wpa_status():
     return properties
 
 def get_current_ap(aps):
-    global current_ap_buffer
     if not aps:
-        print "No aps, cannort get current ap, use buffered ap!"
-        return current_ap_buffer
+        print "No aps, cannot get current ap, use buffered ap!"
+        return None
 
     wpa_status = get_wpa_status()
     if "wpa_state" in wpa_status:
@@ -79,7 +78,7 @@ def get_current_ap(aps):
 
             if not "bssid" in wpa_status:
                 print "Error while getting current bssid, returning buffered current ap."
-                return current_ap_buffer
+                return None
 
             aps_with_correct_bssid = [ap for ap in aps if ap["BSSID"] ==  wpa_status["bssid"]]
             if len(aps_with_correct_bssid) > 1:
@@ -87,17 +86,16 @@ def get_current_ap(aps):
     
             if not aps_with_correct_bssid:
                 print "Scan did not detect current AP with BSSID {0}.".format(wpa_status["bssid"])
-                return current_ap_buffer
+                return None
 
-            current_ap_buffer = aps_with_correct_bssid[0]
-            return current_ap_buffer
+            return aps_with_correct_bssid[0]
 
         elif wpa_status["wpa_state"] == "SCANNING":
             print "Not yet associated with any AP, returning buffered current ap."
-            return current_ap_buffer
+            return None
 
     print "Error while getting current AP, returning buffered current ap."
-    return current_ap_buffer
+    return None
 
 
 def select_network(ssid):
@@ -194,6 +192,7 @@ if __name__ == '__main__':
         sys.exit("Could not select network and retreive SSID, did you install the network configuration?")
 
     print "Network SSID: {0}".format(SSID)
+    select_network(SSID) 
 
     switched_time = time.time()
     global scanned_time 
@@ -216,20 +215,21 @@ if __name__ == '__main__':
         if current_access_point == None:
             wpa_status = get_wpa_status()
             if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and aps:
-                print "Scanning but not yet selected an access point."
+                print "Scanning but not yet associated with an access point."
+                time.sleep(1.0)
             elif "wpa_state" in wpa_status and wpa_status["wpa_state"] == "AUTHENTICATING" and aps:
                 print "Authenticating with new AP."
+                time.sleep(1.0)
                 continue
             else:
                 print "Re-selecting network..."
                 select_network(SSID) 
-                time.sleep(arguments["--rate"])
+                time.sleep(1.0)
                 continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
         # pprint.pprint(aps)
 
-        # # Check for len(mac_map is not null)
         average = 0
         if aps:
             for ap in aps:
@@ -247,6 +247,7 @@ if __name__ == '__main__':
         if aps and current_access_point == None:
             print "Selecting initial AP."
             switch_to_ap(sorted_ap_list[0][0])
+            time.sleep(arguments["--rate"])
             continue
 
         # print sorted_ap_list
