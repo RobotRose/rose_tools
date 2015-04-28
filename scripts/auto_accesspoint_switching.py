@@ -33,9 +33,29 @@ import sys
 import time
 
 
+#! @todo OH [IMPR]: Add AP mac blacklist.
+
+#! @todo OH [IMPR]: Make possible to provide this via the whitelis parameter.
+def get_network_ssid(id):
+    try: 
+        raw = wpa_cli("-i", arguments["--interface"], "get_network", id, "ssid")
+        print "Raw get_network result: {0}".format(raw)
+    except ErrorReturnCode:
+        print "Could not get network SSID {0}".format(arguments["--interface"])
+        return None
+
+    SSID = raw.strip('\"')
+    if SSID == "FAIL":
+        return None
+
+    print "Network id: {0}".format(SSID)
+    return SSID
+
 def get_wpa_status():
     current_ap = {}
-    try: raw = wpa_cli("status", arguments["--interface"])
+    try: 
+        raw = wpa_cli("status", arguments["--interface"])
+        print "Raw get_wpa_status result: {0}".format(raw)
     except ErrorReturnCode:
         print "Could not get wpa_cli status {0}".format(arguments["--interface"])
         return None
@@ -48,16 +68,18 @@ def get_wpa_status():
     return properties
 
 def get_current_ap(aps):
+    global current_ap_buffer
     if not aps:
-        return None
+        print "No aps, cannort get current ap, use buffered ap!"
+        return current_ap_buffer
 
     wpa_status = get_wpa_status()
     if "wpa_state" in wpa_status:
         if wpa_status["wpa_state"] == "COMPLETED":
 
             if not "bssid" in wpa_status:
-                print "Error while getting current bssid."
-                return None
+                print "Error while getting current bssid, returning buffered current ap."
+                return current_ap_buffer
 
             aps_with_correct_bssid = [ap for ap in aps if ap["BSSID"] ==  wpa_status["bssid"]]
             if len(aps_with_correct_bssid) > 1:
@@ -65,22 +87,24 @@ def get_current_ap(aps):
     
             if not aps_with_correct_bssid:
                 print "Scan did not detect current AP with BSSID {0}.".format(wpa_status["bssid"])
-                return None
+                return current_ap_buffer
 
-            return aps_with_correct_bssid[0]
+            current_ap_buffer = aps_with_correct_bssid[0]
+            return current_ap_buffer
 
         elif wpa_status["wpa_state"] == "SCANNING":
-            print "Not yet associated with any AP."
-            return None
+            print "Not yet associated with any AP, returning buffered current ap."
+            return current_ap_buffer
 
-    print "Error while getting current AP"
-    return None
-
+    print "Error while getting current AP, returning buffered current ap."
+    return current_ap_buffer
 
 
 def select_network(ssid):
     print "Selecting network '{0}'".format(ssid)
-    try:  result = wpa_cli("select_network", ssid, " -i {0}".format(arguments["--interface"]))
+    try:  
+        result = wpa_cli("select_network", ssid, " -i {0}".format(arguments["--interface"]))
+        print "Selecting network result '{0}'".format(result)
     except ErrorReturnCode, ex:
         print ex
         print "Could not run wpa_cli select_network {0} -i {1}".format(ssid, arguments["--interface"])
@@ -100,7 +124,9 @@ def get_latest_raw_scan():
     # Limit the rate
     time.sleep(0.1)
     
-    try: raw = wpa_cli("scan_results", arguments["--interface"])
+    try: 
+        raw = wpa_cli("scan_results", arguments["--interface"])
+        print "Raw scan results: {0}".format(raw)
     except ErrorReturnCode:
         print "Could not run wpa_cli scan_results {0}".format(arguments["--interface"])
         return ""
@@ -151,6 +177,15 @@ if __name__ == '__main__':
     else:
         arguments["--delay"] = float(arguments["--delay"])
 
+    global current_ap_buffer
+    current_ap_buffer = None
+
+    SSID = get_network_ssid(0)  
+    if SSID == None:
+        sys.exit("Could not select network and retreive SSID, did you install the network configuration?")
+
+    print "Network SSID: {0}".format(SSID)
+
     switched_time = time.time()
     scanned_time = time.time()
 
@@ -164,22 +199,24 @@ if __name__ == '__main__':
         if elapsed_time >= arguments["--rate"] or switched:
             force_scan()
             scanned_time = time.time()
-            time.sleep(0.1)
+            time.sleep(0.2)
 
-            aps = get_aps(get_latest_raw_scan(), "ROSE_WIFI")
+            aps = get_aps(get_latest_raw_scan(), SSID)
             current_access_point = get_current_ap(aps)
         else:
-            time.sleep(0.2)     # Print refresh rate
+            time.sleep(0.2)     # Print refresh rate
 
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # os.system('cls' if os.name == 'nt' else 'clear')
         if current_access_point == None:
             wpa_status = get_wpa_status()
             if "wpa_state" in wpa_status and wpa_status["wpa_state"] == "SCANNING" and aps:
                 print "Scanning but not yet selected an access point."
+            elif "wpa_state" in wpa_status and wpa_status["wpa_state"] == "AUTHENTICATING" and aps:
+                print "Authenticating with new AP."
             else:
-                print "Could not fetch current access point, making sure correct network is selected."
-                select_network("ROSE_WIFI") # @todo OH [CONF]: HardCoded ROSE_WIFI
-                time.sleep(1)
+                print "Re-selecting network."
+                time.sleep(arguments["--rate"])
+                select_network(SSID) # @todo OH [CONF]: HardCoded ROSE_WIFI
                 continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
