@@ -155,6 +155,15 @@ def get_aps(rawscan, ssid):
 def switch_to_ap(access_point_bssid):
     wpa_cli("roam", access_point_bssid) 
 
+def scan():
+    global scanned_time
+    force_scan()
+    scanned_time = time.time()
+    time.sleep(0.2)
+    aps = get_aps(get_latest_raw_scan(), SSID)
+    time.sleep(0.2) 
+    return aps
+
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='1.0')
     print arguments
@@ -187,7 +196,7 @@ if __name__ == '__main__':
     print "Network SSID: {0}".format(SSID)
 
     switched_time = time.time()
-    scanned_time = time.time()
+    global scanned_time = time.time()
 
     current_access_point = None
     switched = True     # Initialize to true in order to force scan @ start
@@ -197,11 +206,7 @@ if __name__ == '__main__':
         elapsed_time = time.time() - scanned_time
         print "Elapsed time since last scan: {0:.2f}s/{1:.2f}s".format(elapsed_time, arguments["--rate"])
         if elapsed_time >= arguments["--rate"] or switched:
-            force_scan()
-            scanned_time = time.time()
-            time.sleep(0.2)
-
-            aps = get_aps(get_latest_raw_scan(), SSID)
+            aps = scan()
             current_access_point = get_current_ap(aps)
         else:
             time.sleep(0.2)     # Print refresh rate
@@ -214,10 +219,11 @@ if __name__ == '__main__':
             elif "wpa_state" in wpa_status and wpa_status["wpa_state"] == "AUTHENTICATING" and aps:
                 print "Authenticating with new AP."
                 continue
-            
-            print "Re-selecting network..."
-            select_network(SSID) # @todo OH [CONF]: HardCoded ROSE_WIFI
-            time.sleep(arguments["--rate"])
+            else:
+                print "Re-selecting network..."
+                select_network(SSID) 
+                time.sleep(arguments["--rate"])
+                continue
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
         # pprint.pprint(aps)
@@ -237,7 +243,7 @@ if __name__ == '__main__':
         sorted_ap_list = sorted(ap_list, key=lambda x: x[2], reverse=True)
 
         # Simply select strongest AP if we currently have none selected
-        if current_access_point == None:
+        if aps and current_access_point == None:
             print "Selecting initial AP."
             switch_to_ap(sorted_ap_list[0][0])
             continue
