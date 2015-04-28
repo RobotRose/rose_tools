@@ -216,9 +216,8 @@ if __name__ == '__main__':
                 continue
             
             print "Re-selecting network..."
-            time.sleep(arguments["--rate"])
             select_network(SSID) # @todo OH [CONF]: HardCoded ROSE_WIFI
-            continue
+            time.sleep(arguments["--rate"])
 
         # pprint.pprint("Current access point: {0} | {1} dBm".format(current_access_point["BSSID"], current_access_point["dBm"]))
         # pprint.pprint(aps)
